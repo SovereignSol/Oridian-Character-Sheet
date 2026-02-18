@@ -35,6 +35,7 @@ export function defaultCharacterState() {
     race: "",
     background: "",
     alignment: "",
+    xp: "",
     level: 1,
     multiclass: false,
     inspiration: false,
@@ -51,8 +52,33 @@ export function defaultCharacterState() {
     primary: { classKey: "", subclass: "", classLevel: 1, spellMod: 0, subclassPackageUrl: "" },
     secondary: { classKey: "", subclass: "", classLevel: 0, spellMod: 0, subclassPackageUrl: "" },
 
-    notes: "",
-  };
+    spells: {
+    spellcastingClass: "",
+    spellcastingAbility: "INT",
+    spellsKnown: 0,
+    saveDcMisc: 0,
+    attackBonusMisc: 0,
+    cantrips: [],
+    levels: { "1": [], "2": [], "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [] }
+  },
+
+  bio: {
+    age: "",
+    height: "",
+    weight: "",
+    eyes: "",
+    skin: "",
+    hair: "",
+    appearance: "",
+    backstory: "",
+    allies: "",
+    treasure: "",
+    additionalFeatures: "",
+    symbol: ""
+  },
+
+  notes: "",
+};
 }
 
 export function loadCharacterState() {
@@ -73,6 +99,8 @@ export function loadCharacterState() {
       combat: { ...b.combat, ...(p.combat || {}) },
       primary: { ...b.primary, ...(p.primary || {}) },
       secondary: { ...b.secondary, ...(p.secondary || {}) },
+      spells: { ...b.spells, ...(p.spells || {}), levels: { ...b.spells.levels, ...((p.spells||{}).levels || {}) } },
+      bio: { ...b.bio, ...(p.bio || {}) },
     };
     merged.level = clampInt(merged.level, 1, 20);
     for (const a of abilityList) merged.abilities[a] = clampInt(merged.abilities[a], 1, 30);
