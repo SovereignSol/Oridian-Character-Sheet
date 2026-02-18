@@ -56,6 +56,26 @@
     .skillBtn{padding:8px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(26,39,53,.65);color:var(--text);cursor:pointer;font-size:12px}
     .skillBtn.active{outline:2px solid var(--accent)}
     .skillRight{display:flex;justify-content:flex-end;font-size:16px}
+.pageNav{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pageBtn{padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.10);color:var(--text);cursor:pointer;font-size:12px}
+.pageBtn.active{outline:2px solid var(--accent)}
+.sheetFrame{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:12px}
+.sheetHeaderGrid{display:grid;grid-template-columns:1fr;gap:10px}
+.sheetHeaderRow{display:grid;grid-template-columns:1fr;gap:10px}
+.bigName{font-size:18px;font-weight:1000}
+.kvGrid{display:grid;grid-template-columns:1fr;gap:10px}
+.spellCols{display:grid;grid-template-columns:1fr;gap:12px}
+.spellLevelBox{border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14)}
+.spellLevelHead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);font-weight:900}
+.spellList{padding:10px 12px;display:grid;gap:8px}
+.spellRow{display:grid;grid-template-columns:18px 1fr 56px;gap:8px;align-items:center}
+.tag{color:var(--muted);font-size:12px}
+@media (min-width:900px){
+  .sheetHeaderGrid{grid-template-columns:1.4fr 1fr}
+  .sheetHeaderRow{grid-template-columns:1fr 1fr 1fr}
+  .kvGrid{grid-template-columns:1fr 1fr 1fr}
+  .spellCols{grid-template-columns:1fr 1fr 1fr}
+}
     footer{max-width:1100px;margin:8px auto 18px;padding:0 14px;color:var(--muted);font-size:12px}
     @media (min-width:900px){
       .menuGrid{grid-template-columns:1fr 1fr}
@@ -107,6 +127,7 @@
           <div class="topTitle">Character Sheet</div>
           <button class="btn" id="backFromSheet" type="button">Back</button>
         </div>
+        <div class="pageNav" id="pageNav"></div>
         <div id="sheetRoot" style="margin-top:12px"></div>
       </div>
     </div>
@@ -245,114 +266,273 @@
       ]);
     }
 
-    function renderSheet(){
-      state = loadCharacterState();
-      const root = document.getElementById("sheetRoot");
-      root.innerHTML = "";
+    
+let sheetPage = "core"; // core | bio | spells
 
-      const pb = proficiencyBonus(state.level) + (Number(state.proficiencyMisc)||0);
+function setPage(p){
+  sheetPage = p;
+  renderSheet();
+}
 
-      const cloudButtons = el("div", { class:"row" }, [
-        el("button", { class:"btn", type:"button", disabled: !isCloudConfigured(), onclick: async () => { const r = await cloudSave(); alert(r.message); }}, ["Save to Cloud"]),
-        el("button", { class:"btn", type:"button", disabled: !isCloudConfigured(), onclick: async () => { const r = await cloudLoad(); alert(r.message); renderSheet(); notifyCombat(); }}, ["Load from Cloud"]),
-        el("button", { class:"btn", type:"button", onclick: () => { if (!confirm("Reset local character sheet to defaults?")) return; writeState(defaultCharacterState()); renderSheet(); }}, ["Reset Local"]),
-      ]);
+function renderPageNav(){
+  const nav = document.getElementById("pageNav");
+  if (!nav) return;
+  nav.innerHTML = "";
+  const pages = [
+    { id:"core", label:"Core" },
+    { id:"bio", label:"Details" },
+    { id:"spells", label:"Spells" },
+  ];
+  for (const p of pages){
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "pageBtn" + (sheetPage === p.id ? " active" : "");
+    b.textContent = p.label;
+    b.addEventListener("click", ()=> setPage(p.id));
+    nav.appendChild(b);
+  }
+}
 
-      const identity = box("Identity", null, [
-        el("div", { class:"formGrid2" }, [
-          field("Character Name", el("input", { value: state.name, oninput: (e)=> writeState({ ...state, name: e.target.value }) })),
-          field("Player Name", el("input", { value: state.playerName, oninput: (e)=> writeState({ ...state, playerName: e.target.value }) })),
-          field("Race", el("input", { value: state.race, oninput: (e)=> writeState({ ...state, race: e.target.value }) })),
-          field("Background", el("input", { value: state.background, oninput: (e)=> writeState({ ...state, background: e.target.value }) })),
-          field("Alignment", el("input", { value: state.alignment, oninput: (e)=> writeState({ ...state, alignment: e.target.value }) })),
-          el("div", { class:"row" }, [
-            el("label", { class:"pill" }, [
-              el("input", { type:"checkbox", checked: state.inspiration ? true : null, onchange:(e)=> writeState({ ...state, inspiration: e.target.checked }) }),
-              "Inspiration"
+function renderSheet(){
+  state = loadCharacterState();
+  renderPageNav();
+
+  const root = document.getElementById("sheetRoot");
+  root.innerHTML = "";
+
+  const pb = proficiencyBonus(state.level) + (Number(state.proficiencyMisc)||0);
+
+  const spellAbility = (state.spells?.spellcastingAbility || "INT");
+  const spellMod = abilityMod(state.abilities[spellAbility] || 10);
+  const spellSaveDC = 8 + proficiencyBonus(state.level) + spellMod + clampInt(state.spells?.saveDcMisc || 0, -99, 99);
+  const spellAttackBonus = proficiencyBonus(state.level) + spellMod + clampInt(state.spells?.attackBonusMisc || 0, -99, 99);
+
+  const cloudButtons = el("div", { class:"row" }, [
+    el("button", { class:"btn", type:"button", disabled: !isCloudConfigured(), onclick: async () => { const r = await cloudSave(); alert(r.message); }}, ["Save to Cloud"]),
+    el("button", { class:"btn", type:"button", disabled: !isCloudConfigured(), onclick: async () => { const r = await cloudLoad(); alert(r.message); renderSheet(); notifyCombat(); }}, ["Load from Cloud"]),
+    el("button", { class:"btn", type:"button", onclick: () => { if (!confirm("Reset local character sheet to defaults?")) return; writeState(defaultCharacterState()); renderSheet(); }}, ["Reset Local"]),
+  ]);
+
+  const header = el("div", { class:"sheetFrame" }, [
+    el("div", { class:"sheetHeaderGrid" }, [
+      el("div", {}, [
+        el("div", { class:"bigName" }, [state.name || "Character Name"]),
+        el("div", { class:"tag" }, ["Character Name"])
+      ]),
+      el("div", { class:"sheetHeaderRow" }, [
+        field("Class & Level", el("input", { value: buildClassLevelLabel(state), readonly:true })),
+        field("Background", el("input", { value: state.background, oninput: (e)=> writeState({ ...state, background: e.target.value }) })),
+        field("Player Name", el("input", { value: state.playerName, oninput: (e)=> writeState({ ...state, playerName: e.target.value }) })),
+      ]),
+      el("div", { class:"sheetHeaderRow" }, [
+        field("Race", el("input", { value: state.race, oninput: (e)=> writeState({ ...state, race: e.target.value }) })),
+        field("Alignment", el("input", { value: state.alignment, oninput: (e)=> writeState({ ...state, alignment: e.target.value }) })),
+        field("Experience Points", el("input", { value: state.xp || "", oninput: (e)=> writeState({ ...state, xp: e.target.value }) })),
+      ]),
+    ])
+  ]);
+
+  root.appendChild(header);
+
+  if (sheetPage === "core") {
+    root.appendChild(renderCorePage(cloudButtons, pb));
+  } else if (sheetPage === "bio") {
+    root.appendChild(renderBioPage());
+  } else {
+    root.appendChild(renderSpellsPage(cloudButtons, pb, spellAbility, spellMod, spellSaveDC, spellAttackBonus));
+  }
+}
+
+function buildClassLevelLabel(s){
+  const p = s.primary?.classKey ? `${s.primary.classKey} ${s.primary.classLevel||""}`.trim() : "";
+  const q = (s.multiclass && s.secondary?.classKey) ? `${s.secondary.classKey} ${s.secondary.classLevel||""}`.trim() : "";
+  if (p && q) return `${p} / ${q}`;
+  return p || q || "";
+}
+
+function renderCorePage(cloudButtons, pb){
+  const identity = box("Identity", cloudButtons, [
+    el("div", { class:"formGrid2" }, [
+      field("Character Name", el("input", { value: state.name, oninput: (e)=> { writeState({ ...state, name: e.target.value }); renderSheet(); } })),
+      field("Level (1-20)", el("input", { type:"number", min:"1", max:"20", value: state.level, oninput: (e)=> { writeState({ ...state, level: clampInt(e.target.value, 1, 20) }); renderSheet(); } })),
+      el("div", { class:"row" }, [
+        el("label", { class:"pill" }, [
+          el("input", { type:"checkbox", checked: state.multiclass ? true : null, onchange:(e)=>{ writeState({ ...state, multiclass: e.target.checked }); renderSheet(); }}),
+          "Multiclass"
+        ]),
+        el("label", { class:"pill" }, [
+          el("input", { type:"checkbox", checked: state.inspiration ? true : null, onchange:(e)=> writeState({ ...state, inspiration: e.target.checked }) }),
+          "Inspiration"
+        ]),
+        el("div", { class:"pill" }, ["Proficiency Bonus ", el("b", {}, [formatSigned(pb)])]),
+        el("div", { class:"pill" }, ["Passive Perception ", el("b", {}, [String(passivePerception(state))])]),
+      ]),
+      el("div", { class:"divider" }),
+      classBlock("Primary Class", true, state.primary, (np)=> writeState({ ...state, primary: { ...state.primary, ...np } })),
+      classBlock("Secondary Class", !!state.multiclass, state.secondary, (ns)=> writeState({ ...state, secondary: { ...state.secondary, ...ns } })),
+    ])
+  ]);
+
+  const abilitiesBox = box("Abilities and Saving Throws", null, [
+    el("div", { class:"abilitiesGrid" }, abilityList.map(a => {
+      const score = state.abilities[a];
+      const mod = abilityMod(score);
+      const saveProf = !!state.saves[a];
+      const saveVal = saveBonus(state, a);
+
+      return el("div", { class:"abilityCard" }, [
+        el("div", { class:"abilityName" }, [a]),
+        el("input", { type:"number", min:"1", max:"30", value: score, oninput:(e)=>{ writeState({ ...state, abilities:{ ...state.abilities, [a]: clampInt(e.target.value,1,30) } }); renderSheet(); }}),
+        el("div", { class:"abilityMod" }, [formatSigned(mod)]),
+        el("div", { style:"grid-column:1/-1;margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:10px" }, [
+          el("div", { class:"smallCard" }, [
+            el("div", { class:"smallLabel" }, ["Saving Throw"]),
+            el("div", { class:"smallValue" }, [
+              el("label", { class:"pillSmall" }, [
+                el("input", { type:"checkbox", checked: saveProf ? true : null, onchange:(e)=>{ writeState({ ...state, saves:{ ...state.saves, [a]: e.target.checked } }); renderSheet(); }}),
+                "Proficient"
+              ]),
+              el("span", { style:"margin-left:10px;font-weight:900" }, [formatSigned(saveVal)])
+            ])
+          ]),
+          el("div", { class:"smallCard" }, [
+            el("div", { class:"smallLabel" }, ["Check"]),
+            el("div", { class:"smallValue" }, [
+              el("span", { style:"font-weight:900" }, [formatSigned(mod)]),
+              el("span", { style:"margin-left:8px;color:var(--muted);font-size:12px" }, ["base"])
             ])
           ]),
         ])
       ]);
+    }))
+  ]);
 
-      const levelClass = box("Level and Class (syncs to Combat Tracker)", cloudButtons, [
-        el("div", { class:"formGrid2" }, [
-          field("Character Level (1-20)", el("input", { type:"number", min:"1", max:"20", value: state.level, oninput: (e)=> { writeState({ ...state, level: clampInt(e.target.value, 1, 20) }); renderSheet(); } })),
-          el("div", { class:"row" }, [
-            el("label", { class:"pill" }, [
-              el("input", { type:"checkbox", checked: state.multiclass ? true : null, onchange:(e)=>{ writeState({ ...state, multiclass: e.target.checked }); renderSheet(); }}),
-              "Multiclass (2 classes max)"
-            ])
-          ]),
-          el("div", { class:"note" }, [
-            "Proficiency Bonus: ", el("b", {}, [formatSigned(pb)]),
-            ". Passive Perception: ", el("b", {}, [String(passivePerception(state))]),
-            ". Initiative: ", el("b", {}, [formatSigned(initiative(state))]),
-            (!isCloudConfigured() ? el("div", { style:"margin-top:6px" }, ["Cloud sync is disabled until you fill in ", el("code", {}, ["config.js"]), "."]) : null)
-          ]),
-          el("div", { class:"divider" }),
-          classBlock("Primary Class", true, state.primary, (np)=> writeState({ ...state, primary: { ...state.primary, ...np } })),
-          classBlock("Secondary Class", !!state.multiclass, state.secondary, (ns)=> writeState({ ...state, secondary: { ...state.secondary, ...ns } })),
-        ])
+  const combatBox = box("Combat", null, [
+    el("div", { class:"formGrid2" }, [
+      field("Armor Class", el("input", { type:"number", min:"0", value: state.combat.acBase, oninput:(e)=> writeState({ ...state, combat: { ...state.combat, acBase: clampInt(e.target.value, 0, 99) } }) })),
+      field("Initiative", el("input", { value: formatSigned(initiative(state)), readonly:true })),
+      field("Speed", el("input", { type:"number", min:"0", value: state.combat.speed, oninput:(e)=> writeState({ ...state, combat: { ...state.combat, speed: clampInt(e.target.value, 0, 999) } }) })),
+      field("Hit Point Maximum", el("input", { type:"number", min:"0", value: state.combat.hpMax, oninput:(e)=> {
+        const hpMax = clampInt(e.target.value, 0, 9999);
+        const hpNow = Math.min(clampInt(state.combat.hpNow, 0, 9999), hpMax);
+        writeState({ ...state, combat: { ...state.combat, hpMax, hpNow } });
+      }})),
+      field("Current Hit Points", el("input", { type:"number", min:"0", value: state.combat.hpNow, oninput:(e)=> writeState({ ...state, combat: { ...state.combat, hpNow: clampInt(e.target.value, 0, clampInt(state.combat.hpMax,0,9999)) } }) })),
+      field("Temporary Hit Points", el("input", { type:"number", min:"0", value: state.combat.hpTemp, oninput:(e)=> writeState({ ...state, combat: { ...state.combat, hpTemp: clampInt(e.target.value, 0, 9999) } }) })),
+    ]),
+    el("div", { class:"note" }, ["HP and AC values sync into the Combat Tracker as defaults."])
+  ]);
+
+  const skillsBox = box("Skills", null, [
+    el("div", { class:"skillsGrid" }, skillMeta.map(s => {
+      const lvl = Number(state.skills[s.id] || 0);
+      return el("div", { class:"skillRow" }, [
+        el("div", { class:"skillLeft" }, [ el("div", { class:"skillName" }, [s.label]), el("div", { class:"skillMeta" }, [s.ability]) ]),
+        el("div", { class:"skillMid" }, [
+          skillBtn("None", lvl===0, ()=>{ writeState({ ...state, skills:{ ...state.skills, [s.id]:0 } }); renderSheet(); }),
+          skillBtn("Prof", lvl===1, ()=>{ writeState({ ...state, skills:{ ...state.skills, [s.id]:1 } }); renderSheet(); }),
+          skillBtn("Expert", lvl===2, ()=>{ writeState({ ...state, skills:{ ...state.skills, [s.id]:2 } }); renderSheet(); }),
+        ]),
+        el("div", { class:"skillRight" }, [ el("span", { style:"font-weight:900" }, [formatSigned(skillBonus(state, s.id))]) ])
       ]);
+    }))
+  ]);
 
-      const abilitiesBox = box("Abilities", null, [
-        el("div", { class:"abilitiesGrid" }, abilityList.map(a => {
-          const score = state.abilities[a];
-          const mod = abilityMod(score);
-          const saveProf = !!state.saves[a];
-          const saveVal = saveBonus(state, a);
-          return el("div", { class:"abilityCard" }, [
-            el("div", { class:"abilityName" }, [a]),
-            el("input", { type:"number", min:"1", max:"30", value: score, oninput:(e)=>{ writeState({ ...state, abilities:{ ...state.abilities, [a]: clampInt(e.target.value,1,30) } }); renderSheet(); }}),
-            el("div", { class:"abilityMod" }, [formatSigned(mod)]),
-            el("div", { style:"grid-column:1/-1;margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:10px" }, [
-              el("div", { class:"smallCard" }, [
-                el("div", { class:"smallLabel" }, ["Saving Throw"]),
-                el("div", { class:"smallValue" }, [
-                  el("label", { class:"pillSmall" }, [
-                    el("input", { type:"checkbox", checked: saveProf ? true : null, onchange:(e)=>{ writeState({ ...state, saves:{ ...state.saves, [a]: e.target.checked } }); renderSheet(); }}),
-                    "Proficient"
-                  ]),
-                  el("span", { style:"margin-left:10px;font-weight:900" }, [formatSigned(saveVal)])
-                ])
-              ]),
-              el("div", { class:"smallCard" }, [
-                el("div", { class:"smallLabel" }, ["Ability Checks"]),
-                el("div", { class:"smallValue" }, [
-                  el("span", { style:"font-weight:900" }, [formatSigned(mod)]),
-                  el("span", { style:"margin-left:8px;color:var(--muted);font-size:12px" }, ["base"])
-                ])
-              ]),
-            ])
-          ]);
-        }))
-      ]);
+  const notesBox = box("Features and Traits (quick notes)", null, [
+    el("textarea", { oninput:(e)=> writeState({ ...state, notes: e.target.value }) }, [state.notes || ""])
+  ]);
 
-      const skillsBox = box("Skills (none, proficient, expertise)", null, [
-        el("div", { class:"skillsGrid" }, skillMeta.map(s => {
-          const lvl = Number(state.skills[s.id] || 0);
-          return el("div", { class:"skillRow" }, [
-            el("div", { class:"skillLeft" }, [ el("div", { class:"skillName" }, [s.label]), el("div", { class:"skillMeta" }, [s.ability]) ]),
-            el("div", { class:"skillMid" }, [
-              skillBtn("None", lvl===0, ()=>{ writeState({ ...state, skills:{ ...state.skills, [s.id]:0 } }); renderSheet(); }),
-              skillBtn("Prof", lvl===1, ()=>{ writeState({ ...state, skills:{ ...state.skills, [s.id]:1 } }); renderSheet(); }),
-              skillBtn("Expert", lvl===2, ()=>{ writeState({ ...state, skills:{ ...state.skills, [s.id]:2 } }); renderSheet(); }),
-            ]),
-            el("div", { class:"skillRight" }, [ el("span", { style:"font-weight:900" }, [formatSigned(skillBonus(state, s.id))]) ])
-          ]);
-        }))
-      ]);
+  return el("div", { class:"gridTop" }, [
+    el("div", {}, [identity, el("div", { style:"height:12px" }), combatBox]),
+    el("div", {}, [abilitiesBox, el("div", { style:"height:12px" }), skillsBox, el("div", { style:"height:12px" }), notesBox]),
+  ]);
+}
 
-      const notesBox = box("Notes", null, [
-        el("textarea", { oninput:(e)=> writeState({ ...state, notes: e.target.value }) }, [state.notes || ""])
-      ]);
+function renderBioPage(){
+  const b = state.bio || {};
+  const top = box("Description", null, [
+    el("div", { class:"kvGrid" }, [
+      field("Age", el("input", { value: b.age || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, age:e.target.value } }) })),
+      field("Height", el("input", { value: b.height || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, height:e.target.value } }) })),
+      field("Weight", el("input", { value: b.weight || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, weight:e.target.value } }) })),
+      field("Eyes", el("input", { value: b.eyes || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, eyes:e.target.value } }) })),
+      field("Skin", el("input", { value: b.skin || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, skin:e.target.value } }) })),
+      field("Hair", el("input", { value: b.hair || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, hair:e.target.value } }) })),
+    ]),
+    el("div", { class:"divider" }),
+    field("Character Appearance", el("textarea", { oninput:(e)=> writeState({ ...state, bio:{ ...b, appearance:e.target.value } }) }, [b.appearance || ""])),
+  ]);
 
-      root.appendChild(el("div", { class:"gridTop" }, [identity, levelClass]));
-      root.appendChild(el("div", { class:"gridBottom" }, [abilitiesBox, skillsBox]));
-      root.appendChild(notesBox);
-    }
+  const mid = box("Story", null, [
+    field("Character Backstory", el("textarea", { oninput:(e)=> writeState({ ...state, bio:{ ...b, backstory:e.target.value } }) }, [b.backstory || ""])),
+    field("Allies and Organizations", el("textarea", { oninput:(e)=> writeState({ ...state, bio:{ ...b, allies:e.target.value } }) }, [b.allies || ""])),
+  ]);
 
-    window.addEventListener("DOMContentLoaded", () => {
+  const bot = box("Extras", null, [
+    field("Additional Features and Traits", el("textarea", { oninput:(e)=> writeState({ ...state, bio:{ ...b, additionalFeatures:e.target.value } }) }, [b.additionalFeatures || ""])),
+    field("Treasure", el("textarea", { oninput:(e)=> writeState({ ...state, bio:{ ...b, treasure:e.target.value } }) }, [b.treasure || ""])),
+    field("Symbol", el("input", { value: b.symbol || "", oninput:(e)=> writeState({ ...state, bio:{ ...b, symbol:e.target.value } }) })),
+  ]);
+
+  return el("div", { class:"gridMid" }, [top, mid, bot]);
+}
+
+function renderSpellsPage(cloudButtons, pb, spellAbility, spellMod, spellSaveDC, spellAttackBonus){
+  const sp = state.spells || {};
+
+  const header = box("Spellcasting", cloudButtons, [
+    el("div", { class:"formGrid2" }, [
+      field("Spellcasting Class", el("input", { value: sp.spellcastingClass || "", oninput:(e)=> writeState({ ...state, spells:{ ...sp, spellcastingClass:e.target.value } }) })),
+      field("Spellcasting Ability", el("input", { value: sp.spellcastingAbility || "INT", oninput:(e)=> { writeState({ ...state, spells:{ ...sp, spellcastingAbility:e.target.value.toUpperCase() } }); renderSheet(); } })),
+      field("Spells Known", el("input", { type:"number", min:"0", value: sp.spellsKnown ?? 0, oninput:(e)=> writeState({ ...state, spells:{ ...sp, spellsKnown: clampInt(e.target.value, 0, 99) } }) })),
+      field("Spell Save DC", el("input", { value: String(spellSaveDC), readonly:true })),
+      field("Spell Attack Bonus", el("input", { value: formatSigned(spellAttackBonus), readonly:true })),
+      field("Ability Mod", el("input", { value: formatSigned(spellMod), readonly:true })),
+    ])
+  ]);
+
+  const levels = sp.levels || {};
+  const cols = el("div", { class:"spellCols" }, [
+    spellLevelList("Cantrips", sp.cantrips || [], (next)=> writeState({ ...state, spells:{ ...sp, cantrips: next } })),
+    spellLevelList("1st Level", levels["1"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "1": next } } })),
+    spellLevelList("2nd Level", levels["2"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "2": next } } })),
+    spellLevelList("3rd Level", levels["3"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "3": next } } })),
+    spellLevelList("4th Level", levels["4"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "4": next } } })),
+    spellLevelList("5th Level", levels["5"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "5": next } } })),
+    spellLevelList("6th Level", levels["6"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "6": next } } })),
+    spellLevelList("7th Level", levels["7"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "7": next } } })),
+    spellLevelList("8th Level", levels["8"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "8": next } } })),
+    spellLevelList("9th Level", levels["9"] || [], (next)=> writeState({ ...state, spells:{ ...sp, levels:{ ...levels, "9": next } } })),
+  ]);
+
+  return el("div", {}, [header, cols]);
+}
+
+function spellLevelList(title, rows, onSet){
+  return el("div", { class:"spellLevelBox" }, [
+    el("div", { class:"spellLevelHead" }, [
+      el("div", {}, [title]),
+      el("button", { type:"button", class:"btn", onclick: ()=>{ onSet([...(rows||[]), { name:"", prepared:false }]); renderSheet(); } }, ["Add"])
+    ]),
+    el("div", { class:"spellList" }, (rows||[]).map((r, idx) => {
+      const chk = el("input", { type:"checkbox", checked: r.prepared ? true : null, onchange:(e)=>{ 
+        const next = [...rows];
+        next[idx] = { ...r, prepared: e.target.checked };
+        onSet(next);
+      }});
+      const name = el("input", { value: r.name || "", placeholder:"Spell name", oninput:(e)=>{ 
+        const next = [...rows];
+        next[idx] = { ...r, name: e.target.value };
+        onSet(next);
+      }});
+      const del = el("button", { type:"button", class:"btn", onclick: ()=>{ const next=[...rows]; next.splice(idx,1); onSet(next); renderSheet(); }}, ["Del"]);
+      return el("div", { class:"spellRow" }, [chk, name, del]);
+    }))
+  ]);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+
       notifyCombat();
       show("menu");
     });
