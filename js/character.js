@@ -1,4 +1,3 @@
-// Sol: Local-first character sheet state + calculations (no build tools).
 export const CHAR_STORAGE_KEY = "dnd_character_state_v1";
 
 export const abilityList = ["STR","DEX","CON","INT","WIS","CHA"];
@@ -27,18 +26,18 @@ export const skillMeta = [
 export function defaultCharacterState() {
   const skills = {};
   for (const s of skillMeta) skills[s.id] = 0; // 0 none, 1 prof, 2 expertise
+
   return {
-    version: 1,
+    version: 4,
     id: cryptoRandomId(),
-    name: "New Character",
-    playerName: "",
+
+    name: "",
     race: "",
-    background: "",
     alignment: "",
-    xp: "",
-    level: 1,
+
+    inspirationPoints: 0,
+
     multiclass: false,
-    inspiration: false,
 
     abilities: { STR:10, DEX:10, CON:10, INT:10, WIS:10, CHA:10 },
     saves: { STR:false, DEX:false, CON:false, INT:false, WIS:false, CHA:false },
@@ -49,75 +48,85 @@ export function defaultCharacterState() {
 
     combat: { hpMax: 10, hpNow: 10, hpTemp: 0, acBase: 10, speed: 30, initiativeMisc: 0 },
 
-    primary: { classKey: "", subclass: "", classLevel: 1, spellMod: 0, subclassPackageUrl: "" },
-    secondary: { classKey: "", subclass: "", classLevel: 0, spellMod: 0, subclassPackageUrl: "" },
+    // Derived from class levels, stored for convenience and Combat Tracker sync.
+    level: 1,
 
-    spells: {
-    spellcastingClass: "",
-    spellcastingAbility: "INT",
-    spellsKnown: 0,
-    saveDcMisc: 0,
-    attackBonusMisc: 0,
-    cantrips: [],
-    levels: { "1": [], "2": [], "3": [], "4": [], "5": [], "6": [], "7": [], "8": [], "9": [] }
-  },
+    primary: { className: "", classLevel: 1, subclass: "", subclassPackageUrl: "", spellMod: 0 },
+    secondary: { className: "", classLevel: 0, subclass: "", subclassPackageUrl: "", spellMod: 0 },
 
-  bio: {
-    age: "",
-    height: "",
-    weight: "",
-    eyes: "",
-    skin: "",
-    hair: "",
-    appearance: "",
-    backstory: "",
-    allies: "",
-    treasure: "",
-    additionalFeatures: "",
-    symbol: ""
-  },
+    background: "",
 
-  notes: "",
-};
+    // feat/feature/asi picks
+    picks: [],
+
+    details: { appearance: "", backstory: "", allies: "", treasure: "" },
+    spells: { notes: "" },
+  };
+}
+
+export function clampInt(v, min, max) {
+  const n = Number(v);
+  const i = Number.isFinite(n) ? Math.trunc(n) : min;
+  return Math.max(min, Math.min(max, i));
+}
+
+export function deriveAndClamp(state) {
+  const s = structuredClone(state);
+
+  s.inspirationPoints = clampInt(s.inspirationPoints, 0, 99);
+
+  for (const a of abilityList) s.abilities[a] = clampInt(s.abilities[a], 1, 30);
+
+  s.primary.classLevel = clampInt(s.primary.classLevel, 0, 20);
+  s.secondary.classLevel = clampInt(s.secondary.classLevel, 0, 20);
+
+  const total = Math.max(1, s.primary.classLevel + (s.multiclass ? s.secondary.classLevel : 0));
+  s.level = clampInt(total, 1, 20);
+
+  s.combat.hpMax = clampInt(s.combat.hpMax, 0, 9999);
+  s.combat.hpNow = clampInt(s.combat.hpNow, 0, s.combat.hpMax);
+  s.combat.hpTemp = clampInt(s.combat.hpTemp, 0, 9999);
+
+  return s;
 }
 
 export function loadCharacterState() {
   try {
     const raw = localStorage.getItem(CHAR_STORAGE_KEY);
-    if (!raw) return defaultCharacterState();
+    if (!raw) return deriveAndClamp(defaultCharacterState());
     const p = JSON.parse(raw);
-    if (!p || typeof p !== "object") return defaultCharacterState();
+    if (!p || typeof p !== "object") return deriveAndClamp(defaultCharacterState());
+
     const b = defaultCharacterState();
     const merged = {
       ...b,
       ...p,
-      version: 1,
-      id: (typeof p.id === "string") ? p.id : b.id,
       abilities: { ...b.abilities, ...(p.abilities || {}) },
       saves: { ...b.saves, ...(p.saves || {}) },
       skills: { ...b.skills, ...(p.skills || {}) },
       combat: { ...b.combat, ...(p.combat || {}) },
       primary: { ...b.primary, ...(p.primary || {}) },
       secondary: { ...b.secondary, ...(p.secondary || {}) },
-      spells: { ...b.spells, ...(p.spells || {}), levels: { ...b.spells.levels, ...((p.spells||{}).levels || {}) } },
-      bio: { ...b.bio, ...(p.bio || {}) },
+      details: { ...b.details, ...(p.details || {}) },
+      spells: { ...b.spells, ...(p.spells || {}) },
+      picks: Array.isArray(p.picks) ? p.picks : b.picks,
     };
-    merged.level = clampInt(merged.level, 1, 20);
-    for (const a of abilityList) merged.abilities[a] = clampInt(merged.abilities[a], 1, 30);
-    merged.primary.classLevel = clampInt(merged.primary.classLevel, 0, 20);
-    merged.secondary.classLevel = clampInt(merged.secondary.classLevel, 0, 20);
-    return merged;
+
+    return deriveAndClamp(merged);
   } catch {
-    return defaultCharacterState();
+    return deriveAndClamp(defaultCharacterState());
   }
 }
 
 export function saveCharacterState(s) {
-  localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(s));
+  const fixed = deriveAndClamp(s);
+  localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(fixed));
+  return fixed;
 }
 
 export function abilityMod(score) {
-  const s = Number.isFinite(Number(score)) ? Math.trunc(Number(score)) : 10;
+  const n = Number(score);
+  const s = Number.isFinite(n) ? Math.trunc(n) : 10;
   return Math.floor((s - 10) / 2);
 }
 
@@ -156,12 +165,6 @@ export function passivePerception(state) {
 
 export function initiative(state) {
   return abilityMod(state.abilities.DEX) + clampInt(state.combat.initiativeMisc, -99, 99);
-}
-
-export function clampInt(v, min, max) {
-  const n = Number(v);
-  const i = Number.isFinite(n) ? Math.trunc(n) : min;
-  return Math.max(min, Math.min(max, i));
 }
 
 function cryptoRandomId() {
