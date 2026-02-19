@@ -36,6 +36,10 @@
     .note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
     .kpi{font-weight:1000;font-size:14px}
     .smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
+    .quickGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .quickGrid .smallCard{padding:6px 8px}
+    .quickGrid .kpi{font-size:13px}
+    @media(max-width:520px){.quickGrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
     .smallLabel{color:var(--muted);font-size:12px}
     .smallValue{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
     .abilitiesGrid{display:grid;grid-template-columns:1fr;gap:10px}
@@ -125,11 +129,126 @@
     import { clampInt, safeText } from "./js/util.js";
     import { earnedPickSlots } from "./js/progression.js";
     import { cloudSave, cloudLoad, isCloudConfigured } from "./js/cloud.js";
-    import { applyBackgroundToState } from "./js/backgrounds.js";
-    import { defaultEquipment, computeEquipmentAcBonus, getEquippedWeaponDice, setEquippedWeapon, EQUIP_GROUPS_LEFT, EQUIP_GROUPS_RIGHT } from "./js/equipment.js";
-    import { applyShortRestHitDice, applyLongRest, defaultHitDicePools } from "./js/rest.js";
-    import { allowedSpellIds, spellsByLevel, alwaysPreparedIds, isKnownCaster, isPreparedCaster } from "./js/spells_engine.js";
+    import { applyBackgroundToState } from "./js/backgrounds.js";    import { applyShortRestHitDice, applyLongRest, defaultHitDicePools } from "./js/rest.js";
+// --- Inline equipment helpers (so tabs never break if js/equipment.js mismatches) ---
+const EQUIP_GROUPS_LEFT=[
+  {id:"head",label:"Head",slots:3},{id:"neck",label:"Neck",slots:3},{id:"body",label:"Body/Armor",slots:3,ac:true},
+  {id:"waist",label:"Waist",slots:3},{id:"legs",label:"Legs",slots:3},{id:"feet",label:"Feet",slots:3},
+];
+const EQUIP_GROUPS_RIGHT=[
+  {id:"face",label:"Face",slots:3},{id:"shoulders",label:"Shoulders",slots:3},{id:"torso",label:"Torso",slots:3},{id:"arms",label:"Arms",slots:3},
+];
+function emptyItem(){return {name:"",short:"",long:"",acBonus:""};}
+function defaultEquipment(){
+  const slots={};
+  for(const g of [...EQUIP_GROUPS_LEFT,...EQUIP_GROUPS_RIGHT]) slots[g.id]=Array.from({length:g.slots}).map(()=>emptyItem());
+  slots.ringsRight=Array.from({length:6}).map(()=>emptyItem());
+  slots.ringsLeft=Array.from({length:6}).map(()=>emptyItem());
+  slots.shields=Array.from({length:3}).map(()=>({...emptyItem(),acBonus:""}));
+  slots.weapons=Array.from({length:6}).map(()=>({...emptyItem(),hitDice:"",equipped:false}));
+  return {portraitDataUrl:"",slots,bag:{items:[]}};
+}
+function normalizeEquipment(eq){
+  const def=defaultEquipment();
+  const out = (eq && typeof eq==="object") ? structuredClone(eq) : {};
+  out.portraitDataUrl = typeof out.portraitDataUrl==="string" ? out.portraitDataUrl : "";
+  out.bag = out.bag && typeof out.bag==="object" ? out.bag : {items:[]};
+  out.bag.items = Array.isArray(out.bag.items) ? out.bag.items : [];
+  out.slots = out.slots && typeof out.slots==="object" ? out.slots : {};
+  for(const [k,v] of Object.entries(def.slots)){
+    if(!Array.isArray(out.slots[k])) out.slots[k]=structuredClone(v);
+    else {
+      // ensure correct length + shape
+      const want=v.length;
+      while(out.slots[k].length<want) out.slots[k].push(structuredClone(v[0]));
+      out.slots[k]=out.slots[k].slice(0,want).map(it=>({...structuredClone(v[0]), ...(it||{})}));
+    }
+  }
+  return out;
+}
+function setEquippedWeapon(eq, idx){
+  const w=eq?.slots?.weapons; if(!Array.isArray(w)) return;
+  w.forEach((it,i)=>{ if(it) it.equipped = (i===idx); });
+}
+function getEquippedWeaponDice(eq){
+  const w=eq?.slots?.weapons; if(!Array.isArray(w)) return "";
+  const it=w.find(x=>x&&x.equipped); return (it?.hitDice||"").trim();
+}
+function computeEquipmentAcBonus(eq){
+  let total=0; const slots=eq?.slots||{};
+  const add=(v)=>{const n=Number(v); if(Number.isFinite(n)) total+=n;};
+  for(const arr of Object.values(slots)){
+    if(!Array.isArray(arr)) continue;
+    for(const it of arr) add(it?.acBonus);
+  }
+  return total;
+}
 
+// --- Inline spell helpers ---
+function isPreparedCaster(className){ return ["Cleric","Druid","Wizard","Paladin"].includes(className); }
+function isKnownCaster(className, subclassName){
+  const base=["Bard","Sorcerer","Warlock","Ranger"];
+  if(base.includes(className)) return true;
+  if(className==="Rogue" && subclassName==="Arcane Trickster") return true;
+  if(className==="Fighter" && subclassName==="Eldritch Knight") return true;
+  return false;
+}
+function findSubclass(subclassesData, className, subName){
+  const c=(subclassesData?.classes||[]).find(x=>x.class===className); if(!c) return null;
+  return (c.subclasses||[]).find(s=>s.name===subName)||null;
+}
+function alwaysPreparedIds(state, subclassesData){
+  const ids=[];
+  const add=(block)=>{
+    const cn=(block?.className||"").trim(); const sn=(block?.subclass||"").trim();
+    if(!cn||!sn) return;
+    const sub=findSubclass(subclassesData, cn, sn);
+    const byLvl=sub?.spellRules?.alwaysPreparedByLevel||{};
+    for(const [lvl,arr] of Object.entries(byLvl)){
+      if(Number(state.level)>=Number(lvl)) for(const id of (Array.isArray(arr)?arr:[])) ids.push(id);
+    }
+  };
+  add(state.primary); if(state.multiclass) add(state.secondary);
+  return Array.from(new Set(ids));
+}
+function allowedSpellIds(state, spellcastingData, subclassesData){
+  // Union of spells available to active class blocks up to max spell level.
+  const ids=new Set();
+  const blocks=[state.primary, state.multiclass?state.secondary:null].filter(Boolean);
+  for(const b of blocks){
+    const cn=(b.className||"").trim(); if(!cn) continue;
+    const cls=spellcastingData?.classes?.[cn]; 
+    let listByLevel=cls?.spellListByLevel||null;
+    // third-caster subclasses use Wizard list in our schema
+    const sub=findSubclass(subclassesData, cn, (b.subclass||"").trim());
+    const sr=sub?.spellRules||null;
+    if(sr?.spellSourceClass && spellcastingData?.classes?.[sr.spellSourceClass]?.spellListByLevel){
+      listByLevel=spellcastingData.classes[sr.spellSourceClass].spellListByLevel;
+    }
+    const prog=sr?.progression || cls?.progression;
+    const maxLvl = Number(spellcastingData?.progressions?.[prog]?.maxSpellLevel?.[String(b.classLevel)]) || 0;
+    if(!listByLevel) continue;
+    for(let lv=0; lv<=maxLvl; lv++){
+      const arr=listByLevel[String(lv)]||[];
+      for(const s of arr) if(s?.id) ids.add(s.id);
+    }
+  }
+  return Array.from(ids);
+}
+function spellsByLevel(spellsData, allowedIds){
+  const map=new Map();
+  const allowed=new Set(allowedIds||[]);
+  const spells=spellsData?.spells||spellsData||[];
+  for(const sp of spells){
+    if(!sp || !sp.id) continue;
+    if(allowed.size && !allowed.has(sp.id)) continue;
+    const lv=Number(sp.level||0);
+    if(!map.has(lv)) map.set(lv,[]);
+    map.get(lv).push(sp);
+  }
+  for(const [k,v] of map) v.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+  return map;
+}
     const root = document.getElementById("root");
     const modal = document.getElementById("modal");
     const modalTitle = document.getElementById("modalTitle");
@@ -578,7 +697,8 @@
     }
 
     function renderEquipment(){
-      const eq = state.equipment || defaultEquipment();
+      const eq = normalizeEquipment(state.equipment);
+      if (JSON.stringify(eq)!==JSON.stringify(state.equipment||{})) writeState({ ...state, equipment:eq });
       function commit(){ writeState({ ...state, equipment:eq }); }
       function openLongModal(title, item){
         const ta = el("textarea", {}, [item.long || ""]);
@@ -783,11 +903,19 @@
 
       if (!state.rest?.hitDice) writeState({ ...state, rest:{ ...(state.rest||{}), hitDice: defaultHitDicePools(state) }});
 
-      if (page==="core") renderCore();
-      if (page==="details") renderDetails();
-      if (page==="spells") renderSpells();
-      if (page==="equipment") renderEquipment();
-      if (page==="notes") renderNotes();
+      try{
+        if (page==="core") renderCore();
+        else if (page==="details") renderDetails();
+        else if (page==="spells") renderSpells();
+        else if (page==="equipment") renderEquipment();
+        else if (page==="notes") renderNotes();
+      } catch (e) {
+        root.appendChild(el("div",{class:"smallCard"},[
+          el("div",{class:"kpi"},[`${page} failed to render`]),
+          el("div",{class:"note"},[String(e?.message||e)])
+        ]));
+        console.error(e);
+      }
     }
 
     window.addEventListener("DOMContentLoaded", async ()=>{
