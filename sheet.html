@@ -8,39 +8,42 @@
     :root{--bg:#0b0f14;--panel:rgba(18,26,35,.92);--border:#223041;--text:#e9eef5;--muted:#97a6b8;--accent:rgba(124,230,165,.65);}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-    header{max-width:1100px;margin:0 auto;padding:14px 14px 6px;}
+    header{max-width:1200px;margin:0 auto;padding:14px 14px 6px;}
     h1{margin:0;font-size:20px;font-weight:900}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 14px 18px}
+    .wrap{max-width:1200px;margin:0 auto;padding:0 14px 18px}
     .panel{margin-top:10px;border-radius:16px;border:1px solid var(--border);background:var(--panel);overflow:hidden;}
-    .topBar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.10)}
-    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .topBar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.10)}
+    .topTitle{font-weight:900}
+    .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
     .btn{padding:9px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(26,39,53,.9);color:var(--text);cursor:pointer}
     .btn:disabled{opacity:.5;cursor:not-allowed}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-bottom:1px solid var(--border)}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border)}
     .tab{padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.12);color:var(--text);cursor:pointer;font-size:12px}
     .tab.active{outline:2px solid var(--accent)}
-    .body{padding:12px}
-    .gridTop{display:grid;grid-template-columns:1fr;gap:12px}
-    .box{border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14)}
-    .boxHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border)}
+    .content{padding:12px}
+    .grid2{display:grid;grid-template-columns:1fr;gap:12px}
+    .box{border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14);overflow:hidden}
+    .boxHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
     .boxTitle{font-weight:900}
     .boxBody{padding:12px}
     label.field{display:grid;gap:6px}
     .lbl{color:var(--muted);font-size:12px}
     input,textarea,select{width:100%;padding:10px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(15,22,32,.95);color:var(--text);outline:none}
-    textarea{min-height:160px;resize:vertical}
-    .formRow{display:grid;grid-template-columns:1fr;gap:10px}
-    .formGrid2{display:grid;grid-template-columns:1fr;gap:10px}
-    .pill{padding:8px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;display:flex;align-items:center;gap:8px}
+    textarea{min-height:140px;resize:vertical}
+    .note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+    .pill{padding:7px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.10)}
+    .kpi{font-weight:1000;font-size:14px}
+    .smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
+    .smallLabel{color:var(--muted);font-size:12px}
+    .smallValue{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .quickRow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
     .abilitiesGrid{display:grid;grid-template-columns:1fr;gap:10px}
     .abilityCard{border:1px solid var(--border);border-radius:16px;padding:12px;background:rgba(0,0,0,.16)}
     .abilityName{font-weight:900;color:var(--muted)}
     .abilityMod{margin-top:8px;font-size:18px;font-weight:900}
-    .smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
-    .smallLabel{color:var(--muted);font-size:12px}
-    .smallValue{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
     .skillsGrid{display:grid;grid-template-columns:1fr;gap:8px}
     .skillRow{border:1px solid var(--border);border-radius:14px;padding:10px;background:rgba(0,0,0,.14);display:grid;grid-template-columns:1fr;gap:10px}
+    .skillLeft{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
     .skillName{font-weight:900}
     .skillMeta{color:var(--muted);font-size:12px}
     .skillMid{display:flex;gap:8px;flex-wrap:wrap}
@@ -49,434 +52,891 @@
     .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(0,0,0,.10);margin:6px 6px 0 0}
     .chipX{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:14px}
     .modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;padding:14px}
-    .modal{width:100%;max-width:740px;border:1px solid var(--border);background:rgba(18,26,35,.98);border-radius:16px;overflow:hidden}
+    .modal{width:100%;max-width:860px;border:1px solid var(--border);background:rgba(18,26,35,.98);border-radius:16px;overflow:hidden}
     .modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border)}
-    .modalBody{padding:12px}
+    .modalBody{padding:12px;max-height:70vh;overflow:auto}
     .modalBackdrop.show{display:flex}
-    .kpi{font-weight:1000}
+    .cols2fixed{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+    .spellCol{border:1px solid var(--border);border-radius:16px;padding:10px;background:rgba(0,0,0,.12)}
+    .spellRow{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .spellRow:last-child{border-bottom:none}
+    .spellName{font-weight:800}
+    .spellMeta2{color:var(--muted);font-size:12px}
+    .equipCols{display:grid;grid-template-columns:1fr;gap:12px}
+    .portraitBox{border:1px dashed var(--border);border-radius:16px;min-height:320px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:var(--muted);background:rgba(0,0,0,.10);padding:10px}
     @media (min-width:900px){
-      .gridTop{grid-template-columns:1fr 1fr}
-      .formRow{grid-template-columns:1fr 1fr 1fr}
-      .formGrid2{grid-template-columns:1fr 1fr}
+      .grid2{grid-template-columns:1.2fr .8fr}
       .abilitiesGrid{grid-template-columns:1fr 1fr 1fr}
       .skillsGrid{grid-template-columns:1fr 1fr}
       .skillRow{grid-template-columns:1.2fr 1.6fr .4fr}
+      .equipCols{grid-template-columns:1fr .9fr 1fr}
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Character Sheet</h1>
-  </header>
+  <header><h1>Character Sheet</h1></header>
 
   <div class="wrap">
     <div class="panel">
       <div class="topBar">
-        <div class="kpi">Character Sheet</div>
+        <div class="topTitle">Character Sheet</div>
         <div class="row">
+          <button class="btn" id="shortRestBtn" type="button">Short Rest</button>
+          <button class="btn" id="longRestBtn" type="button">Long Rest</button>
           <button class="btn" id="cloudSaveBtn" type="button">Save to Cloud</button>
           <button class="btn" id="cloudLoadBtn" type="button">Load from Cloud</button>
-          <a class="btn" href="./index.html" style="text-decoration:none">Back</a>
+          <a class="btn" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">Back</a>
         </div>
       </div>
 
       <div class="tabs">
-        <button class="tab active" id="tabCore" type="button">Core</button>
-        <button class="tab" id="tabDetails" type="button">Details</button>
-        <button class="tab" id="tabSpells" type="button">Spells</button>
-        <button class="tab" id="tabEquipment" type="button">Equipment</button>
-        <button class="tab" id="tabNotes" type="button">Notes</button>
+        <button class="tab active" data-tab="core" type="button">Core</button>
+        <button class="tab" data-tab="details" type="button">Details</button>
+        <button class="tab" data-tab="spells" type="button">Spells</button>
+        <button class="tab" data-tab="equipment" type="button">Equipment</button>
+        <button class="tab" data-tab="notes" type="button">Notes</button>
       </div>
 
-      <div class="body" id="root"></div>
+      <div class="content" id="root"></div>
     </div>
   </div>
 
-  <div class="modalBackdrop" id="pickModal">
+  <div class="modalBackdrop" id="modal">
     <div class="modal">
       <div class="modalHead">
-        <div class="kpi">Add Pick</div>
-        <button class="btn" id="closePickModal" type="button">Close</button>
+        <div class="kpi" id="modalTitle">Modal</div>
+        <button class="btn" id="modalClose" type="button">Close</button>
       </div>
-      <div class="modalBody" id="pickModalBody"></div>
+      <div class="modalBody" id="modalBody"></div>
     </div>
   </div>
 
-  <script type="module">
-    import {
-      abilityList, skillMeta,
-      defaultCharacterState, loadCharacterState, saveCharacterState,
-      abilityMod, proficiencyBonus, formatSigned,
-      saveBonus, skillBonus, passivePerception, initiative,
-      clampInt
-    } from "./js/character.js";
-
-    import { earnedPickSlots } from "./js/progression.js";
-    import { applyBackgroundToState } from "./js/backgrounds.js";
-    import { defaultEquipment, computeEquipmentAcBonus, getEquippedWeaponDice, EQUIP_GROUPS } from "./js/equipment.js";
-    import { applyShortRestHitDice, applyLongRest, defaultHitDicePools } from "./js/rest.js";
-
-    let page = "core";
-    let state = loadCharacterState();
-
-// Cloud actions are lazy-loaded so a CDN hiccup (esm.sh) cannot break the whole sheet UI.
-async function lazyCloud() {
-  try {
-    const mod = await import("./js/cloud.js");
-    return mod;
-  } catch (e) {
-    console.error(e);
-    throw new Error("Cloud module failed to load. If you are offline or a CDN is blocked, cloud features will not work.");
-  }
-}
-async function doCloudSave(){
-  const mod = await lazyCloud();
-  const res = await mod.cloudSave();
-  alert(res?.message || (res?.ok ? "Saved to cloud." : "Cloud save failed."));
-}
-async function doCloudLoad(){
-  const mod = await lazyCloud();
-  const res = await mod.cloudLoad();
-  alert(res?.message || (res?.ok ? "Loaded from cloud." : "Cloud load failed."));
-  // trigger combat to refresh if open elsewhere
-  try{ window.postMessage({type:"CHAR_SHEET_UPDATED"}, "*"); }catch{}
-}
-
-      if (!state.equipment) { writeState({ ...state, equipment: defaultEquipment() }); state = loadCharacterState(); }
-      if (!state.rest?.hitDice) { writeState({ ...state, rest: { ...(state.rest||{}), hitDice: defaultHitDicePools(state) } }); state = loadCharacterState(); }
-
-    const tabCore = document.getElementById("tabCore");
-    const tabDetails = document.getElementById("tabDetails");
-    const tabSpells = document.getElementById("tabSpells");
-    const tabEquipment = document.getElementById("tabEquipment");
-    const tabNotes = document.getElementById("tabNotes");
+  <script>
+  (function(){
     const root = document.getElementById("root");
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalClose = document.getElementById("modalClose");
 
+    const shortRestBtn = document.getElementById("shortRestBtn");
+    const longRestBtn = document.getElementById("longRestBtn");
     const cloudSaveBtn = document.getElementById("cloudSaveBtn");
     const cloudLoadBtn = document.getElementById("cloudLoadBtn");
-    cloudSaveBtn.disabled = !isCloudConfigured();
-    cloudLoadBtn.disabled = !isCloudConfigured();
 
-    cloudSaveBtn.addEventListener("click", async ()=> alert((await cloudSave()).message));
-    cloudLoadBtn.addEventListener("click", async ()=> { alert((await cloudLoad()).message); state = loadCharacterState(); render(); });
+    const CHAR_KEY = "dnd_character_state_v1";
+    const abilityList = ["STR","DEX","CON","INT","WIS","CHA"];
+    const skillMeta = [
+      { id:"acrobatics", label:"Acrobatics", ability:"DEX" },
+      { id:"animalHandling", label:"Animal Handling", ability:"WIS" },
+      { id:"arcana", label:"Arcana", ability:"INT" },
+      { id:"athletics", label:"Athletics", ability:"STR" },
+      { id:"deception", label:"Deception", ability:"CHA" },
+      { id:"history", label:"History", ability:"INT" },
+      { id:"insight", label:"Insight", ability:"WIS" },
+      { id:"intimidation", label:"Intimidation", ability:"CHA" },
+      { id:"investigation", label:"Investigation", ability:"INT" },
+      { id:"medicine", label:"Medicine", ability:"WIS" },
+      { id:"nature", label:"Nature", ability:"INT" },
+      { id:"perception", label:"Perception", ability:"WIS" },
+      { id:"performance", label:"Performance", ability:"CHA" },
+      { id:"persuasion", label:"Persuasion", ability:"CHA" },
+      { id:"religion", label:"Religion", ability:"INT" },
+      { id:"sleightOfHand", label:"Sleight of Hand", ability:"DEX" },
+      { id:"stealth", label:"Stealth", ability:"DEX" },
+      { id:"survival", label:"Survival", ability:"WIS" },
+    ];
+    const skillIdMap = {
+      acrobatics:"acrobatics", animal_handling:"animalHandling", animalHandling:"animalHandling",
+      arcana:"arcana", athletics:"athletics", deception:"deception", history:"history", insight:"insight",
+      intimidation:"intimidation", investigation:"investigation", medicine:"medicine", nature:"nature",
+      perception:"perception", performance:"performance", persuasion:"persuasion", religion:"religion",
+      sleight_of_hand:"sleightOfHand", sleightOfHand:"sleightOfHand", stealth:"stealth", survival:"survival"
+    };
+    const ASI_LEVELS_BY_CLASS = {
+      Barbarian:[4,8,12,16,19], Bard:[4,8,12,16,19], Cleric:[4,8,12,16,19], Druid:[4,8,12,16,19],
+      Fighter:[4,6,8,12,14,16,19], Monk:[4,8,12,16,19], Paladin:[4,8,12,16,19], Ranger:[4,8,12,16,19],
+      Rogue:[4,8,10,12,16,19], Sorcerer:[4,8,12,16,19], Warlock:[4,8,12,16,19], Wizard:[4,8,12,16,19],
+      Artificer:[4,8,12,16,19],
+    };
+    const EQUIP_GROUPS_LEFT=[
+      {id:"head",label:"Head",slots:3},{id:"neck",label:"Neck",slots:3},{id:"body",label:"Body/Armor",slots:3,ac:true},
+      {id:"waist",label:"Waist",slots:3},{id:"legs",label:"Legs",slots:3},{id:"feet",label:"Feet",slots:3},
+    ];
+    const EQUIP_GROUPS_RIGHT=[
+      {id:"face",label:"Face",slots:3},{id:"shoulders",label:"Shoulders",slots:3},{id:"torso",label:"Torso",slots:3},{id:"arms",label:"Arms",slots:3},
+    ];
 
-    function setActiveTab(){
-      tabCore.classList.toggle("active", page === "core");
-      tabDetails.classList.toggle("active", page === "details");
-      tabSpells.classList.toggle("active", page === "spells");
-      tabEquipment.classList.toggle("active", page === "equipment");
-      tabNotes.classList.toggle("active", page === "notes");
-    }
-    tabCore.addEventListener("click", ()=>{ page="core"; setActiveTab(); render(); });
-    tabDetails.addEventListener("click", ()=>{ page="details"; setActiveTab(); render(); });
-    tabSpells.addEventListener("click", ()=>{ page="spells"; setActiveTab(); render(); });
+    let page = "core";
+    let state = null;
 
-    function writeState(next){
-      state = saveCharacterState(next);
-      // ping combat if it is open in another tab or embedded elsewhere
-      try { window.opener?.postMessage?.({ type:"CHAR_SHEET_UPDATED" }, "*"); } catch {}
-    }
+    let data = { backgrounds:null, classes:null, subclasses:null, traits:null, spells:null, spellcasting:null };
 
-    function el(tag, attrs={}, children=[]){
-      const n = document.createElement(tag);
-      for (const [k,v] of Object.entries(attrs)){
-        if (k === "class") n.className = v;
-        else if (k === "style") n.setAttribute("style", v);
-        else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2).toLowerCase(), v);
-        else if (v === true) n.setAttribute(k, "");
-        else if (v !== false && v != null) n.setAttribute(k, String(v));
+    // ----------------- helpers -----------------
+    function clampInt(v,min,max){ const n=Number(v); const i=Number.isFinite(n)?Math.trunc(n):min; return Math.max(min,Math.min(max,i)); }
+    function safeText(v){ return v==null ? "" : String(v); }
+    function uniq(arr){ return Array.from(new Set(arr)); }
+
+    function el(tag, attrs, children){
+      const n=document.createElement(tag);
+      attrs=attrs||{};
+      children=children||[];
+      for(const k in attrs){
+        const v=attrs[k];
+        if(k==="class") n.className=v;
+        else if(k==="style") n.setAttribute("style", v);
+        else if(k.startsWith("on") && typeof v==="function") n.addEventListener(k.slice(2).toLowerCase(), v);
+        else if(v===true) n.setAttribute(k,"");
+        else if(v!==false && v!=null) n.setAttribute(k, String(v));
       }
-      for (const c of children){
-        if (c == null) continue;
-        if (typeof c === "string") n.appendChild(document.createTextNode(c));
+      for(const c of children){
+        if(c==null) continue;
+        if(typeof c==="string") n.appendChild(document.createTextNode(c));
         else n.appendChild(c);
       }
       return n;
     }
     function field(label, control){
-      return el("label", { class:"field" }, [el("div", { class:"lbl" }, [label]), control]);
+      return el("label", {class:"field"}, [el("div",{class:"lbl"},[label]), control]);
     }
     function box(title, right, body){
-      return el("section", { class:"box" }, [
-        el("div", { class:"boxHead" }, [el("div", { class:"boxTitle" }, [title]), right || el("div")]),
-        el("div", { class:"boxBody" }, body)
+      return el("section",{class:"box"},[
+        el("div",{class:"boxHead"},[el("div",{class:"boxTitle"},[title]), right||el("div")]),
+        el("div",{class:"boxBody"}, body||[])
       ]);
     }
-    function skillBtn(label, active, onClick){
-      return el("button", { type:"button", class: "skillBtn" + (active ? " active" : ""), onclick:onClick }, [label]);
+
+    function showModal(title, bodyEl){
+      modalTitle.textContent=title;
+      modalBody.innerHTML="";
+      modalBody.appendChild(bodyEl);
+      modal.classList.add("show");
+    }
+    function closeModal(){ modal.classList.remove("show"); modalBody.innerHTML=""; }
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e)=>{ if(e.target===modal) closeModal(); });
+
+    function cryptoRandomId(){
+      const arr=new Uint8Array(12); crypto.getRandomValues(arr);
+      return Array.from(arr).map(x=>x.toString(16).padStart(2,"0")).join("");
     }
 
-    async function loadJson(path){
-      const r = await fetch(path, { cache:"no-store" });
-      if (!r.ok) throw new Error("Failed to load "+path);
+    function defaultEquipment(){
+      const empty=()=>({name:"",short:"",long:"",acBonus:""});
+      const slots={};
+      for(const g of [...EQUIP_GROUPS_LEFT,...EQUIP_GROUPS_RIGHT]) slots[g.id]=Array.from({length:g.slots}).map(()=>empty());
+      slots.ringsRight=Array.from({length:6}).map(()=>empty());
+      slots.ringsLeft=Array.from({length:6}).map(()=>empty());
+      slots.shields=Array.from({length:3}).map(()=>({...empty(),acBonus:""}));
+      slots.weapons=Array.from({length:6}).map(()=>({...empty(),hitDice:"",equipped:false}));
+      return {portraitDataUrl:"",slots,bag:{items:[]}};
+    }
+    function computeEquipmentAcBonus(eq){
+      let total=0;
+      const slots=eq?.slots||{};
+      const add=(v)=>{ const n=Number(v); if(Number.isFinite(n)) total+=n; };
+      for(const arr of Object.values(slots)){
+        if(!Array.isArray(arr)) continue;
+        for(const it of arr) add(it?.acBonus);
+      }
+      return total;
+    }
+    function getEquippedWeaponDice(eq){
+      const w=eq?.slots?.weapons;
+      if(!Array.isArray(w)) return "";
+      const it=w.find(x=>x && x.equipped);
+      return (it?.hitDice||"").trim();
+    }
+
+    function defaultState(){
+      const skills={}; for(const s of skillMeta) skills[s.id]=0;
+      return {
+        version: 99,
+        id: cryptoRandomId(),
+        name:"", race:"", alignment:"",
+        inspirationPoints:0,
+        multiclass:false,
+        abilities:{STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10},
+        saves:{STR:false,DEX:false,CON:false,INT:false,WIS:false,CHA:false},
+        skills,
+        backgroundId:"", backgroundName:"",
+        profSources:{skills:{},tools:{},languages:{}},
+        toolProficiencies:[], languageProficiencies:[],
+        proficiencyMisc:0, perceptionMisc:0,
+        combat:{hpMax:10,hpNow:10,hpTemp:0,acBase:10,acBonusExtra:0,speed:30,initiativeMisc:0,weaponDice:""},
+        level:1,
+        primary:{className:"",classLevel:1,subclass:"",subclassPackageUrl:"",spellMod:0},
+        secondary:{className:"",classLevel:0,subclass:"",subclassPackageUrl:"",spellMod:0},
+        features:[],
+        picks:[],
+        equipment: defaultEquipment(),
+        rest:{preparedUnlock:0,hitDice:null},
+        spells:{known:[],prepared:[],pendingLearn:0,notes:""},
+        notes:"",
+        details:{appearance:"",backstory:"",allies:"",treasure:""},
+        _lastLevelSeen: 1
+      };
+    }
+
+    function loadState(){
+      try{
+        const raw=localStorage.getItem(CHAR_KEY);
+        if(!raw) return derive(defaultState());
+        const p=JSON.parse(raw);
+        if(!p||typeof p!=="object") return derive(defaultState());
+        const b=defaultState();
+        const merged={
+          ...b, ...p,
+          abilities:{...b.abilities,...(p.abilities||{})},
+          saves:{...b.saves,...(p.saves||{})},
+          skills:{...b.skills,...(p.skills||{})},
+          combat:{...b.combat,...(p.combat||{})},
+          primary:{...b.primary,...(p.primary||{})},
+          secondary:{...b.secondary,...(p.secondary||{})},
+          details:{...b.details,...(p.details||{})},
+          rest:{...b.rest,...(p.rest||{})},
+          spells:{...b.spells,...(p.spells||{})},
+          features:Array.isArray(p.features)?p.features:b.features,
+          picks:Array.isArray(p.picks)?p.picks:b.picks,
+          toolProficiencies:Array.isArray(p.toolProficiencies)?p.toolProficiencies:b.toolProficiencies,
+          languageProficiencies:Array.isArray(p.languageProficiencies)?p.languageProficiencies:b.languageProficiencies,
+          equipment:p.equipment||b.equipment,
+        };
+        return derive(merged);
+      }catch{
+        return derive(defaultState());
+      }
+    }
+
+    function saveState(next){
+      state=derive(next);
+      // equipment integration
+      const acBonus = computeEquipmentAcBonus(state.equipment);
+      const weaponDice = getEquippedWeaponDice(state.equipment);
+      state.combat.acBonusExtra = acBonus;
+      state.combat.weaponDice = weaponDice;
+      localStorage.setItem(CHAR_KEY, JSON.stringify(state));
+      try{ window.postMessage({type:"CHAR_SHEET_UPDATED"}, "*"); }catch{}
+      return state;
+    }
+
+    function derive(s){
+      const st=structuredClone(s);
+      st.inspirationPoints=clampInt(st.inspirationPoints,0,99);
+      for(const a of abilityList) st.abilities[a]=Math.min(20, clampInt(st.abilities[a],1,30));
+      st.primary.classLevel=clampInt(st.primary.classLevel,0,20);
+      st.secondary.classLevel=clampInt(st.secondary.classLevel,0,20);
+      const total=Math.max(1, st.primary.classLevel + (st.multiclass? st.secondary.classLevel:0));
+      st.level=clampInt(total,1,20);
+      st.combat.hpMax=clampInt(st.combat.hpMax,0,9999);
+      st.combat.hpNow=clampInt(st.combat.hpNow,0,st.combat.hpMax);
+      st.combat.hpTemp=clampInt(st.combat.hpTemp,0,9999);
+      st.combat.acBase=clampInt(st.combat.acBase,0,99);
+      st.combat.initiativeMisc=clampInt(st.combat.initiativeMisc,-99,99);
+      if(!st.equipment) st.equipment=defaultEquipment();
+      if(!st.equipment.slots) st.equipment=defaultEquipment();
+      if(!st.rest) st.rest={preparedUnlock:0,hitDice:null};
+      if(!st.spells) st.spells={known:[],prepared:[],pendingLearn:0,notes:""};
+      if(!Array.isArray(st.features)) st.features=[];
+      if(!Array.isArray(st.picks)) st.picks=[];
+      if(!Array.isArray(st.toolProficiencies)) st.toolProficiencies=[];
+      if(!Array.isArray(st.languageProficiencies)) st.languageProficiencies=[];
+      return st;
+    }
+
+    function abilityMod(score){ const sc=clampInt(score,1,30); return Math.floor((sc-10)/2); }
+    function proficiencyBonus(level){
+      const l=clampInt(level,1,20);
+      if(l>=17) return 6; if(l>=13) return 5; if(l>=9) return 4; if(l>=5) return 3; return 2;
+    }
+    function formatSigned(n){ return n>=0?`+${n}`:`${n}`; }
+    function saveBonus(ability){
+      const base=abilityMod(state.abilities[ability]);
+      const prof=state.saves[ability]?proficiencyBonus(state.level):0;
+      return base+prof;
+    }
+    function skillBonus(skillId){
+      const meta=skillMeta.find(s=>s.id===skillId);
+      const abil=meta?.ability||"INT";
+      const base=abilityMod(state.abilities[abil]);
+      const pb=proficiencyBonus(state.level);
+      const lvl=Number(state.skills[skillId]||0);
+      const add=(lvl===1)?pb:(lvl===2?pb*2:0);
+      return base+add;
+    }
+    function passivePerception(){ return 10 + skillBonus("perception") + clampInt(state.perceptionMisc,-50,50); }
+    function initiative(){ return abilityMod(state.abilities.DEX) + clampInt(state.combat.initiativeMisc,-99,99); }
+
+    function countAsiSlots(className, classLevel){
+      const levels=ASI_LEVELS_BY_CLASS[className]||[];
+      let n=0; for(const lv of levels) if(classLevel>=lv) n++; return n;
+    }
+    function earnedPickSlots(){
+      let slots=1;
+      const pN=(state.primary.className||"").trim(); const pL=Number(state.primary.classLevel||0);
+      if(pN&&pL>0) slots+=countAsiSlots(pN,pL);
+      if(state.multiclass){
+        const sN=(state.secondary.className||"").trim(); const sL=Number(state.secondary.classLevel||0);
+        if(sN&&sL>0) slots+=countAsiSlots(sN,sL);
+      }
+      return slots;
+    }
+
+    function basePath(){
+      return window.location.pathname.replace(/[^/]*$/, "");
+    }
+    async function loadJson(name){
+      const url = new URL(`data/${name}`, window.location.origin + basePath()).toString();
+      const r = await fetch(url, { cache:"no-store" });
+      if(!r.ok) throw new Error(`Failed ${r.status} loading ${url}`);
       return await r.json();
     }
-    let classes=null, subclasses=null, traits=null;
-    async function ensureData(){
-      if (!classes) classes = await loadJson("./data/classes.json");
-      if (!subclasses) subclasses = await loadJson("./data/subclasses.json");
-      if (!traits) traits = await loadJson("./data/traits.json");
-    }
 
-    // Modal
-    const pickModal = document.getElementById("pickModal");
-    const closePickModal = document.getElementById("closePickModal");
-    const pickModalBody = document.getElementById("pickModalBody");
-    closePickModal.addEventListener("click", ()=>hidePickModal());
-    pickModal.addEventListener("click", (e)=>{ if (e.target === pickModal) hidePickModal(); });
-    function showPickModal(){ pickModal.classList.add("show"); }
-    function hidePickModal(){ pickModal.classList.remove("show"); pickModalBody.innerHTML=""; }
+    // ----------------- background apply -----------------
+    function applyBackground(bg){
+      const next=structuredClone(state);
+      next.backgroundId=bg?.id||"";
+      next.backgroundName=bg?.name||"";
+      next.profSources=next.profSources||{skills:{},tools:{},languages:{}};
 
-    function enforceCap20(nextAbilities){
-      const out = { ...nextAbilities };
-      for (const a of abilityList) out[a] = Math.min(20, clampInt(out[a], 1, 30));
-      return out;
-    }
-
-    function openPickModal(){
-      const earned = earnedPickSlots(state);
-      const used = Array.isArray(state.picks) ? state.picks.length : 0;
-      const available = Math.max(0, earned - used);
-
-      pickModalBody.innerHTML = "";
-      pickModalBody.appendChild(el("div", { class:"pill" }, ["Available picks: ", el("b", {}, [String(available)])]));
-
-      if (available <= 0){
-        showPickModal();
-        return;
+      const skills=Array.isArray(bg?.skills)?bg.skills:[];
+      for(const sid of skills){
+        const id=skillIdMap[sid]||sid;
+        if(!(id in next.skills)) continue;
+        if(Number(next.skills[id]||0)===0) next.skills[id]=1;
+        next.profSources.skills[id]="background";
       }
 
-      const row = el("div", { class:"row", style:"margin-top:10px" }, [
-        el("button", { class:"btn", type:"button", onclick:()=>renderFeatPicker() }, ["Add Feat or Feature"]),
-        el("button", { class:"btn", type:"button", onclick:()=>renderAsiPicker() }, ["Take ASI"]),
+      next.toolProficiencies=Array.isArray(next.toolProficiencies)?next.toolProficiencies:[];
+      next.languageProficiencies=Array.isArray(next.languageProficiencies)?next.languageProficiencies:[];
+      for(const t of (Array.isArray(bg?.tools)?bg.tools:[])) if(t) next.toolProficiencies.push({value:String(t),source:"background"});
+      for(const l of (Array.isArray(bg?.languages)?bg.languages:[])) if(l) next.languageProficiencies.push({value:String(l),source:"background"});
+
+      const feat=bg?.feature;
+      if(feat && (feat.name||feat.text)){
+        next.features=Array.isArray(next.features)?next.features:[];
+        const key=`bg:${bg.id||bg.name||"background"}`;
+        const idx=next.features.findIndex(x=>x && x.key===key);
+        const obj={key,source:"background",name:feat.name||"Background Feature",text:feat.text||""};
+        if(idx>=0) next.features[idx]=obj; else next.features.push(obj);
+      }
+      saveState(next);
+      render();
+    }
+
+    // ----------------- rests -----------------
+    function hitDieForClass(className){
+      switch((className||"").trim()){
+        case "Barbarian": return "d12";
+        case "Fighter": case "Paladin": case "Ranger": return "d10";
+        case "Bard": case "Cleric": case "Druid": case "Monk": case "Rogue": case "Warlock": return "d8";
+        case "Sorcerer": case "Wizard": return "d6";
+        case "Artificer": return "d8";
+        default: return "";
+      }
+    }
+    function defaultHitDicePools(){
+      const pools={};
+      const add=(die,count)=>{
+        if(!die||!count) return;
+        pools[die]=pools[die]||{max:0,remaining:0};
+        pools[die].max+=count; pools[die].remaining+=count;
+      };
+      add(hitDieForClass(state.primary.className), clampInt(state.primary.classLevel,0,20));
+      if(state.multiclass) add(hitDieForClass(state.secondary.className), clampInt(state.secondary.classLevel,0,20));
+      for(const k in pools) pools[k].remaining=Math.min(pools[k].remaining,pools[k].max);
+      return pools;
+    }
+    function openHitDiceModal(){
+      if(!state.rest.hitDice) state.rest.hitDice = defaultHitDicePools();
+      const pools=state.rest.hitDice;
+      const spend={};
+      const wrap=el("div",{},[el("div",{class:"note"},["Spend hit dice. Total numbers entered adds to current HP."])]);
+      Object.keys(pools).forEach(die=>{
+        const p=pools[die];
+        const inp=el("input",{type:"number",min:"0",value:"0",oninput:(e)=>{spend[die]=e.target.value;}});
+        wrap.appendChild(el("div",{class:"smallCard",style:"margin-top:10px"},[
+          el("div",{class:"smallLabel"},[`${die.toUpperCase()} remaining: ${p.remaining}/${p.max}`]),
+          field("Spend", inp),
+        ]));
+      });
+      const accept=el("button",{class:"btn",type:"button",style:"margin-top:12px",onclick:()=>{
+        let total=0;
+        for(const die in spend){
+          const use=clampInt(spend[die],0,999);
+          const pool=pools[die]; if(!pool) continue;
+          const real=Math.min(use, pool.remaining);
+          pool.remaining -= real;
+          total += real;
+        }
+        const next=structuredClone(state);
+        next.rest.hitDice = pools;
+        next.combat.hpNow = clampInt((next.combat.hpNow||0)+total,0,next.combat.hpMax||9999);
+        saveState(next);
+        closeModal();
+        try{ localStorage.setItem("dnd_rest_command", JSON.stringify({type:"short"})); }catch{}
+        render();
+      }},["Accept"]);
+      wrap.appendChild(accept);
+      showModal("Short Rest: Hit Dice", wrap);
+    }
+    function doLongRest(){
+      const next=structuredClone(state);
+      next.rest.hitDice = defaultHitDicePools();
+      next.rest.preparedUnlock = (next.rest.preparedUnlock||0)+1;
+      next.combat.hpNow = next.combat.hpMax;
+      next.combat.hpTemp = 0;
+      saveState(next);
+      try{ localStorage.setItem("dnd_rest_command", JSON.stringify({type:"long"})); }catch{}
+      render();
+    }
+
+    // ----------------- spells -----------------
+    function findSubclass(className, subName){
+      const c=(data.subclasses?.classes||[]).find(x=>x.class===className);
+      if(!c) return null;
+      return (c.subclasses||[]).find(s=>s.name===subName) || null;
+    }
+    function getAlwaysPreparedIds(){
+      const ids=[];
+      const add=(block)=>{
+        const className=(block.className||"").trim();
+        const subName=(block.subclass||"").trim();
+        if(!className || !subName) return;
+        const sub=findSubclass(className, subName);
+        const ap=sub?.spellRules?.alwaysPreparedByLevel;
+        if(ap && typeof ap==="object"){
+          // include spells up to current class level
+          const lv = clampInt(block.classLevel,0,20);
+          for(const k in ap){
+            const unlock = Number(k);
+            if(Number.isFinite(unlock) && unlock<=lv){
+              const arr=ap[k];
+              if(Array.isArray(arr)) arr.forEach(x=>ids.push(x));
+            }
+          }
+        }
+      };
+      add(state.primary);
+      if(state.multiclass) add(state.secondary);
+      return uniq(ids);
+    }
+    function isPreparedCasterAny(){
+      const set = ["Cleric","Druid","Wizard","Paladin"];
+      return set.includes((state.primary.className||"").trim()) || (state.multiclass && set.includes((state.secondary.className||"").trim()));
+    }
+    function isKnownCasterAny(){
+      const knownBase=["Bard","Sorcerer","Warlock","Ranger"];
+      const p=state.primary, s=state.secondary;
+      const pKnown = knownBase.includes((p.className||"").trim()) || ((p.className==="Rogue"&&p.subclass==="Arcane Trickster")||(p.className==="Fighter"&&p.subclass==="Eldritch Knight"));
+      const sKnown = state.multiclass && (knownBase.includes((s.className||"").trim()) || ((s.className==="Rogue"&&s.subclass==="Arcane Trickster")||(s.className==="Fighter"&&s.subclass==="Eldritch Knight")));
+      return pKnown || sKnown;
+    }
+
+    function unionAllowedSpellIds(){
+      const allowed=[];
+      const add=(block)=>{
+        const cn=(block.className||"").trim();
+        const lv=clampInt(block.classLevel,0,20);
+        if(!cn||lv<=0) return;
+        const cls=data.spellcasting?.classes?.[cn];
+        // If subclass defines spellSourceClass (AT/EK), use that list
+        let listByLevel = cls?.spellListByLevel || null;
+        const sub=findSubclass(cn,(block.subclass||"").trim());
+        const sr=sub?.spellRules;
+        if(sr?.spellSourceClass){
+          const src=data.spellcasting?.classes?.[sr.spellSourceClass];
+          if(src?.spellListByLevel) listByLevel = src.spellListByLevel;
+        }
+        if(!listByLevel) return;
+
+        // max spell level from progression
+        const prog = sr?.progression || cls?.progression;
+        const maxSpellLevel = data.spellcasting?.progressions?.[prog]?.maxSpellLevel?.[String(lv)] ?? 0;
+
+        for(let sl=0; sl<=maxSpellLevel; sl++){
+          const arr=listByLevel[String(sl)]||[];
+          arr.forEach(x=>allowed.push(x.id));
+        }
+      };
+      add(state.primary);
+      if(state.multiclass) add(state.secondary);
+      return uniq(allowed);
+    }
+
+    function renderSpells(){
+      const wrap=el("div",{},[]);
+      const preparedCaster=isPreparedCasterAny();
+      const knownCaster=isKnownCasterAny();
+
+      const alwaysPrepared=getAlwaysPreparedIds();
+      const allowed=uniq([...unionAllowedSpellIds(), ...alwaysPrepared]);
+
+      const spellById={};
+      for(const sp of (data.spells?.spells||[])) spellById[sp.id]=sp;
+
+      const allowedSpells=allowed.map(id=>spellById[id]).filter(Boolean);
+
+      // compute max spell level in allowed set
+      let maxLv=0;
+      allowedSpells.forEach(sp=>{ maxLv=Math.max(maxLv, Number(sp.level)||0); });
+
+      // known caster level-up pending learns
+      const prev=Number(state._lastLevelSeen || state.level);
+      if(state.level > prev && knownCaster){
+        const gain = state.level - prev;
+        const next=structuredClone(state);
+        next._lastLevelSeen = state.level;
+        next.spells.pendingLearn = (next.spells.pendingLearn||0) + gain;
+        saveState(next);
+      } else if(state.level !== prev){
+        const next=structuredClone(state);
+        next._lastLevelSeen = state.level;
+        saveState(next);
+      }
+
+      if(knownCaster && (state.spells.pendingLearn||0)>0){
+        wrap.appendChild(el("div",{class:"smallCard"},[
+          el("div",{class:"smallLabel"},["Learn new spells"]),
+          el("div",{class:"note"},[`You have ${state.spells.pendingLearn} spell(s) to learn. Learning is permanent. Tap + Learn next to spells.`])
+        ]));
+      }
+      if(preparedCaster){
+        const unlocked = (state.rest.preparedUnlock||0)>0;
+        wrap.appendChild(el("div",{class:"smallCard",style:"margin-top:10px"},[
+          el("div",{class:"smallLabel"},["Prepared spells"]),
+          el("div",{class:"note"},[ unlocked ? "You can change prepared spells now (unlocked by Long Rest)." : "Prepared spell changes are locked until you Long Rest." ])
+        ]));
+        if(unlocked){
+          wrap.appendChild(el("button",{class:"btn",type:"button",style:"margin-top:8px",onclick:()=>{
+            const next=structuredClone(state);
+            next.rest.preparedUnlock = Math.max(0,(next.rest.preparedUnlock||0)-1);
+            saveState(next); render();
+          }},["Finish preparing (lock)"]));
+        }
+      }
+
+      for(let lv=0; lv<=maxLv; lv++){
+        const title = lv===0 ? "Cantrips" : `Level ${lv}`;
+        const list = allowedSpells.filter(sp=>Number(sp.level)===lv).sort((a,b)=>a.name.localeCompare(b.name));
+        const mid=Math.ceil(list.length/2);
+        const left=list.slice(0,mid), right=list.slice(mid);
+
+        const colL=el("div",{class:"spellCol"}, left.map(sp=>spellRow(sp, preparedCaster, knownCaster, alwaysPrepared)));
+        const colR=el("div",{class:"spellCol"}, right.map(sp=>spellRow(sp, preparedCaster, knownCaster, alwaysPrepared)));
+        wrap.appendChild(box(title, null, [el("div",{class:"cols2fixed"},[colL,colR])]));
+      }
+
+      wrap.appendChild(box("Spell Notes", null, [
+        field("Notes", el("textarea",{oninput:(e)=>{ const next=structuredClone(state); next.spells.notes=e.target.value; saveState(next); }},[state.spells.notes||""]))
+      ]));
+      root.appendChild(wrap);
+    }
+
+    function spellRow(sp, preparedCaster, knownCaster, alwaysPrepared){
+      const row=el("div",{class:"spellRow"},[]);
+      const left=el("div",{},[
+        el("div",{class:"spellName"},[sp.name]),
+        el("div",{class:"spellMeta2"},[`(${sp.school}) ${sp.castingTime}, ${sp.range}`]),
       ]);
-      pickModalBody.appendChild(row);
+      const right=el("div",{class:"row"},[]);
 
-      function renderFeatPicker(){
-        pickModalBody.innerHTML = "";
-        pickModalBody.appendChild(el("div", { class:"lbl" }, ["Requirements are shown, you decide if you qualify."]));
+      const isAP = alwaysPrepared.includes(sp.id);
+      const isPrepared = isAP || (state.spells.prepared||[]).includes(sp.id);
+      const isKnown = (state.spells.known||[]).includes(sp.id);
 
-        const sel = el("select", {}, [el("option", { value:"" }, ["Select..."])]);
-        const items = Array.isArray(traits?.items) ? traits.items : [];
-        for (const it of items) sel.appendChild(el("option", { value: it.id }, [`${it.name} (${it.type || "item"})`]));
+      if(knownCaster){
+        if(isKnown){
+          right.appendChild(el("span",{class:"pill"},["Known"]));
+        } else if((state.spells.pendingLearn||0)>0){
+          right.appendChild(el("button",{class:"btn",type:"button",onclick:(e)=>{
+            e.stopPropagation();
+            if(!confirm("Learn this spell? This is permanent.")) return;
+            const next=structuredClone(state);
+            next.spells.known = [...(next.spells.known||[]), sp.id];
+            next.spells.pendingLearn = Math.max(0,(next.spells.pendingLearn||0)-1);
+            saveState(next); render();
+          }},["+ Learn"]));
+        }
+      }
 
-        const req = el("div", { class:"lbl", style:"margin-top:10px" }, [""]);
-        const addBtn = el("button", { class:"btn", type:"button", disabled:true, style:"margin-top:10px" }, ["Add"]);
+      if(preparedCaster){
+        if(isAP){
+          right.appendChild(el("span",{class:"pill"},["Subclass prepared"]));
+        } else {
+          const unlocked=(state.rest.preparedUnlock||0)>0;
+          const btn=el("button",{class:"btn",type:"button",disabled:!unlocked,onclick:(e)=>{
+            e.stopPropagation();
+            const set=new Set(state.spells.prepared||[]);
+            if(set.has(sp.id)) set.delete(sp.id); else set.add(sp.id);
+            const next=structuredClone(state);
+            next.spells.prepared=[...set];
+            saveState(next); render();
+          }},[isPrepared?"Prepared":"Prepare"]);
+          right.appendChild(btn);
+        }
+      }
 
+      row.appendChild(left); row.appendChild(right);
+      row.addEventListener("click", ()=>{
+        const body=el("div",{},[
+          el("div",{class:"note"},[sp.description||""]),
+          el("div",{class:"note"},[`Duration: ${sp.duration} | Components: ${sp.components}`]),
+        ]);
+        showModal(sp.name, body);
+      });
+      return row;
+    }
+
+    // ----------------- equipment -----------------
+    function renderEquipment(){
+      const eq=state.equipment || defaultEquipment();
+      // normalize missing slots
+      state.equipment = eq;
+      saveState(state);
+
+      function commit(){ saveState(state); }
+
+      function openItemModal(title, item){
+        const ta=el("textarea",{},[item.long||""]);
+        const pasteBtn=el("button",{class:"btn",type:"button",onclick:async()=>{
+          try{ const txt=await navigator.clipboard.readText(); ta.value=txt; item.long=txt; commit(); }
+          catch{ alert("Clipboard paste blocked by browser."); }
+        }},["Paste from clipboard"]);
+        const saveBtn=el("button",{class:"btn",type:"button",onclick:()=>{ item.long=ta.value; commit(); closeModal(); }},["Save"]);
+        showModal(title, el("div",{},[field("Extended effect", ta), el("div",{class:"row",style:"margin-top:10px"},[pasteBtn, saveBtn])]));
+      }
+
+      function slotCard(label, idx, item, opts){
+        const name=el("input",{value:item.name||"",oninput:(e)=>{item.name=e.target.value; commit();}});
+        const short=el("input",{value:item.short||"",oninput:(e)=>{item.short=e.target.value; commit();}});
+        const openBtn=el("button",{class:"btn",type:"button",onclick:()=>openItemModal(`${label} ${idx+1}`, item)},["Open"]);
+        const body=[field("Name",name),field("Short effect",short)];
+        if(opts.ac){
+          body.push(field("AC", el("input",{value:item.acBonus||"",oninput:(e)=>{item.acBonus=e.target.value; commit();}})));
+        }
+        if(opts.hitDice){
+          body.push(field("Hit dice", el("input",{value:item.hitDice||"",oninput:(e)=>{item.hitDice=e.target.value; commit();}})));
+        }
+        if(opts.equipped){
+          body.push(el("label",{class:"pill"},[
+            el("input",{type:"checkbox",checked:item.equipped?true:null,onchange:(e)=>{
+              const w=eq.slots.weapons;
+              w.forEach(x=>x.equipped=false);
+              item.equipped=e.target.checked;
+              commit();
+            }}),
+            "Equipped"
+          ]));
+        }
+        body.push(el("div",{class:"row"},[openBtn]));
+        return el("div",{class:"smallCard",style:"margin-top:10px"}, body);
+      }
+
+      function groupBox(g){
+        const arr=eq.slots[g.id] || [];
+        return box(g.label, null, arr.map((it,i)=>slotCard(g.label, i, it, {ac:!!g.ac})));
+      }
+
+      const leftCol=el("div",{},[]);
+      EQUIP_GROUPS_LEFT.forEach(g=>leftCol.appendChild(groupBox(g)));
+      leftCol.appendChild(box("Rings (right)", null, (eq.slots.ringsRight||[]).map((it,i)=>slotCard("Ring",i,it,{}))));
+
+      const rightCol=el("div",{},[]);
+      EQUIP_GROUPS_RIGHT.forEach(g=>rightCol.appendChild(groupBox(g)));
+      rightCol.appendChild(box("Rings (left)", null, (eq.slots.ringsLeft||[]).map((it,i)=>slotCard("Ring",i,it,{}))));
+      rightCol.appendChild(box("Shields", null, (eq.slots.shields||[]).map((it,i)=>slotCard("Shield",i,it,{ac:true}))));
+      rightCol.appendChild(box("Weapons", null, (eq.slots.weapons||[]).map((it,i)=>slotCard("Weapon",i,it,{hitDice:true,equipped:true}))));
+
+      const portraitImg = state.equipment.portraitDataUrl ? el("img",{src:state.equipment.portraitDataUrl,style:"max-width:100%;border-radius:12px"}) : null;
+      const upload = el("input",{type:"file",accept:"image/*",onchange:async(e)=>{
+        const f=e.target.files && e.target.files[0];
+        if(!f) return;
+        const reader=new FileReader();
+        reader.onload=()=>{
+          state.equipment.portraitDataUrl = String(reader.result||"");
+          commit(); render();
+        };
+        reader.readAsDataURL(f);
+      }});
+      const bagBtn=el("button",{class:"btn",type:"button",onclick:()=>{
+        const bag=state.equipment.bag || (state.equipment.bag={items:[]});
+        const list=el("div",{},[]);
+        function renderBag(){
+          list.innerHTML="";
+          if(bag.items.length===0) list.appendChild(el("div",{class:"note"},["No bag items yet."]));
+          bag.items.forEach((it,idx)=>{
+            list.appendChild(el("div",{class:"smallCard",style:"margin-top:10px"},[
+              field("Name", el("input",{value:it.name||"",oninput:(e)=>{it.name=e.target.value; commit();}})),
+              field("Short", el("input",{value:it.short||"",oninput:(e)=>{it.short=e.target.value; commit();}})),
+              el("div",{class:"row"},[
+                el("button",{class:"btn",type:"button",onclick:()=>openItemModal("Bag item",it)},["Open"]),
+                el("button",{class:"btn",type:"button",onclick:()=>{bag.items.splice(idx,1); commit(); renderBag();}},["Remove"])
+              ])
+            ]));
+          });
+        }
+        const add=el("button",{class:"btn",type:"button",onclick:()=>{bag.items.push({name:"",short:"",long:""}); commit(); renderBag();}},["+ Add item"]);
+        const wrap=el("div",{},[add,list]);
+        renderBag();
+        showModal("Bag (misc equipment and loot)", wrap);
+      }},["Open Bag"]);
+
+      const portrait=el("div",{class:"portraitBox"},[
+        portraitImg || el("div",{},["Portrait area"]),
+        upload,
+        bagBtn
+      ]);
+
+      root.appendChild(el("div",{class:"equipCols"},[leftCol, portrait, rightCol]));
+    }
+
+    // ----------------- features/traits/ASI -----------------
+    function openPickModal(){
+      const earned=earnedPickSlots();
+      const used=(state.picks||[]).length;
+      const available=Math.max(0, earned-used);
+      const wrap=el("div",{},[el("div",{class:"note"},[`Available picks: ${available}. Add a feat/feature or take an ASI.`])]);
+      if(available<=0){ showModal("Add Pick", wrap); return; }
+
+      const addTraitBtn=el("button",{class:"btn",type:"button",onclick:()=>renderTraitPicker()},["Add Feat or Feature"]);
+      const addAsiBtn=el("button",{class:"btn",type:"button",onclick:()=>renderAsiPicker()},["Take ASI"]);
+      wrap.appendChild(el("div",{class:"row",style:"margin-top:10px"},[addTraitBtn, addAsiBtn]));
+      showModal("Add Pick", wrap);
+
+      function renderTraitPicker(){
+        const items=Array.isArray(data.traits?.items)?data.traits.items:[];
+        const sel=el("select",{},[el("option",{value:""},["Select..."])]);
+        items.forEach(it=>sel.appendChild(el("option",{value:it.id},[`${it.name} (${it.type||"item"})`])));
+        const req=el("div",{class:"note"},[""]);
+        const addBtn=el("button",{class:"btn",type:"button",disabled:true},["Add"]);
         sel.addEventListener("change", ()=>{
-          const it = items.find(x=>x.id===sel.value);
+          const it=items.find(x=>x.id===sel.value);
           req.textContent = it?.requirementsText || "";
-          addBtn.disabled = !sel.value;
+          addBtn.disabled = !it;
         });
         addBtn.addEventListener("click", ()=>{
-          const it = items.find(x=>x.id===sel.value);
-          if (!it) return;
-          writeState({ ...state, picks: [...(state.picks||[]), { kind:"trait", id: it.id, name: it.name, type: it.type || "item" }] });
-          hidePickModal();
-          render();
+          const it=items.find(x=>x.id===sel.value);
+          if(!it) return;
+          const next=structuredClone(state);
+          next.picks=[...(next.picks||[]), {kind:"trait", id:it.id, name:it.name, type:it.type||"item"}];
+          saveState(next); closeModal(); render();
         });
-
-        pickModalBody.appendChild(field("Feat or feature", sel));
-        pickModalBody.appendChild(req);
-        pickModalBody.appendChild(el("div", { class:"row" }, [addBtn, el("button", { class:"btn", type:"button", onclick:()=>openPickModal() }, ["Back"])]));
+        showModal("Add Pick: Feat/Feature", el("div",{},[field("Feat or feature", sel), req, el("div",{class:"row",style:"margin-top:10px"},[addBtn])]));
       }
 
       function renderAsiPicker(){
-        pickModalBody.innerHTML = "";
-        pickModalBody.appendChild(el("div", { class:"lbl" }, ["ASI: +2 to one ability, or +1 to two different abilities. Cap 20 enforced."]));
-
-        const mode = el("select", {}, [
-          el("option", { value:"plus2" }, ["+2 to one ability"]),
-          el("option", { value:"plus1plus1" }, ["+1 to two abilities"]),
+        const mode=el("select",{},[
+          el("option",{value:"plus2"},["+2 to one ability"]),
+          el("option",{value:"plus1plus1"},["+1 to two abilities"]),
         ]);
-        const a1 = el("select", {}, [el("option", { value:"" }, ["Select ability..."]), ...abilityList.map(a=>el("option",{value:a},[a]))]);
-        const a2 = el("select", {}, [el("option", { value:"" }, ["Select second ability..."]), ...abilityList.map(a=>el("option",{value:a},[a]))]);
-        a2.disabled = true;
-        mode.addEventListener("change", ()=>{ a2.disabled = mode.value !== "plus1plus1"; });
-
-        const applyBtn = el("button", { class:"btn", type:"button", style:"margin-top:10px" }, ["Apply ASI"]);
-        applyBtn.addEventListener("click", ()=>{
-          if (!a1.value) return alert("Pick an ability.");
-          if (mode.value === "plus1plus1" && (!a2.value || a2.value === a1.value)) return alert("Pick two different abilities.");
-
-          let nextAbilities = { ...state.abilities };
-          if (mode.value === "plus2") nextAbilities[a1.value] = (nextAbilities[a1.value] || 0) + 2;
-          else {
-            nextAbilities[a1.value] = (nextAbilities[a1.value] || 0) + 1;
-            nextAbilities[a2.value] = (nextAbilities[a2.value] || 0) + 1;
-          }
-          nextAbilities = enforceCap20(nextAbilities);
-
-          const nextPick = { kind:"asi", mode: mode.value, a1: a1.value, a2: (mode.value==="plus1plus1") ? a2.value : null };
-          writeState({ ...state, abilities: nextAbilities, picks: [...(state.picks||[]), nextPick] });
-          hidePickModal();
-          render();
-        });
-
-        pickModalBody.appendChild(field("ASI type", mode));
-        pickModalBody.appendChild(field("Ability", a1));
-        pickModalBody.appendChild(field("Second ability", a2));
-        pickModalBody.appendChild(el("div", { class:"row" }, [applyBtn, el("button", { class:"btn", type:"button", onclick:()=>openPickModal() }, ["Back"])]));
+        const optAbil=()=>[el("option",{value:""},["Select ability..."]), ...abilityList.map(a=>el("option",{value:a},[a]))];
+        const a1=el("select",{},optAbil());
+        const a2=el("select",{disabled:true},optAbil());
+        mode.addEventListener("change", ()=>{ a2.disabled = mode.value!=="plus1plus1"; });
+        const apply=el("button",{class:"btn",type:"button",onclick:()=>{
+          const m=mode.value, first=a1.value, second=a2.value;
+          if(!first) return alert("Pick an ability.");
+          if(m==="plus1plus1" && (!second || second===first)) return alert("Pick two different abilities.");
+          const next=structuredClone(state);
+          if(m==="plus2") next.abilities[first]=Math.min(20,(next.abilities[first]||0)+2);
+          else{ next.abilities[first]=Math.min(20,(next.abilities[first]||0)+1); next.abilities[second]=Math.min(20,(next.abilities[second]||0)+1); }
+          next.picks=[...(next.picks||[]), {kind:"asi", mode:m, a1:first, a2:(m==="plus1plus1")?second:null}];
+          saveState(next); closeModal(); render();
+        }},["Apply ASI"]);
+        showModal("Add Pick: ASI", el("div",{},[
+          el("div",{class:"note"},["ASI: +2 to one ability, or +1 to two different abilities. Cap 20 enforced."]),
+          field("ASI type", mode),
+          field("Ability", a1),
+          field("Second ability", a2),
+          el("div",{class:"row",style:"margin-top:10px"},[apply])
+        ]));
       }
-
-      showPickModal();
     }
 
-    function classBlock(isSecondary){
-      const data = isSecondary ? state.secondary : state.primary;
-      if (isSecondary && !state.multiclass) return null;
-      const title = state.multiclass ? (isSecondary ? "Class 2" : "Class 1") : "Class";
-
-      const classSel = el("select", { onchange:(e)=>{ 
-        const className = e.target.value;
-        const next = { ...data, className, subclass:"", subclassPackageUrl:"" };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-        render();
-      }}, [el("option",{value:""},["Select class..."])]);
-
-      for (const c of classes) classSel.appendChild(el("option",{value:c.name, selected:(c.name===data.className)?true:null},[c.name]));
-
-      const subSel = el("select", { onchange:(e)=>{
-        const subName = e.target.value;
-        const entry = (subclasses?.classes||[]).find(x=>x.class===data.className);
-        const sub = (entry?.subclasses||[]).find(x=>x.name===subName) || null;
-        const next = { ...data, subclass: subName, subclassPackageUrl: (sub?.packageUrl || "") };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-        render();
-      }}, [el("option",{value:""},["Select subclass..."])]);
-
-      const entry = (subclasses?.classes||[]).find(x=>x.class===data.className);
-      const subs = Array.isArray(entry?.subclasses) ? entry.subclasses : [];
-      for (const s of subs) subSel.appendChild(el("option",{value:s.name, selected:(s.name===data.subclass)?true:null},[s.name]));
-
-      const lvl = el("input",{type:"number",min:"0",max:"20",value:data.classLevel,oninput:(e)=>{
-        const v = clampInt(e.target.value,0,20);
-        const next = { ...data, classLevel:v };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-        render();
-      }});
-
-      const spellMod = el("input",{type:"number",value:data.spellMod,oninput:(e)=>{
-        const v = clampInt(e.target.value,-10,20);
-        const next = { ...data, spellMod:v };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-      }});
-
-      return box(title, null, [
-        el("div",{class:"formGrid2"},[
-          field("Class", classSel),
-          field("Class level", lvl),
-          field("Subclass", subSel),
-          field("Spellcasting modifier (if applicable)", spellMod),
-        ])
-      ]);
-    }
-
-    async function render(dataError){
-      state = loadCharacterState();
-      root.innerHTML = "";
-
-      if (!classes) await ensureData();
-
+    // ----------------- core render -----------------
+    function renderCore(){
       const pb = proficiencyBonus(state.level) + (Number(state.proficiencyMisc)||0);
-      const pp = passivePerception(state);
+      const pp = passivePerception();
+      const init = initiative();
 
-      if (page === "details"){
-        root.appendChild(box("Details", null, [
-          el("div",{class:"formGrid2"},[
-            field("Appearance", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,appearance:e.target.value}})},[state.details.appearance||""])),
-            field("Backstory", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,backstory:e.target.value}})},[state.details.backstory||""])),
-            field("Allies and Organizations", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,allies:e.target.value}})},[state.details.allies||""])),
-            field("Treasure", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,treasure:e.target.value}})},[state.details.treasure||""])),
-          ])
-        ]));
-        return;
-      }
-
-      if (page === "spells"){
-        root.appendChild(box("Spells", null, [
-          el("div",{class:"lbl"},["This page stays lightweight for now. Spell slots are tracked in Combat Tracker."]),
-          field("Spell notes", el("textarea",{oninput:(e)=>writeState({...state,spells:{...state.spells,notes:e.target.value}})},[state.spells.notes||""])),
-        ]));
-        return;
-      }
-
-      // Core Header row: name, race, alignment
       root.appendChild(box("Core Header", null, [
-        el("div",{class:"formRow"},[
-          field("Character name", el("input",{value:state.name,oninput:(e)=>writeState({...state,name:e.target.value})})),
-          field("Race", el("input",{value:state.race,oninput:(e)=>writeState({...state,race:e.target.value})})),
-          field("Alignment", el("input",{value:state.alignment,oninput:(e)=>writeState({...state,alignment:e.target.value})})),
+        el("div",{style:"display:grid;grid-template-columns:1fr;gap:10px"},[
+          field("Character name", el("input",{value:state.name,oninput:(e)=>{ const next=structuredClone(state); next.name=e.target.value; saveState(next); }})),
+          field("Race", el("input",{value:state.race,oninput:(e)=>{ const next=structuredClone(state); next.race=e.target.value; saveState(next); }})),
+          field("Alignment", el("input",{value:state.alignment,oninput:(e)=>{ const next=structuredClone(state); next.alignment=e.target.value; saveState(next); }})),
         ])
       ]));
 
-      const left = box("Class and Background", null, [
-        el("div",{class:"formGrid2"},[
-          field("Background", el("input",{value:state.background,oninput:(e)=>writeState({...state,background:e.target.value})})),
-          el("div",{class:"row"},[
-            el("label",{class:"pill"},[
-              el("input",{type:"checkbox",checked:state.multiclass?true:null,onchange:(e)=>{writeState({...state,multiclass:e.target.checked}); render();}}),
-              "Multiclass"
-            ]),
-            el("div",{class:"pill"},["Total level: ", el("b",{},[String(state.level)])])
-          ])
-        ]),
-        classBlock(false),
-        classBlock(true),
-      ].filter(Boolean));
+      // class/background
+      const bgSelect=el("select",{onchange:(e)=>{
+        const id=e.target.value;
+        const bg=(data.backgrounds?.backgrounds||[]).find(b=>b.id===id) || null;
+        if(!bg){ const next=structuredClone(state); next.backgroundId=""; next.backgroundName=""; saveState(next); render(); return; }
+        applyBackground(bg);
+      }},[el("option",{value:""},["Select background..."])]);
+      (data.backgrounds?.backgrounds||[]).forEach(b=>{
+        bgSelect.appendChild(el("option",{value:b.id,selected:(b.id===state.backgroundId)?true:null},[b.name]));
+      });
 
-      const combat = box("Combat", null, [
-        el("div",{class:"formGrid2"},[
-          field("Armor class", el("input",{type:"number",min:"0",value:state.combat.acBase,oninput:(e)=>writeState({...state,combat:{...state.combat,acBase:clampInt(e.target.value,0,99)}})})),
-          field("Speed", el("input",{type:"number",min:"0",value:state.combat.speed,oninput:(e)=>writeState({...state,combat:{...state.combat,speed:clampInt(e.target.value,0,999)}})})),
-          field("Max HP", el("input",{type:"number",min:"0",value:state.combat.hpMax,oninput:(e)=>{
-            const v=clampInt(e.target.value,0,9999);
-            writeState({...state,combat:{...state.combat,hpMax:v,hpNow:Math.min(state.combat.hpNow,v)}});
-          }})),
-          field("Current HP", el("input",{type:"number",min:"0",value:state.combat.hpNow,oninput:(e)=>writeState({...state,combat:{...state.combat,hpNow:clampInt(e.target.value,0,state.combat.hpMax)}})})),
-          field("Temp HP", el("input",{type:"number",min:"0",value:state.combat.hpTemp,oninput:(e)=>writeState({...state,combat:{...state.combat,hpTemp:clampInt(e.target.value,0,9999)}})})),
-          field("Initiative misc", el("input",{type:"number",value:state.combat.initiativeMisc,oninput:(e)=>{writeState({...state,combat:{...state.combat,initiativeMisc:clampInt(e.target.value,-99,99)}}); render();}})),
-        ])
+      const mcToggle = el("label",{class:"pill"},[
+        el("input",{type:"checkbox",checked:state.multiclass?true:null,onchange:(e)=>{ const next=structuredClone(state); next.multiclass=e.target.checked; if(!next.multiclass) next.secondary.classLevel=0; saveState(next); render(); }}),
+        "Multiclass"
       ]);
 
-      root.appendChild(el("div",{class:"gridTop"},[left,combat]));
+      const leftBody=[ field("Background", bgSelect), el("div",{class:"row"},[mcToggle, el("div",{class:"pill"},["Total level: ", el("b",{},[String(state.level)])])]) ];
+      leftBody.push(renderClassBlock(false));
+      if(state.multiclass) leftBody.push(renderClassBlock(true));
 
-      // Quick Stats (inspiration, pb, pp, init)
-      root.appendChild(box("Quick Stats", null, [
-        el("div", { class:"row" }, [
-          el("button", { class:"btn", type:"button", onclick:()=>openHitDiceModal() }, ["Short Rest"]),
-          el("button", { class:"btn", type:"button", onclick:()=>doLongRest() }, ["Long Rest"]),
+      const left = box("Class and Background", null, leftBody.filter(Boolean));
+
+      const right = box("Combat", null, [
+        el("div",{style:"display:grid;grid-template-columns:1fr 1fr;gap:10px"},[
+          field("Armor class", el("input",{type:"number",min:"0",value:state.combat.acBase,oninput:(e)=>{ const next=structuredClone(state); next.combat.acBase=clampInt(e.target.value,0,99); saveState(next); }})),
+          field("Speed", el("input",{type:"number",min:"0",value:state.combat.speed,oninput:(e)=>{ const next=structuredClone(state); next.combat.speed=clampInt(e.target.value,0,999); saveState(next); }})),
+          field("Max HP", el("input",{type:"number",min:"0",value:state.combat.hpMax,oninput:(e)=>{ const v=clampInt(e.target.value,0,9999); const next=structuredClone(state); next.combat.hpMax=v; next.combat.hpNow=Math.min(next.combat.hpNow,v); saveState(next); }})),
+          field("Current HP", el("input",{type:"number",min:"0",value:state.combat.hpNow,oninput:(e)=>{ const next=structuredClone(state); next.combat.hpNow=clampInt(e.target.value,0,next.combat.hpMax); saveState(next); }})),
+          field("Temp HP", el("input",{type:"number",min:"0",value:state.combat.hpTemp,oninput:(e)=>{ const next=structuredClone(state); next.combat.hpTemp=clampInt(e.target.value,0,9999); saveState(next); }})),
+          field("Initiative misc", el("input",{type:"number",value:state.combat.initiativeMisc,oninput:(e)=>{ const next=structuredClone(state); next.combat.initiativeMisc=clampInt(e.target.value,-99,99); saveState(next); }})),
         ]),
-        el("div",{class:"formGrid2"},[
-          box("Inspiration Points", null, [
-            el("div",{class:"row"},[
-              el("button",{class:"btn",type:"button",onclick:()=>writeState({...state,inspirationPoints:clampInt(state.inspirationPoints-1,0,99)})},["-"]),
+        el("div",{class:"note"},["Equipped weapon hit dice: ", el("b",{},[safeText(state.combat.weaponDice)||"(none)"])])
+      ]);
+
+      root.appendChild(el("div",{class:"grid2"},[left,right]));
+
+      // quick stats compact
+      root.appendChild(box("Quick Stats", null, [
+        el("div",{class:"quickRow"},[
+          el("div",{class:"smallCard"},[
+            el("div",{class:"smallLabel"},["Inspiration"]),
+            el("div",{class:"smallValue"},[
+              el("button",{class:"btn",type:"button",onclick:()=>{ const next=structuredClone(state); next.inspirationPoints=clampInt(next.inspirationPoints-1,0,99); saveState(next); render(); }},["-"]),
               el("div",{class:"kpi"},[String(state.inspirationPoints)]),
-              el("button",{class:"btn",type:"button",onclick:()=>writeState({...state,inspirationPoints:clampInt(state.inspirationPoints+1,0,99)})},["+"]),
+              el("button",{class:"btn",type:"button",onclick:()=>{ const next=structuredClone(state); next.inspirationPoints=clampInt(next.inspirationPoints+1,0,99); saveState(next); render(); }},["+"]),
             ])
           ]),
-          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Proficiency bonus"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(pb)])])]),
-          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Passive perception"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[String(pp)])])]),
-          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Initiative"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(initiative(state))])])]),
+          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Proficiency"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(pb)])])]),
+          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Passive Perception"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[String(pp)])])]),
+          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Initiative"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(init)])])]),
         ])
       ]));
 
-      // Abilities & saves
+      // abilities + saves
       root.appendChild(box("Abilities and Saving Throws", null, [
         el("div",{class:"abilitiesGrid"}, abilityList.map(a=>{
           const score=state.abilities[a];
           const mod=abilityMod(score);
           const saveProf=!!state.saves[a];
-          const saveVal=saveBonus(state,a);
+          const saveVal = saveBonus(a);
           return el("div",{class:"abilityCard"},[
             el("div",{class:"abilityName"},[a]),
-            el("input",{type:"number",min:"1",max:"30",value:score,oninput:(e)=>{writeState({...state,abilities:{...state.abilities,[a]:clampInt(e.target.value,1,30)}}); render();}}),
+            el("input",{type:"number",min:"1",max:"20",value:score,oninput:(e)=>{ const next=structuredClone(state); next.abilities[a]=clampInt(e.target.value,1,20); saveState(next); render(); }}),
             el("div",{class:"abilityMod"},[formatSigned(mod)]),
             el("div",{class:"smallCard",style:"margin-top:10px"},[
               el("div",{class:"smallLabel"},["Saving throw"]),
               el("div",{class:"smallValue"},[
                 el("label",{class:"pill"},[
-                  el("input",{type:"checkbox",checked:saveProf?true:null,onchange:(e)=>{writeState({...state,saves:{...state.saves,[a]:e.target.checked}}); render();}}),
+                  el("input",{type:"checkbox",checked:saveProf?true:null,onchange:(e)=>{ const next=structuredClone(state); next.saves[a]=e.target.checked; saveState(next); render(); }}),
                   "Proficient"
                 ]),
                 el("div",{class:"kpi"},[formatSigned(saveVal)])
@@ -486,55 +946,194 @@ async function doCloudLoad(){
         }))
       ]));
 
-      // Skills
+      // skills
       root.appendChild(box("Skills", null, [
         el("div",{class:"skillsGrid"}, skillMeta.map(s=>{
           const lvl=Number(state.skills[s.id]||0);
+          const btn=(label, active, val)=> el("button",{type:"button",class:"skillBtn"+(active?" active":""),onclick:()=>{ const next=structuredClone(state); next.skills[s.id]=val; saveState(next); render(); }},[label]);
           return el("div",{class:"skillRow"},[
-            el("div",{},[
-              el("div",{class:"skillName"},[s.label]),
-              el("div",{class:"skillMeta"},[s.ability]),
-            ]),
-            el("div",{class:"skillMid"},[
-              skillBtn("None", lvl===0, ()=>{writeState({...state,skills:{...state.skills,[s.id]:0}}); render();}),
-              skillBtn("Prof", lvl===1, ()=>{writeState({...state,skills:{...state.skills,[s.id]:1}}); render();}),
-              skillBtn("Expert", lvl===2, ()=>{writeState({...state,skills:{...state.skills,[s.id]:2}}); render();}),
-            ]),
-            el("div",{class:"kpi",style:"text-align:right"},[formatSigned(skillBonus(state,s.id))])
+            el("div",{class:"skillLeft"},[el("div",{class:"skillName"},[s.label]), el("div",{class:"skillMeta"},[s.ability])]),
+            el("div",{class:"skillMid"},[btn("None",lvl===0,0),btn("Prof",lvl===1,1),btn("Expert",lvl===2,2)]),
+            el("div",{style:"display:flex;justify-content:flex-end;font-size:16px;font-weight:900"},[formatSigned(skillBonus(s.id))])
           ]);
         }))
       ]));
 
-      // Picks
-      const earned=earnedPickSlots(state);
-      const used=Array.isArray(state.picks)?state.picks.length:0;
-      const available=Math.max(0,earned-used);
-      const right = el("div",{class:"row"},[
+      // features/traits/feats/ASI
+      const earned=earnedPickSlots();
+      const used=(state.picks||[]).length;
+      const available=Math.max(0, earned-used);
+      const rightHead=el("div",{class:"row"},[
         el("div",{class:"pill"},["Available picks: ", el("b",{},[String(available)])]),
-        el("button",{class:"btn",type:"button",onclick:async()=>{await ensureData(); openPickModal();}},["+ Add"]),
+        el("button",{class:"btn",type:"button",onclick:()=>openPickModal()},["+ Add"])
       ]);
 
-      const chips = [];
-      for (let i=0;i<(state.picks||[]).length;i++){
-        const p=state.picks[i];
-        const label = p.kind==="asi"
-          ? (p.mode==="plus2" ? `ASI: +2 ${p.a1}` : `ASI: +1 ${p.a1} +1 ${p.a2}`)
-          : (p.name || p.id);
-        chips.push(el("div",{class:"chip"},[
-          el("span",{},[label]),
-          el("button",{class:"chipX",type:"button",onclick:()=>{const next=[...state.picks]; next.splice(i,1); writeState({...state,picks:next}); render();}},["✕"])
-        ]));
+      const picksBody=[];
+      if(used===0) picksBody.push(el("div",{class:"note"},["No picks added yet."]));
+      else{
+        (state.picks||[]).forEach((p,i)=>{
+          const label = p.kind==="asi" ? (p.mode==="plus2"?`ASI: +2 ${p.a1}`:`ASI: +1 ${p.a1} +1 ${p.a2}`) : (p.name||p.id);
+          picksBody.push(el("div",{class:"chip"},[
+            el("span",{},[label]),
+            el("button",{class:"chipX",type:"button",onclick:()=>{ const next=structuredClone(state); next.picks.splice(i,1); saveState(next); render(); }},["✕"])
+          ]));
+        });
       }
-      if (chips.length===0) chips.push(el("div",{class:"lbl"},["No picks added yet."]));
 
-      root.appendChild(box("Features, Traits, Feats, ASI", right, [
-        el("div",{class:"lbl"},["Unlocks at level 1 and at class-specific ASI levels (Fighter and Rogue get extras)."]),
-        el("div",{},chips)
+      const featureCards=(state.features||[]).map(f=>el("div",{class:"smallCard",style:"margin-top:10px"},[
+        el("div",{class:"smallLabel"},[safeText(f.name)]),
+        el("div",{class:"note"},[safeText(f.text)])
+      ]));
+
+      root.appendChild(box("Features, Traits, Feats, ASI", rightHead, [
+        el("div",{class:"note"},["Unlocks at level 1 and at class-specific ASI levels. Background features auto-appear here."]),
+        el("div",{},picksBody),
+        ...featureCards
       ]));
     }
-    let dataError = "";
-    try { await ensureData(); } catch (e) { dataError = (e && e.message) ? e.message : String(e); console.error(e); }
-    render(dataError);
+
+    function renderClassBlock(isSecondary){
+      const d=isSecondary?state.secondary:state.primary;
+      const title = state.multiclass ? (isSecondary ? "Class 2" : "Class 1") : "Class";
+      const classSelect=el("select",{onchange:(e)=>{
+        const next=structuredClone(state);
+        const target=isSecondary?next.secondary:next.primary;
+        target.className=e.target.value;
+        target.subclass=""; target.subclassPackageUrl="";
+        saveState(next); render();
+      }},[el("option",{value:""},["Select class..."])]);
+      (data.classes||[]).forEach(c=>classSelect.appendChild(el("option",{value:c.name,selected:(c.name===d.className)?true:null},[c.name])));
+
+      const levelInput=el("input",{type:"number",min:"0",max:"20",value:d.classLevel,oninput:(e)=>{
+        const next=structuredClone(state);
+        const target=isSecondary?next.secondary:next.primary;
+        target.classLevel=clampInt(e.target.value,0,20);
+        saveState(next); render();
+      }});
+
+      const subclassSelect=el("select",{onchange:(e)=>{
+        const next=structuredClone(state);
+        const target=isSecondary?next.secondary:next.primary;
+        target.subclass=e.target.value;
+        const entry=(data.subclasses?.classes||[]).find(x=>x.class===target.className);
+        const sub=(entry?.subclasses||[]).find(s=>s.name===target.subclass) || null;
+        target.subclassPackageUrl = (sub?.packageUrl||"");
+        saveState(next); render();
+      }},[el("option",{value:""},["Select subclass..."])]);
+
+      const subEntry=(data.subclasses?.classes||[]).find(x=>x.class===d.className);
+      (subEntry?.subclasses||[]).forEach(s=>subclassSelect.appendChild(el("option",{value:s.name,selected:(s.name===d.subclass)?true:null},[s.name])));
+
+      const spellMod=el("input",{type:"number",value:d.spellMod,oninput:(e)=>{
+        const next=structuredClone(state);
+        const target=isSecondary?next.secondary:next.primary;
+        target.spellMod=clampInt(e.target.value,-10,20);
+        saveState(next);
+      }});
+
+      return box(title, null, [
+        el("div",{style:"display:grid;grid-template-columns:1fr 1fr;gap:10px"},[
+          field("Class", classSelect),
+          field("Class level", levelInput),
+          field("Subclass", subclassSelect),
+          field("Spellcasting modifier", spellMod),
+        ])
+      ]);
+    }
+
+    function renderDetails(){
+      root.appendChild(box("Details", null, [
+        el("div",{style:"display:grid;grid-template-columns:1fr;gap:10px"},[
+          field("Appearance", el("textarea",{oninput:(e)=>{ const next=structuredClone(state); next.details.appearance=e.target.value; saveState(next); }},[state.details.appearance||""])),
+          field("Backstory", el("textarea",{oninput:(e)=>{ const next=structuredClone(state); next.details.backstory=e.target.value; saveState(next); }},[state.details.backstory||""])),
+          field("Allies and Organizations", el("textarea",{oninput:(e)=>{ const next=structuredClone(state); next.details.allies=e.target.value; saveState(next); }},[state.details.allies||""])),
+          field("Treasure", el("textarea",{oninput:(e)=>{ const next=structuredClone(state); next.details.treasure=e.target.value; saveState(next); }},[state.details.treasure||""])),
+        ])
+      ]));
+    }
+
+    function renderNotes(){
+      root.appendChild(box("Notes", null, [
+        field("Notes", el("textarea",{oninput:(e)=>{ const next=structuredClone(state); next.notes=e.target.value; saveState(next); }},[state.notes||""]))
+      ]));
+    }
+
+    function render(){
+      state = loadState();
+      root.innerHTML="";
+      try{
+        if(page==="core") renderCore();
+        else if(page==="details") renderDetails();
+        else if(page==="spells") renderSpells();
+        else if(page==="equipment") renderEquipment();
+        else if(page==="notes") renderNotes();
+      }catch(err){
+        root.appendChild(el("div",{class:"smallCard"},[
+          el("div",{class:"smallLabel"},["Render error"]),
+          el("div",{class:"note"},[safeText(err && err.message ? err.message : err)])
+        ]));
+      }
+    }
+
+    // ----------------- tabs wiring -----------------
+    function setActive(tabName){
+      page=tabName;
+      document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active", b.dataset.tab===tabName));
+      render();
+    }
+    document.querySelectorAll(".tab").forEach(btn=>{
+      btn.addEventListener("click", ()=> setActive(btn.dataset.tab));
+    });
+
+    // ----------------- buttons wiring -----------------
+    shortRestBtn.addEventListener("click", ()=> openHitDiceModal());
+    longRestBtn.addEventListener("click", ()=> doLongRest());
+
+    cloudSaveBtn.addEventListener("click", async ()=>{
+      try{
+        // lazy import so CDN cannot kill the page
+        const mod = await import("./js/cloud.js");
+        const r = await mod.cloudSave();
+        alert(r.message);
+      }catch(e){
+        alert("Cloud save failed. Supabase not configured or blocked. This does not affect local saves.");
+      }
+    });
+    cloudLoadBtn.addEventListener("click", async ()=>{
+      try{
+        const mod = await import("./js/cloud.js");
+        const r = await mod.cloudLoad();
+        alert(r.message);
+        state = loadState();
+        render();
+      }catch(e){
+        alert("Cloud load failed. Supabase not configured or blocked. This does not affect local saves.");
+      }
+    });
+
+    // ----------------- init data then render -----------------
+    (async function init(){
+      try{
+        data.backgrounds = await loadJson("backgrounds.json");
+        data.classes = await loadJson("classes.json");
+        data.subclasses = await loadJson("subclasses.json");
+        data.traits = await loadJson("traits.json");
+        data.spells = await loadJson("spells.json");
+        data.spellcasting = await loadJson("spellcasting.json");
+      }catch(err){
+        root.innerHTML="";
+        root.appendChild(el("div",{class:"smallCard"},[
+          el("div",{class:"smallLabel"},["Data load error"]),
+          el("div",{class:"note"},[safeText(err && err.message ? err.message : err)]),
+          el("div",{class:"note"},["Make sure GitHub Pages is serving /data/*.json (case-sensitive)."])
+        ]));
+        return;
+      }
+      state = loadState();
+      setActive("core");
+    })();
+
+  })();
   </script>
 </body>
 </html>
