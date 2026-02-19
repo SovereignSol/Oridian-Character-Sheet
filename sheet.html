@@ -36,9 +36,9 @@
     .abilityCard{border:1px solid var(--border);border-radius:16px;padding:12px;background:rgba(0,0,0,.16)}
     .abilityName{font-weight:900;color:var(--muted)}
     .abilityMod{margin-top:8px;font-size:18px;font-weight:900}
-    .smallCard{border:1px solid var(--border);border-radius:14px;padding:10px;background:rgba(0,0,0,.12)}
+    .smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
     .smallLabel{color:var(--muted);font-size:12px}
-    .smallValue{margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .smallValue{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
     .skillsGrid{display:grid;grid-template-columns:1fr;gap:8px}
     .skillRow{border:1px solid var(--border);border-radius:14px;padding:10px;background:rgba(0,0,0,.14);display:grid;grid-template-columns:1fr;gap:10px}
     .skillName{font-weight:900}
@@ -84,6 +84,8 @@
         <button class="tab active" id="tabCore" type="button">Core</button>
         <button class="tab" id="tabDetails" type="button">Details</button>
         <button class="tab" id="tabSpells" type="button">Spells</button>
+        <button class="tab" id="tabEquipment" type="button">Equipment</button>
+        <button class="tab" id="tabNotes" type="button">Notes</button>
       </div>
 
       <div class="body" id="root"></div>
@@ -111,13 +113,20 @@
 
     import { earnedPickSlots } from "./js/progression.js";
     import { cloudSave, cloudLoad, isCloudConfigured } from "./js/cloud.js";
+    import { applyBackgroundToState } from "./js/backgrounds.js";
+    import { defaultEquipment, computeEquipmentAcBonus, getEquippedWeaponDice, EQUIP_GROUPS } from "./js/equipment.js";
+    import { applyShortRestHitDice, applyLongRest, defaultHitDicePools } from "./js/rest.js";
 
     let page = "core";
     let state = loadCharacterState();
+      if (!state.equipment) { writeState({ ...state, equipment: defaultEquipment() }); state = loadCharacterState(); }
+      if (!state.rest?.hitDice) { writeState({ ...state, rest: { ...(state.rest||{}), hitDice: defaultHitDicePools(state) } }); state = loadCharacterState(); }
 
     const tabCore = document.getElementById("tabCore");
     const tabDetails = document.getElementById("tabDetails");
     const tabSpells = document.getElementById("tabSpells");
+    const tabEquipment = document.getElementById("tabEquipment");
+    const tabNotes = document.getElementById("tabNotes");
     const root = document.getElementById("root");
 
     const cloudSaveBtn = document.getElementById("cloudSaveBtn");
@@ -132,6 +141,8 @@
       tabCore.classList.toggle("active", page === "core");
       tabDetails.classList.toggle("active", page === "details");
       tabSpells.classList.toggle("active", page === "spells");
+      tabEquipment.classList.toggle("active", page === "equipment");
+      tabNotes.classList.toggle("active", page === "notes");
     }
     tabCore.addEventListener("click", ()=>{ page="core"; setActiveTab(); render(); });
     tabDetails.addEventListener("click", ()=>{ page="details"; setActiveTab(); render(); });
@@ -409,6 +420,10 @@
 
       // Quick Stats (inspiration, pb, pp, init)
       root.appendChild(box("Quick Stats", null, [
+        el("div", { class:"row" }, [
+          el("button", { class:"btn", type:"button", onclick:()=>openHitDiceModal() }, ["Short Rest"]),
+          el("button", { class:"btn", type:"button", onclick:()=>doLongRest() }, ["Long Rest"]),
+        ]),
         el("div",{class:"formGrid2"},[
           box("Inspiration Points", null, [
             el("div",{class:"row"},[

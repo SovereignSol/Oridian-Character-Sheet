@@ -6,6 +6,8 @@
     <title>Combat Tracker</title>
 
     <style>
+      .topRow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+
       :root {
         --bg: #0b0f14;
         --text: #e9eef5;
@@ -494,7 +496,7 @@
   <body>
     <main class="wrap">
       <header class="header">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h1 style="margin:0">Combat Tracker</h1><a href="./index.html" style="padding:8px 10px;border-radius:12px;border:1px solid #223041;background:rgba(26,39,53,.9);color:#e9eef5;text-decoration:none">Back</a></div>
+        <div class="topRow"><h1 style="margin:0">Combat Tracker</h1><a class="btn" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">Back</a></div>
         <p class="sub">Spellcasting: ./data/spellcasting.json, Spells: ./data/spells.json</p>
       </header>
 
@@ -576,7 +578,7 @@
               <div>Action</div>
             </div>
             <div class="econBtns">
-              <button id="basicAttack" class="btn" type="button">Basic Attack</button>
+              <button id="basicAttack" class="btn" type="button">Basic Attack <span id="weaponDiceBadge" style="opacity:.75;font-weight:800"></span></button>
               <button id="actionOptions" class="btn" type="button">Additional Options</button>
             </div>
           </div>
@@ -885,38 +887,19 @@
           if (Number.isFinite(Number(cs.combat.hpMax))) state.hpMax = Math.max(0, nint(cs.combat.hpMax, state.hpMax));
           if (Number.isFinite(Number(cs.combat.hpNow))) state.hpNow = clamp(nint(cs.combat.hpNow, state.hpNow), 0, state.hpMax);
           if (Number.isFinite(Number(cs.combat.hpTemp))) state.hpTemp = Math.max(0, nint(cs.combat.hpTemp, 0));
-          if (Number.isFinite(Number(cs.combat.acBase))) state.acBase = Math.max(0, nint(cs.combat.acBase, state.acBase));
+
+          const baseAc = Number.isFinite(Number(cs.combat.acBase)) ? Math.max(0, nint(cs.combat.acBase, state.acBase)) : state.acBase;
+          const bonus = Number.isFinite(Number(cs.combat.acBonusExtra)) ? nint(cs.combat.acBonusExtra, 0) : 0;
+          state.acBase = baseAc + bonus;
+
+          state._weaponDice = (typeof cs.combat.weaponDice === "string") ? cs.combat.weaponDice : "";
         }
-      }
-
-      function hideSheetManagedUi() {
-        const level = document.getElementById("levelInput");
-        if (level && level.closest(".row")) level.closest(".row").style.display = "none";
-        const mc = document.getElementById("multiclassToggle");
-        if (mc && mc.closest(".row")) mc.closest(".row").style.display = "none";
-        const cb = document.querySelector(".classBlockWrap");
-        if (cb) cb.style.display = "none";
-
-        const build = document.getElementById("buildManifestUrl");
-        if (build && build.closest(".row")) build.closest(".row").style.display = "none";
-        const divider = document.querySelector("#coreCard .divider");
-        if (divider) divider.style.display = "none";
-        const loadManifest = document.getElementById("loadManifest");
-        const addPackage = document.getElementById("addPackage");
-        const clearPackages = document.getElementById("clearPackages");
-        const pkgSummary = document.getElementById("packageSummary");
-        for (const x of [loadManifest, addPackage, clearPackages]) if (x) x.style.display = "none";
-        if (pkgSummary) pkgSummary.style.display = "none";
       }
 
       window.addEventListener("message", (e) => {
         if (!e || !e.data) return;
         if (e.data.type === "CHAR_SHEET_UPDATED") {
-          try {
-            applyCharToCombatState();
-            saveState();
-            render();
-          } catch {}
+          try { applyCharToCombatState(); saveState(); render(); } catch {}
         }
       });
 
@@ -2816,6 +2799,7 @@ const DEFAULT_ICONS_BASE = "./Icons/";
 
       /* ---------- Main render ---------- */
       async function render() {
+        try { const b = document.getElementById('weaponDiceBadge'); if (b) b.textContent = state._weaponDice ? `(${state._weaponDice})` : ''; } catch {}
         normalize();
         updatePackageSummary();
         renderResourcesFromPackages();
@@ -2832,7 +2816,6 @@ const DEFAULT_ICONS_BASE = "./Icons/";
       }
 
       function initDom() {
-        hideSheetManagedUi();
         el.levelInput = document.getElementById("levelInput");
         el.multiclassToggle = document.getElementById("multiclassToggle");
         el.classBlocks = document.getElementById("classBlocks");
