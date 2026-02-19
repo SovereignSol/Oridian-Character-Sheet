@@ -1,5 +1,5 @@
-// Sol: Optional Supabase cloud sync, no build.
-// Configure by editing config.js and filling in values.
+// Optional Supabase cloud sync (no build step).
+// If config.js is empty, buttons will be disabled by the caller.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { loadCharacterState, saveCharacterState } from "./character.js";
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from "../config.js";
@@ -16,23 +16,20 @@ export function isCloudConfigured() {
   return !!(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
-async function ensureAuth() {
-  const sb = getSupabase();
-  if (!sb) return { ok:false, message:"Supabase not configured. Fill in config.js." };
-
+async function ensureAuth(sb) {
   const { data } = await sb.auth.getSession();
-  if (data.session) return { ok:true, message:"Signed in." };
+  if (data.session) return { ok: true };
 
   const res = await sb.auth.signInAnonymously();
-  if (res.error) return { ok:false, message: res.error.message };
-  return { ok:true, message:"Signed in (anonymous)." };
+  if (res.error) return { ok: false, message: res.error.message };
+  return { ok: true };
 }
 
 export async function cloudSave() {
   const sb = getSupabase();
-  if (!sb) return { ok:false, message:"Supabase not configured." };
+  if (!sb) return { ok:false, message:"Cloud is not configured. Fill in config.js." };
 
-  const auth = await ensureAuth();
+  const auth = await ensureAuth(sb);
   if (!auth.ok) return auth;
 
   const { data: sess } = await sb.auth.getSession();
@@ -54,9 +51,9 @@ export async function cloudSave() {
 
 export async function cloudLoad() {
   const sb = getSupabase();
-  if (!sb) return { ok:false, message:"Supabase not configured." };
+  if (!sb) return { ok:false, message:"Cloud is not configured. Fill in config.js." };
 
-  const auth = await ensureAuth();
+  const auth = await ensureAuth(sb);
   if (!auth.ok) return auth;
 
   const { data: sess } = await sb.auth.getSession();
@@ -73,7 +70,7 @@ export async function cloudLoad() {
     .maybeSingle();
 
   if (error) return { ok:false, message:error.message };
-  if (!data?.payload) return { ok:false, message:"Not found in cloud (for this character id)." };
+  if (!data?.payload) return { ok:false, message:"Not found in cloud for this character id." };
 
   saveCharacterState(data.payload);
   return { ok:true, message:"Loaded from cloud." };
