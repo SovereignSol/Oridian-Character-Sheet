@@ -8,14 +8,14 @@
     :root{--bg:#0b0f14;--panel:rgba(18,26,35,.92);--border:#223041;--text:#e9eef5;--muted:#97a6b8;}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-    header{max-width:1100px;margin:0 auto;padding:14px 14px 6px;}
+    header{max-width:1100px;margin:0 auto;padding:16px 14px 6px;}
     h1{margin:0;font-size:20px;font-weight:900}
     .sub{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.4}
     .wrap{max-width:1100px;margin:0 auto;padding:0 14px 18px}
     .panel{margin-top:10px;border-radius:16px;border:1px solid var(--border);background:var(--panel);overflow:hidden;}
-    .panelBody{padding:12px}
-    .menuGrid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:10px}
-    a.menuCard{display:block;text-decoration:none;text-align:left;padding:16px 14px;border-radius:16px;border:1px solid var(--border);background:rgba(0,0,0,.12);color:var(--text);cursor:pointer}
+    .panelBody{padding:14px}
+    .menuGrid{display:grid;grid-template-columns:1fr;gap:12px}
+    .menuCard{text-align:left;padding:16px 14px;border-radius:16px;border:1px solid var(--border);background:rgba(0,0,0,.12);color:var(--text);cursor:pointer}
     .menuTitle{font-weight:1000;font-size:16px}
     .menuHint{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.4}
     @media (min-width:900px){ .menuGrid{grid-template-columns:1fr 1fr} }
@@ -24,20 +24,20 @@
 <body>
   <header>
     <h1>D&D Mobile Tracker</h1>
-    <div class="sub">Choose Combat Tracker or Character Sheet.</div>
+    <div class="sub">Choose an area.</div>
   </header>
 
   <div class="wrap">
     <div class="panel">
       <div class="panelBody">
         <div class="menuGrid">
-          <a class="menuCard" href="./combat.html">
+          <a class="menuCard" href="combat.html" style="text-decoration:none;display:block">
             <div class="menuTitle">Combat Tracker</div>
-            <div class="menuHint">Run turns, track HP, manage spell slots.</div>
+            <div class="menuHint">Run turns, track HP, manage spell slots, rests.</div>
           </a>
-          <a class="menuCard" href="./sheet.html">
+          <a class="menuCard" href="sheet.html" style="text-decoration:none;display:block">
             <div class="menuTitle">Character Sheet</div>
-            <div class="menuHint">Abilities, saves, skills, class levels, feats and ASI, cloud.</div>
+            <div class="menuHint">Backgrounds, equipment, spellbook, features, rests.</div>
           </a>
         </div>
       </div>

@@ -1083,7 +1083,21 @@ const DEFAULT_ICONS_BASE = "./Icons/";
 
       function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-      function normalize() {
+      
+      function checkRestCommand() {
+        try {
+          const raw = localStorage.getItem("dnd_rest_command_v1");
+          if (!raw) return;
+          const cmd = JSON.parse(raw);
+          if (!cmd || !cmd.cmd) return;
+          localStorage.removeItem("dnd_rest_command_v1");
+          if (cmd.cmd === "short") doShortRest();
+          if (cmd.cmd === "long") doLongRest();
+        } catch {}
+      }
+
+function normalize() {
+        checkRestCommand();
         applyCharToCombatState();
         state.level = clamp(nint(state.level, 1), 1, 20);
         state.multiclass = !!state.multiclass;
