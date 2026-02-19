@@ -1,62 +1,54 @@
 [
   {
     "name": "Barbarian",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": false
   },
   {
     "name": "Bard",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Cleric",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Druid",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Fighter",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Monk",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": false
   },
   {
     "name": "Paladin",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Ranger",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Rogue",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Sorcerer",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Warlock",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
   },
   {
     "name": "Wizard",
-    "isSpellcaster": false,
-    "defaultSpellAbility": null
+    "isSpellcaster": true
+  },
+  {
+    "name": "Artificer",
+    "isSpellcaster": true
   }
 ]

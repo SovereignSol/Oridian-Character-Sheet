@@ -15,24 +15,7 @@
       ],
       "feature": {
         "name": "Shelter of the Faithful",
-        "text": "As an acolyte, you command the respect of those who share your faith."
-      }
-    },
-    {
-      "id": "criminal",
-      "name": "Criminal",
-      "skills": [
-        "deception",
-        "stealth"
-      ],
-      "tools": [
-        "thieves_tools",
-        "gaming_set_any"
-      ],
-      "languages": [],
-      "feature": {
-        "name": "Criminal Contact",
-        "text": "You have a reliable and trustworthy contact who acts as your liaison to a network of other criminals."
+        "text": "You and your adventuring companions can expect free healing and care at a temple, shrine, or other established presence of your faith, though you must provide any material components needed for spells."
       }
     }
   ]
