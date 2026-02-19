@@ -17,6 +17,214 @@
         "name": "Shelter of the Faithful",
         "text": "You and your adventuring companions can expect free healing and care at a temple, shrine, or other established presence of your faith, though you must provide any material components needed for spells."
       }
+    },
+    {
+      "id": "charlatan",
+      "name": "Charlatan",
+      "skills": [
+        "deception",
+        "sleight_of_hand"
+      ],
+      "tools": [
+        "disguise_kit",
+        "forgery_kit"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "False Identity",
+        "text": "You have created a second identity that includes documentation, established acquaintances, and disguises that allow you to assume that persona."
+      }
+    },
+    {
+      "id": "criminal",
+      "name": "Criminal",
+      "skills": [
+        "deception",
+        "stealth"
+      ],
+      "tools": [
+        "thieves_tools",
+        "gaming_set_any"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "Criminal Contact",
+        "text": "You have a reliable and trustworthy contact who acts as your liaison to a network of other criminals."
+      }
+    },
+    {
+      "id": "entertainer",
+      "name": "Entertainer",
+      "skills": [
+        "acrobatics",
+        "performance"
+      ],
+      "tools": [
+        "disguise_kit",
+        "musical_instrument_any"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "By Popular Demand",
+        "text": "You can always find a place to perform, usually in an inn or tavern, and you receive free lodging and food of a modest or comfortable standard while you perform."
+      }
+    },
+    {
+      "id": "folk_hero",
+      "name": "Folk Hero",
+      "skills": [
+        "animal_handling",
+        "survival"
+      ],
+      "tools": [
+        "artisan_tools_any",
+        "vehicles_land"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "Rustic Hospitality",
+        "text": "Common folk will provide you with simple assistance, such as shelter and food, as long as you do not endanger them."
+      }
+    },
+    {
+      "id": "guild_artisan",
+      "name": "Guild Artisan",
+      "skills": [
+        "insight",
+        "persuasion"
+      ],
+      "tools": [
+        "artisan_tools_any"
+      ],
+      "languages": [
+        "any"
+      ],
+      "feature": {
+        "name": "Guild Membership",
+        "text": "As an established and respected member of a guild, you can rely on certain benefits that membership provides."
+      }
+    },
+    {
+      "id": "hermit",
+      "name": "Hermit",
+      "skills": [
+        "medicine",
+        "religion"
+      ],
+      "tools": [
+        "herbalism_kit"
+      ],
+      "languages": [
+        "any"
+      ],
+      "feature": {
+        "name": "Discovery",
+        "text": "The quiet seclusion of your extended hermitage gave you access to a unique and powerful discovery."
+      }
+    },
+    {
+      "id": "noble",
+      "name": "Noble",
+      "skills": [
+        "history",
+        "persuasion"
+      ],
+      "tools": [
+        "gaming_set_any"
+      ],
+      "languages": [
+        "any"
+      ],
+      "feature": {
+        "name": "Position of Privilege",
+        "text": "Thanks to your noble birth, people are inclined to think the best of you. You are welcome in high society, and common folk make every effort to accommodate you."
+      }
+    },
+    {
+      "id": "outlander",
+      "name": "Outlander",
+      "skills": [
+        "athletics",
+        "survival"
+      ],
+      "tools": [
+        "musical_instrument_any"
+      ],
+      "languages": [
+        "any"
+      ],
+      "feature": {
+        "name": "Wanderer",
+        "text": "You have an excellent memory for maps and geography, and you can always recall the general layout of terrain, settlements, and other features around you."
+      }
+    },
+    {
+      "id": "sage",
+      "name": "Sage",
+      "skills": [
+        "arcana",
+        "history"
+      ],
+      "tools": [],
+      "languages": [
+        "any",
+        "any"
+      ],
+      "feature": {
+        "name": "Researcher",
+        "text": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it."
+      }
+    },
+    {
+      "id": "sailor",
+      "name": "Sailor",
+      "skills": [
+        "athletics",
+        "perception"
+      ],
+      "tools": [
+        "navigator_tools",
+        "vehicles_water"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "Ship's Passage",
+        "text": "You can secure free passage on a sailing ship for yourself and your companions, provided you can work for your passage."
+      }
+    },
+    {
+      "id": "soldier",
+      "name": "Soldier",
+      "skills": [
+        "athletics",
+        "intimidation"
+      ],
+      "tools": [
+        "gaming_set_any",
+        "vehicles_land"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "Military Rank",
+        "text": "You have a military rank from your career as a soldier. Soldiers loyal to your former military organization still recognize your authority."
+      }
+    },
+    {
+      "id": "urchin",
+      "name": "Urchin",
+      "skills": [
+        "sleight_of_hand",
+        "stealth"
+      ],
+      "tools": [
+        "disguise_kit",
+        "thieves_tools"
+      ],
+      "languages": [],
+      "feature": {
+        "name": "City Secrets",
+        "text": "You know the secret patterns and flow to cities and can find passages through the urban sprawl that others would miss."
+      }
     }
   ]
 }
