@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "example_feat_tough",
+      "name": "Tough",
+      "type": "feat",
+      "requirementsText": "No requirements.",
+      "effects": []
+    }
+  ]
+}

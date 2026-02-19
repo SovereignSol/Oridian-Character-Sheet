@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "classes": [
+    {
+      "class": "Barbarian",
+      "subclasses": []
+    },
+    {
+      "class": "Bard",
+      "subclasses": []
+    },
+    {
+      "class": "Cleric",
+      "subclasses": []
+    },
+    {
+      "class": "Druid",
+      "subclasses": []
+    },
+    {
+      "class": "Fighter",
+      "subclasses": []
+    },
+    {
+      "class": "Monk",
+      "subclasses": []
+    },
+    {
+      "class": "Paladin",
+      "subclasses": []
+    },
+    {
+      "class": "Ranger",
+      "subclasses": []
+    },
+    {
+      "class": "Rogue",
+      "subclasses": []
+    },
+    {
+      "class": "Sorcerer",
+      "subclasses": []
+    },
+    {
+      "class": "Warlock",
+      "subclasses": []
+    },
+    {
+      "class": "Wizard",
+      "subclasses": []
+    }
+  ]
+}
