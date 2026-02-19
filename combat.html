@@ -843,9 +843,25 @@
     <script>
       "use strict";
 
-      const SPELLCASTING_URL = "./data/spellcasting.json";
-      const SPELLS_URL = "./data/spells.json";
+      const SPELLCASTING_URL = "data/spellcasting.json";
+      const SPELLS_URL = "data/spells.json";
 
+      
+      async function fetchJsonSmart(path){
+        const clean = String(path || "").replace(/^\.\//, "");
+        const tries = [];
+        for (let up = 0; up <= 6; up++) tries.push("../".repeat(up) + clean);
+        let lastErr = null;
+        for (const url of tries) {
+          try {
+            const r = await fetch(url, { cache: "no-store" });
+            if (r.ok) return await r.json();
+          } catch (e) { lastErr = e; }
+        }
+        const scheme = (location && location.protocol) ? location.protocol : "";
+        const hint = (scheme === "file:") ? "You are opening this via file://. JSON fetch is blocked in most browsers. Use GitHub Pages or a local server." : "Check that /data is in the published folder and GitHub Pages is serving the correct directory.";
+        throw new Error(`Failed to load ${path}. Tried: ${tries.join(", ")}. ${hint}`);
+      }
       const STORAGE_KEY = "generic_tracker_state_v5_multiclass_pooled_packages";
 
       
@@ -1083,21 +1099,7 @@ const DEFAULT_ICONS_BASE = "./Icons/";
 
       function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 
-      
-      function checkRestCommand() {
-        try {
-          const raw = localStorage.getItem("dnd_rest_command_v1");
-          if (!raw) return;
-          const cmd = JSON.parse(raw);
-          if (!cmd || !cmd.cmd) return;
-          localStorage.removeItem("dnd_rest_command_v1");
-          if (cmd.cmd === "short") doShortRest();
-          if (cmd.cmd === "long") doLongRest();
-        } catch {}
-      }
-
-function normalize() {
-        checkRestCommand();
+      function normalize() {
         applyCharToCombatState();
         state.level = clamp(nint(state.level, 1), 1, 20);
         state.multiclass = !!state.multiclass;
