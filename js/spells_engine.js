@@ -1,50 +1,97 @@
 import { clampInt } from "./util.js";
 
+export function isPreparedCaster(className) {
+  return ["Cleric","Druid","Wizard","Paladin"].includes(className);
+}
+
+export function isKnownCaster(className, subclassName) {
+  if (["Bard","Sorcerer","Warlock","Ranger"].includes(className)) return true;
+  if (className==="Rogue" && subclassName==="Arcane Trickster") return true;
+  if (className==="Fighter" && subclassName==="Eldritch Knight") return true;
+  return false;
+}
+
 export function findSubclass(subclassesData, className, subName) {
-  const c = (subclassesData?.classes || []).find(x => x.class === className);
+  const c = (subclassesData?.classes||[]).find(x => x.class === className);
   if (!c) return null;
-  return (c.subclasses || []).find(s => s.name === subName) || null;
+  return (c.subclasses||[]).find(s => s.name === subName) || null;
 }
 
-export function getSubclassPreparedByLevel(subclassesData, className, subName, totalLevel) {
-  const sub = findSubclass(subclassesData, className, subName);
-  const byLv = sub?.spellRules?.alwaysPreparedByLevel;
-  if (!byLv || typeof byLv !== "object") return [];
-  const out = [];
-  for (const [unlockStr, spellIds] of Object.entries(byLv)) {
-    const unlock = clampInt(unlockStr, 0, 20);
-    if (totalLevel >= unlock && Array.isArray(spellIds)) out.push(...spellIds);
-  }
-  return Array.from(new Set(out));
-}
-
-export function classSpellIdsUpToLevel(spellcastingData, className, maxSpellLevel) {
-  const list = spellcastingData?.classes?.[className]?.spellListByLevel;
-  if (!list) return [];
+export function alwaysPreparedIds(state, subclassesData) {
   const ids = [];
-  for (let lv = 0; lv <= maxSpellLevel; lv++) {
-    const arr = list[String(lv)] || [];
-    for (const s of arr) ids.push(s.id);
+  const blocks = [state.primary, state.multiclass ? state.secondary : null].filter(Boolean);
+  for (const b of blocks) {
+    const className = (b.className||"").trim();
+    const subName = (b.subclass||"").trim();
+    if (!className || !subName) continue;
+    const sub = findSubclass(subclassesData, className, subName);
+    const apbl = sub?.spellRules?.alwaysPreparedByLevel || {};
+    const lvl = clampInt(b.classLevel||0, 0, 20);
+    for (const [k, arr] of Object.entries(apbl)) {
+      const need = clampInt(k, 0, 20);
+      if (lvl >= need && Array.isArray(arr)) ids.push(...arr);
+    }
   }
   return Array.from(new Set(ids));
 }
 
-export function isPreparedCaster(className) {
-  return ["Cleric", "Druid", "Wizard", "Paladin"].includes(className);
+export function allowedSpellIds(state, spellcastingData, subclassesData) {
+  const allowed = [];
+  const blocks = [state.primary, state.multiclass ? state.secondary : null].filter(Boolean);
+
+  const maxLevelForBlock = (b) => {
+    const className = (b.className||"").trim();
+    const subName = (b.subclass||"").trim();
+    const classLevel = clampInt(b.classLevel||0, 0, 20);
+    if (!className || classLevel<=0) return 0;
+
+    let progression = spellcastingData?.classes?.[className]?.progression || null;
+    const sub = findSubclass(subclassesData, className, subName);
+    const sr = sub?.spellRules || null;
+    if (sr?.progression) progression = sr.progression;
+
+    const prog = spellcastingData?.progressions?.[progression];
+    const m = prog?.maxSpellLevel?.[String(classLevel)];
+    return Number.isFinite(m) ? m : 0;
+  };
+
+  const listByLevelForBlock = (b) => {
+    const className = (b.className||"").trim();
+    const subName = (b.subclass||"").trim();
+    if (!className) return null;
+
+    let list = spellcastingData?.classes?.[className]?.spellListByLevel || null;
+    const sub = findSubclass(subclassesData, className, subName);
+    const sr = sub?.spellRules || null;
+    if (sr?.spellSourceClass) {
+      list = spellcastingData?.classes?.[sr.spellSourceClass]?.spellListByLevel || list;
+    }
+    return list;
+  };
+
+  for (const b of blocks) {
+    const maxLv = maxLevelForBlock(b);
+    const lb = listByLevelForBlock(b);
+    if (!lb) continue;
+    for (let lv=0; lv<=maxLv; lv++) {
+      const arr = lb[String(lv)] || [];
+      for (const s of arr) allowed.push(s.id);
+    }
+  }
+
+  for (const ap of alwaysPreparedIds(state, subclassesData)) allowed.push(ap);
+  return Array.from(new Set(allowed));
 }
 
-export function isKnownCaster(className, subName) {
-  const base = ["Bard", "Sorcerer", "Warlock", "Ranger"];
-  if (base.includes(className)) return true;
-  if (className === "Rogue" && subName === "Arcane Trickster") return true;
-  if (className === "Fighter" && subName === "Eldritch Knight") return true;
-  return false;
-}
-
-export function maxSpellLevelFor(spellcastingData, className, classLevel) {
-  const progName = spellcastingData?.classes?.[className]?.progression;
-  if (!progName) return 0;
-  const prog = spellcastingData?.progressions?.[progName];
-  const m = prog?.maxSpellLevel?.[String(clampInt(classLevel, 0, 20))];
-  return Number.isFinite(m) ? m : 0;
+export function spellsByLevel(spellCatalog, allowedIds) {
+  const byLevel = new Map();
+  const allowed = new Set(allowedIds);
+  for (const sp of (spellCatalog?.spells || [])) {
+    if (!allowed.has(sp.id)) continue;
+    const lv = Number(sp.level);
+    if (!byLevel.has(lv)) byLevel.set(lv, []);
+    byLevel.get(lv).push(sp);
+  }
+  for (const arr of byLevel.values()) arr.sort((a,b)=>a.name.localeCompare(b.name));
+  return byLevel;
 }
