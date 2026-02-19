@@ -72,7 +72,7 @@
   <div class="wrap">
     <div class="panel">
       <div class="topBar">
-        <div class="kpi">2014-style Sheet</div>
+        <div class="kpi">Character Sheet</div>
         <div class="row">
           <button class="btn" id="cloudSaveBtn" type="button">Save to Cloud</button>
           <button class="btn" id="cloudLoadBtn" type="button">Load from Cloud</button>
@@ -338,7 +338,7 @@
       ]);
     }
 
-    async function render(){
+    async function render(dataError){
       state = loadCharacterState();
       root.innerHTML = "";
 
@@ -494,9 +494,9 @@
         el("div",{},chips)
       ]));
     }
-
-    await ensureData();
-    render();
+    let dataError = "";
+    try { await ensureData(); } catch (e) { dataError = (e && e.message) ? e.message : String(e); console.error(e); }
+    render(dataError);
   </script>
 </body>
 </html>
