@@ -859,11 +859,12 @@
           return (j && typeof j === "object") ? j : null;
         } catch { return null; }
       }
-
+      function saveCharStateSafe(cs) {
+        try { localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(cs)); } catch {}
+      }
       function applyCharToCombatState() {
         const cs = loadCharStateSafe();
         if (!cs) return;
-
         if (Number.isFinite(Number(cs.level))) state.level = clamp(nint(cs.level, state.level), 1, 20);
         state.multiclass = !!cs.multiclass;
 
@@ -874,7 +875,6 @@
           const purl = (typeof cs.primary.subclassPackageUrl === "string") ? cs.primary.subclassPackageUrl.trim() : "";
           state.classBlocks[0].packages = purl ? [purl] : [];
         }
-
         if (cs.secondary && typeof cs.secondary === "object") {
           if (typeof cs.secondary.className === "string") state.classBlocks[1].key = cs.secondary.className;
           if (Number.isFinite(Number(cs.secondary.classLevel))) state.classBlocks[1].classLevel = Math.max(0, nint(cs.secondary.classLevel, 0));
@@ -882,24 +882,32 @@
           const surl = (typeof cs.secondary.subclassPackageUrl === "string") ? cs.secondary.subclassPackageUrl.trim() : "";
           state.classBlocks[1].packages = surl ? [surl] : [];
         }
-
         if (cs.combat && typeof cs.combat === "object") {
           if (Number.isFinite(Number(cs.combat.hpMax))) state.hpMax = Math.max(0, nint(cs.combat.hpMax, state.hpMax));
           if (Number.isFinite(Number(cs.combat.hpNow))) state.hpNow = clamp(nint(cs.combat.hpNow, state.hpNow), 0, state.hpMax);
           if (Number.isFinite(Number(cs.combat.hpTemp))) state.hpTemp = Math.max(0, nint(cs.combat.hpTemp, 0));
-
           const baseAc = Number.isFinite(Number(cs.combat.acBase)) ? Math.max(0, nint(cs.combat.acBase, state.acBase)) : state.acBase;
           const bonus = Number.isFinite(Number(cs.combat.acBonusExtra)) ? nint(cs.combat.acBonusExtra, 0) : 0;
           state.acBase = baseAc + bonus;
-
           state._weaponDice = (typeof cs.combat.weaponDice === "string") ? cs.combat.weaponDice : "";
         }
       }
-
+      function pushCombatToCharState() {
+        const cs = loadCharStateSafe();
+        if (!cs || !cs.combat) return;
+        cs.combat.hpMax = state.hpMax;
+        cs.combat.hpNow = state.hpNow;
+        cs.combat.hpTemp = state.hpTemp;
+        saveCharStateSafe(cs);
+      }
       window.addEventListener("message", (e) => {
         if (!e || !e.data) return;
         if (e.data.type === "CHAR_SHEET_UPDATED") {
-          try { applyCharToCombatState(); saveState(); render(); } catch {}
+          try {
+            applyCharToCombatState();
+            saveState();
+            render();
+          } catch {}
         }
       });
 
@@ -2799,7 +2807,7 @@ const DEFAULT_ICONS_BASE = "./Icons/";
 
       /* ---------- Main render ---------- */
       async function render() {
-        try { const b = document.getElementById('weaponDiceBadge'); if (b) b.textContent = state._weaponDice ? `(${state._weaponDice})` : ''; } catch {}
+        try{const b=document.getElementById('weaponDiceBadge');if(b)b.textContent=state._weaponDice?`(${state._weaponDice})`:'';}catch{}
         normalize();
         updatePackageSummary();
         renderResourcesFromPackages();
@@ -2816,6 +2824,18 @@ const DEFAULT_ICONS_BASE = "./Icons/";
       }
 
       function initDom() {
+
+      function hideSheetManagedUi() {
+        const level = document.getElementById("levelInput");
+        if (level && level.closest(".row")) level.closest(".row").style.display = "none";
+        const mc = document.getElementById("multiclassToggle");
+        if (mc && mc.closest(".row")) mc.closest(".row").style.display = "none";
+        const cb = document.querySelector(".classBlockWrap");
+        if (cb) cb.style.display = "none";
+      }
+
+        hideSheetManagedUi();
+
         el.levelInput = document.getElementById("levelInput");
         el.multiclassToggle = document.getElementById("multiclassToggle");
         el.classBlocks = document.getElementById("classBlocks");
