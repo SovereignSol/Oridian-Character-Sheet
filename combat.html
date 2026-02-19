@@ -639,7 +639,7 @@
         <div class="hpControls">
           <div>
             <label class="label" for="hpMaxInput">Set Max HP</label>
-            <input id="hpMaxInput" type="number" min="0" step="1" />
+            <input id="hpMaxInput" type="text" inputmode="numeric" readonly min="0" step="1" />
           </div>
           <div>
             <label class="label" for="hpTempInput">Set Temp HP</label>
@@ -843,25 +843,9 @@
     <script>
       "use strict";
 
-      const SPELLCASTING_URL = "data/spellcasting.json";
-      const SPELLS_URL = "data/spells.json";
+      const SPELLCASTING_URL = "./data/spellcasting.json";
+      const SPELLS_URL = "./data/spells.json";
 
-      
-      async function fetchJsonSmart(path){
-        const clean = String(path || "").replace(/^\.\//, "");
-        const tries = [];
-        for (let up = 0; up <= 6; up++) tries.push("../".repeat(up) + clean);
-        let lastErr = null;
-        for (const url of tries) {
-          try {
-            const r = await fetch(url, { cache: "no-store" });
-            if (r.ok) return await r.json();
-          } catch (e) { lastErr = e; }
-        }
-        const scheme = (location && location.protocol) ? location.protocol : "";
-        const hint = (scheme === "file:") ? "You are opening this via file://. JSON fetch is blocked in most browsers. Use GitHub Pages or a local server." : "Check that /data is in the published folder and GitHub Pages is serving the correct directory.";
-        throw new Error(`Failed to load ${path}. Tried: ${tries.join(", ")}. ${hint}`);
-      }
       const STORAGE_KEY = "generic_tracker_state_v5_multiclass_pooled_packages";
 
       
