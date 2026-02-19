@@ -494,7 +494,7 @@
   <body>
     <main class="wrap">
       <header class="header">
-        <h1>Combat Tracker</h1>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h1 style="margin:0">Combat Tracker</h1><a href="./index.html" style="padding:8px 10px;border-radius:12px;border:1px solid #223041;background:rgba(26,39,53,.9);color:#e9eef5;text-decoration:none">Back</a></div>
         <p class="sub">Spellcasting: ./data/spellcasting.json, Spells: ./data/spells.json</p>
       </header>
 
@@ -866,7 +866,7 @@
         state.multiclass = !!cs.multiclass;
 
         if (cs.primary && typeof cs.primary === "object") {
-          if (typeof cs.primary.classKey === "string") state.classBlocks[0].key = cs.primary.classKey;
+          if (typeof cs.primary.className === "string") state.classBlocks[0].key = cs.primary.className;
           if (Number.isFinite(Number(cs.primary.classLevel))) state.classBlocks[0].classLevel = Math.max(0, nint(cs.primary.classLevel, state.level));
           if (Number.isFinite(Number(cs.primary.spellMod))) state.classBlocks[0].mod = nint(cs.primary.spellMod, state.classBlocks[0].mod);
           const purl = (typeof cs.primary.subclassPackageUrl === "string") ? cs.primary.subclassPackageUrl.trim() : "";
@@ -874,7 +874,7 @@
         }
 
         if (cs.secondary && typeof cs.secondary === "object") {
-          if (typeof cs.secondary.classKey === "string") state.classBlocks[1].key = cs.secondary.classKey;
+          if (typeof cs.secondary.className === "string") state.classBlocks[1].key = cs.secondary.className;
           if (Number.isFinite(Number(cs.secondary.classLevel))) state.classBlocks[1].classLevel = Math.max(0, nint(cs.secondary.classLevel, 0));
           if (Number.isFinite(Number(cs.secondary.spellMod))) state.classBlocks[1].mod = nint(cs.secondary.spellMod, state.classBlocks[1].mod);
           const surl = (typeof cs.secondary.subclassPackageUrl === "string") ? cs.secondary.subclassPackageUrl.trim() : "";
