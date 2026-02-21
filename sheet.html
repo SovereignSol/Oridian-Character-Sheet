@@ -177,8 +177,8 @@
     ];
 
     let page = "core";
-    let state = null;
     let equipGroupId = "head";
+    let state = null;
 
     let data = { backgrounds:null, classes:null, subclasses:null, traits:null, spells:null, spellcasting:null };
 
@@ -713,7 +713,8 @@
       if (!Array.isArray(eq.slots.weapons)) eq.slots.weapons = Array.from({length:6}).map(()=>({...emptyItem(), hitDice:"", equipped:false}));
       eq.bag = eq.bag || { items: [] };
 
-      // UI state      const groups = [
+      // UI state
+      const groups = [
         { id:"head", label:"Head" },
         { id:"neck", label:"Neck" },
         { id:"body", label:"Body/Armor" },
@@ -729,8 +730,11 @@
         { id:"shields", label:"Shields" },
         { id:"weapons", label:"Weapons" },
         { id:"bag", label:"Bag" },
-      ];      const current = equipGroupId || "head";function commitEq(){
-        writeState({ ...state, equipment: eq, ui: { ...(state.ui||{}), equipGroupId: current } });
+      ];
+      const current = equipGroupId || "head";
+
+      function commitEq(){
+        writeState({ ...state, equipment: eq });
       }
 
       function openItemModal(title, item){
@@ -776,7 +780,7 @@
           class: "tab" + (active ? " active" : ""),
           type:"button",
           onclick: ()=>{
-            writeState({ ...state, equipment:eq, ui:{ ...(state.ui||{}), equipGroupId: g.id } });
+            writeState({ ...state, equipment: eq });
             render();
           }
         }, [g.label]);
@@ -785,8 +789,7 @@
       // Portrait small + selector
       root.appendChild(box("Equipment", null, [
         el("div", { class:"equipWrap" }, [
-          selector,
-          el("div", { class:"portraitBox equipPortrait", style:"min-height:160px;margin-top:10px" }, ["Portrait area (image upload later)"]),
+          selector
         ])
       ]));
 
