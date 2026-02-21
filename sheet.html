@@ -618,11 +618,7 @@
           el("div",{class:"note"},[ unlocked ? "You can change prepared spells now (unlocked by Long Rest)." : "Prepared spell changes are locked until you Long Rest." ])
         ]));
         if(unlocked){
-          wrap.appendChild(el("button",{class:"btn",type:"button",style:"margin-top:8px",onclick:()=>{
-            const next=structuredClone(state);
-            next.rest.preparedUnlock = Math.max(0,(next.rest.preparedUnlock||0)-1);
-            saveState(next); render();
-          }},["Finish preparing (lock)"]));
+          wrap.appendChild(el("button",{class:"btn",type:"button",style:"margin-top:8px",onclick: () => { equipGroupId = g.id; render(); }},["Finish preparing (lock)"]));
         }
       }
 
@@ -891,9 +887,9 @@ function renderCore(){
           el("div",{class:"smallCard"},[
             el("div",{class:"smallLabel"},["Inspiration"]),
             el("div",{class:"smallValue"},[
-              el("button",{class:"btn",type:"button",onclick:()=>{ const next=structuredClone(state); next.inspirationPoints=clampInt(next.inspirationPoints-1,0,99); saveState(next); render(); }},["-"]),
+              el("button",{class:"btn",type:"button",onclick: () => { equipGroupId = g.id; render(); }},["-"]),
               el("div",{class:"kpi"},[String(state.inspirationPoints)]),
-              el("button",{class:"btn",type:"button",onclick:()=>{ const next=structuredClone(state); next.inspirationPoints=clampInt(next.inspirationPoints+1,0,99); saveState(next); render(); }},["+"]),
+              el("button",{class:"btn",type:"button",onclick: () => { equipGroupId = g.id; render(); }},["+"]),
             ])
           ]),
           el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Proficiency"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(pb)])])]),
@@ -931,7 +927,7 @@ function renderCore(){
       root.appendChild(box("Skills", null, [
         el("div",{class:"skillsGrid"}, skillMeta.map(s=>{
           const lvl=Number(state.skills[s.id]||0);
-          const btn=(label, active, val)=> el("button",{type:"button",class:"skillBtn"+(active?" active":""),onclick:()=>{ const next=structuredClone(state); next.skills[s.id]=val; saveState(next); render(); }},[label]);
+          const btn=(label, active, val)=> el("button",{type:"button",class:"skillBtn"+(active?" active":""),onclick: () => { equipGroupId = g.id; render(); }},[label]);
           return el("div",{class:"skillRow"},[
             el("div",{class:"skillLeft"},[el("div",{class:"skillName"},[s.label]), el("div",{class:"skillMeta"},[s.ability])]),
             el("div",{class:"skillMid"},[btn("None",lvl===0,0),btn("Prof",lvl===1,1),btn("Expert",lvl===2,2)]),
@@ -956,7 +952,7 @@ function renderCore(){
           const label = p.kind==="asi" ? (p.mode==="plus2"?`ASI: +2 ${p.a1}`:`ASI: +1 ${p.a1} +1 ${p.a2}`) : (p.name||p.id);
           picksBody.push(el("div",{class:"chip"},[
             el("span",{},[label]),
-            el("button",{class:"chipX",type:"button",onclick:()=>{ const next=structuredClone(state); next.picks.splice(i,1); saveState(next); render(); }},["✕"])
+            el("button",{class:"chipX",type:"button",onclick: () => { equipGroupId = g.id; render(); }},["✕"])
           ]));
         });
       }
