@@ -1,648 +1,300 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Character Sheet</title>
-  <style>
-    :root{--bg:#0b0f14;--panel:rgba(18,26,35,.92);--border:#223041;--text:#e9eef5;--muted:#97a6b8;--accent:rgba(124,230,165,.65);}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-    header{max-width:1100px;margin:0 auto;padding:14px 14px 6px;}
-    h1{margin:0;font-size:20px;font-weight:900}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 14px 18px}
-    .panel{margin-top:10px;border-radius:16px;border:1px solid var(--border);background:var(--panel);overflow:hidden;}
-    .topBar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.10)}
-    .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-    .btn{padding:9px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(26,39,53,.9);color:var(--text);cursor:pointer}
-    .btn:disabled{opacity:.5;cursor:not-allowed}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-bottom:1px solid var(--border)}
-    .tab{padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.12);color:var(--text);cursor:pointer;font-size:12px}
-    .tab.active{outline:2px solid var(--accent)}
-    .body{padding:12px}
-    .gridTop{display:grid;grid-template-columns:1fr;gap:12px}
-    .box{border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14)}
-    .boxHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border)}
-    .boxTitle{font-weight:900}
-    .boxBody{padding:12px}
-    label.field{display:grid;gap:6px}
-    .lbl{color:var(--muted);font-size:12px}
-    input,textarea,select{width:100%;padding:10px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(15,22,32,.95);color:var(--text);outline:none}
-    textarea{min-height:160px;resize:vertical}
-    .formRow{display:grid;grid-template-columns:1fr;gap:10px}
-    .formGrid2{display:grid;grid-template-columns:1fr;gap:10px}
-    .pill{padding:8px 10px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:12px;display:flex;align-items:center;gap:8px}
-    .abilitiesGrid{display:grid;grid-template-columns:1fr;gap:10px}
-    .abilityCard{border:1px solid var(--border);border-radius:16px;padding:12px;background:rgba(0,0,0,.16)}
-    .abilityName{font-weight:900;color:var(--muted)}
-    .abilityMod{margin-top:8px;font-size:18px;font-weight:900}
-    .smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
-    .smallLabel{color:var(--muted);font-size:12px}
-    .smallValue{margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .skillsGrid{display:grid;grid-template-columns:1fr;gap:8px}
-    .skillRow{border:1px solid var(--border);border-radius:14px;padding:10px;background:rgba(0,0,0,.14);display:grid;grid-template-columns:1fr;gap:10px}
-    .skillName{font-weight:900}
-    .skillMeta{color:var(--muted);font-size:12px}
-    .skillMid{display:flex;gap:8px;flex-wrap:wrap}
-    .skillBtn{padding:8px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(26,39,53,.65);color:var(--text);cursor:pointer;font-size:12px}
-    .skillBtn.active{outline:2px solid var(--accent)}
-    .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(0,0,0,.10);margin:6px 6px 0 0}
-    .chipX{border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:14px}
-    .modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;padding:14px}
-    .modal{width:100%;max-width:740px;border:1px solid var(--border);background:rgba(18,26,35,.98);border-radius:16px;overflow:hidden}
-    .modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border)}
-    .modalBody{padding:12px}
-    .modalBackdrop.show{display:flex}
-    .kpi{font-weight:1000}
-    @media (min-width:900px){
-      .gridTop{grid-template-columns:1fr 1fr}
-      .formRow{grid-template-columns:1fr 1fr 1fr}
-      .formGrid2{grid-template-columns:1fr 1fr}
-      .abilitiesGrid{grid-template-columns:1fr 1fr 1fr}
-      .skillsGrid{grid-template-columns:1fr 1fr}
-      .skillRow{grid-template-columns:1.2fr 1.6fr .4fr}
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Character Sheet</title>
+<style>
+:root{--bg:#0b0f14;--panel:rgba(18,26,35,.92);--border:#223041;--text:#e9eef5;--muted:#97a6b8;--accent:rgba(124,230,165,.65);}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{max-width:1200px;margin:0 auto;padding:14px 14px 6px}
+h1{margin:0;font-size:20px;font-weight:900}
+.wrap{max-width:1200px;margin:0 auto;padding:0 14px 18px}
+.panel{margin-top:10px;border-radius:16px;border:1px solid var(--border);background:var(--panel);overflow:hidden}
+.topBar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.10)}
+.topTitle{font-weight:900}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{padding:9px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(26,39,53,.9);color:var(--text);cursor:pointer}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border)}
+.tab{padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.12);color:var(--text);cursor:pointer;font-size:12px}
+.tab.active{outline:2px solid var(--accent)}
+.content{padding:12px}
+.box{border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14);overflow:hidden}
+.boxHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.boxTitle{font-weight:900}
+.boxBody{padding:12px}
+.note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+.smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
+label.field{display:grid;gap:6px;margin-top:10px}
+.lbl{color:var(--muted);font-size:12px}
+input,textarea,select{width:100%;padding:8px 8px;border-radius:12px;border:1px solid var(--border);background:rgba(15,22,32,.95);color:var(--text);outline:none}
+textarea{min-height:140px;resize:vertical}
+.equipSelector{display:flex;gap:6px;flex-wrap:wrap}
+.equipCard input{padding:7px 8px;font-size:12px}
+.equipCard .btn{padding:7px 8px;font-size:12px}
+.modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;padding:14px}
+.modalBackdrop.show{display:flex}
+.modal{width:100%;max-width:820px;border:1px solid var(--border);background:rgba(18,26,35,.98);border-radius:16px;overflow:hidden}
+.modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border)}
+.modalBody{padding:12px;max-height:70vh;overflow:auto}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Character Sheet</h1>
-  </header>
-
-  <div class="wrap">
-    <div class="panel">
-      <div class="topBar">
-        <div class="kpi">Character Sheet</div>
-        <div class="row">
-          <button class="btn" id="cloudSaveBtn" type="button">Save to Cloud</button>
-          <button class="btn" id="cloudLoadBtn" type="button">Load from Cloud</button>
-          <a class="btn" href="./index.html" style="text-decoration:none">Back</a>
-        </div>
+<header><h1>Character Sheet</h1></header>
+<div class="wrap">
+  <div class="panel">
+    <div class="topBar">
+      <div class="topTitle">Character Sheet</div>
+      <div class="row">
+        <button class="btn" id="shortRestBtn" type="button">Short Rest</button>
+        <button class="btn" id="longRestBtn" type="button">Long Rest</button>
+        <button class="btn" id="cloudSaveBtn" type="button">Save to Cloud</button>
+        <button class="btn" id="cloudLoadBtn" type="button">Load from Cloud</button>
+        <a class="btn" href="index.html">Back</a>
       </div>
-
-      <div class="tabs">
-        <button class="tab active" id="tabCore" type="button">Core</button>
-        <button class="tab" id="tabDetails" type="button">Details</button>
-        <button class="tab" id="tabSpells" type="button">Spells</button>
-        <button class="tab" id="tabEquipment" type="button">Equipment</button>
-        <button class="tab" id="tabNotes" type="button">Notes</button>
-      </div>
-
-      <div class="body" id="root"></div>
     </div>
-  </div>
-
-  <div class="modalBackdrop" id="pickModal">
-    <div class="modal">
-      <div class="modalHead">
-        <div class="kpi">Add Pick</div>
-        <button class="btn" id="closePickModal" type="button">Close</button>
-      </div>
-      <div class="modalBody" id="pickModalBody"></div>
+    <div class="tabs">
+      <button class="tab active" id="tabCore" type="button">Core</button>
+      <button class="tab" id="tabDetails" type="button">Details</button>
+      <button class="tab" id="tabSpells" type="button">Spells</button>
+      <button class="tab" id="tabEquipment" type="button">Equipment</button>
+      <button class="tab" id="tabNotes" type="button">Notes</button>
     </div>
+    <div class="content" id="root"></div>
   </div>
+</div>
 
-  <script type="module">
-    import {
-      abilityList, skillMeta,
-      defaultCharacterState, loadCharacterState, saveCharacterState,
-      abilityMod, proficiencyBonus, formatSigned,
-      saveBonus, skillBonus, passivePerception, initiative,
-      clampInt
-    } from "./js/character.js";
+<div class="modalBackdrop" id="modal">
+  <div class="modal">
+    <div class="modalHead">
+      <div class="boxTitle" id="modalTitle">Modal</div>
+      <button class="btn" id="modalClose" type="button">Close</button>
+    </div>
+    <div class="modalBody" id="modalBody"></div>
+  </div>
+</div>
 
-    import { earnedPickSlots } from "./js/progression.js";
-    import { cloudSave, cloudLoad, isCloudConfigured } from "./js/cloud.js";
-    import { applyBackgroundToState } from "./js/backgrounds.js";
-    import { defaultEquipment, computeEquipmentAcBonus, getEquippedWeaponDice, EQUIP_GROUPS } from "./js/equipment.js";
-    import { applyShortRestHitDice, applyLongRest, defaultHitDicePools } from "./js/rest.js";
+<script>
+(() => {
+  const root = document.getElementById("root");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  document.getElementById("modalClose").addEventListener("click", () => closeModal());
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
-    let page = "core";
-    let state = loadCharacterState();
-      if (!state.equipment) { writeState({ ...state, equipment: defaultEquipment() }); state = loadCharacterState(); }
-      if (!state.rest?.hitDice) { writeState({ ...state, rest: { ...(state.rest||{}), hitDice: defaultHitDicePools(state) } }); state = loadCharacterState(); }
+  function showModal(title, bodyEl){
+    modalTitle.textContent = title;
+    modalBody.innerHTML = "";
+    modalBody.appendChild(bodyEl);
+    modal.classList.add("show");
+  }
+  function closeModal(){
+    modal.classList.remove("show");
+    modalBody.innerHTML = "";
+  }
 
-    const tabCore = document.getElementById("tabCore");
-    const tabDetails = document.getElementById("tabDetails");
-    const tabSpells = document.getElementById("tabSpells");
-    const tabEquipment = document.getElementById("tabEquipment");
-    const tabNotes = document.getElementById("tabNotes");
-    const root = document.getElementById("root");
-
-    const cloudSaveBtn = document.getElementById("cloudSaveBtn");
-    const cloudLoadBtn = document.getElementById("cloudLoadBtn");
-    cloudSaveBtn.disabled = !isCloudConfigured();
-    cloudLoadBtn.disabled = !isCloudConfigured();
-
-    cloudSaveBtn.addEventListener("click", async ()=> alert((await cloudSave()).message));
-    cloudLoadBtn.addEventListener("click", async ()=> { alert((await cloudLoad()).message); state = loadCharacterState(); render(); });
-
-    function setActiveTab(){
-      tabCore.classList.toggle("active", page === "core");
-      tabDetails.classList.toggle("active", page === "details");
-      tabSpells.classList.toggle("active", page === "spells");
-      tabEquipment.classList.toggle("active", page === "equipment");
-      tabNotes.classList.toggle("active", page === "notes");
+  function el(tag, attrs={}, kids=[]){
+    const n = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)){
+      if (k==="class") n.className = v;
+      else if (k==="style") n.setAttribute("style", v);
+      else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2).toLowerCase(), v);
+      else if (v !== false && v != null) n.setAttribute(k, String(v));
     }
-    tabCore.addEventListener("click", ()=>{ page="core"; setActiveTab(); render(); });
-    tabDetails.addEventListener("click", ()=>{ page="details"; setActiveTab(); render(); });
-    tabSpells.addEventListener("click", ()=>{ page="spells"; setActiveTab(); render(); });
-    tabEquipment.addEventListener("click", ()=>{ page="equipment"; setActiveTab(); render(); });
-    tabNotes.addEventListener("click", ()=>{ page="notes"; setActiveTab(); render(); });
-
-    function writeState(next){
-      state = saveCharacterState(next);
-      // ping combat if it is open in another tab or embedded elsewhere
-      try { window.opener?.postMessage?.({ type:"CHAR_SHEET_UPDATED" }, "*"); } catch {}
+    for (const c of kids){
+      if (c==null) continue;
+      if (typeof c==="string") n.appendChild(document.createTextNode(c));
+      else n.appendChild(c);
     }
+    return n;
+  }
+  function field(label, control){
+    return el("label",{class:"field"},[el("div",{class:"lbl"},[label]), control]);
+  }
+  function box(title, bodyKids){
+    return el("section",{class:"box"},[
+      el("div",{class:"boxHead"},[el("div",{class:"boxTitle"},[title])]),
+      el("div",{class:"boxBody"}, bodyKids || [])
+    ]);
+  }
 
-    function el(tag, attrs={}, children=[]){
-      const n = document.createElement(tag);
-      for (const [k,v] of Object.entries(attrs)){
-        if (k === "class") n.className = v;
-        else if (k === "style") n.setAttribute("style", v);
-        else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2).toLowerCase(), v);
-        else if (v === true) n.setAttribute(k, "");
-        else if (v !== false && v != null) n.setAttribute(k, String(v));
-      }
-      for (const c of children){
-        if (c == null) continue;
-        if (typeof c === "string") n.appendChild(document.createTextNode(c));
-        else n.appendChild(c);
-      }
-      return n;
+  const KEY = "dnd_character_state_v1";
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { equipment: defaultEquipment(), notes:"", details:{}, spells:{} };
+      const j = JSON.parse(raw);
+      j.equipment = normalizeEquipment(j.equipment || defaultEquipment());
+      return j;
+    }catch{
+      return { equipment: defaultEquipment(), notes:"", details:{}, spells:{} };
     }
-    function field(label, control){
-      return el("label", { class:"field" }, [el("div", { class:"lbl" }, [label]), control]);
-    }
-    function box(title, right, body){
-      return el("section", { class:"box" }, [
-        el("div", { class:"boxHead" }, [el("div", { class:"boxTitle" }, [title]), right || el("div")]),
-        el("div", { class:"boxBody" }, body)
-      ]);
-    }
-    function skillBtn(label, active, onClick){
-      return el("button", { type:"button", class: "skillBtn" + (active ? " active" : ""), onclick:onClick }, [label]);
-    }
+  }
+  function saveState(s){
+    localStorage.setItem(KEY, JSON.stringify(s));
+  }
 
-    async function loadJson(path){
-      const r = await fetch(path, { cache:"no-store" });
-      if (!r.ok) throw new Error("Failed to load "+path);
-      return await r.json();
-    }
-    let classes=null, subclasses=null, traits=null;
-    async function ensureData(){
-      if (!classes) classes = await loadJson("./data/classes.json");
-      if (!subclasses) subclasses = await loadJson("./data/subclasses.json");
-      if (!traits) traits = await loadJson("./data/traits.json");
-    }
+  function emptyItem(){ return {name:"",short:"",long:"",acBonus:"",hitDice:"",equipped:false}; }
+  function defaultEquipment(){
+    const mk=(n)=>Array.from({length:n}).map(()=>emptyItem());
+    return { slots:{
+      head:mk(3),neck:mk(3),body:mk(3),waist:mk(3),legs:mk(3),feet:mk(3),
+      face:mk(3),shoulders:mk(3),torso:mk(3),arms:mk(3),
+      ringsRight:mk(6),ringsLeft:mk(6),
+      shields:mk(3),weapons:mk(6)
+    }, bag:{items:[]} };
+  }
+  function normalizeEquipment(eq){
+    const out = eq && typeof eq==="object" ? eq : defaultEquipment();
+    out.slots = out.slots || {};
+    const ensure=(k,n)=>{
+      if(!Array.isArray(out.slots[k])) out.slots[k]=Array.from({length:n}).map(()=>emptyItem());
+      while(out.slots[k].length<n) out.slots[k].push(emptyItem());
+      for(let i=0;i<out.slots[k].length;i++) out.slots[k][i]=Object.assign(emptyItem(), out.slots[k][i]||{});
+    };
+    ["head","neck","body","waist","legs","feet","face","shoulders","torso","arms"].forEach(k=>ensure(k,3));
+    ensure("ringsRight",6); ensure("ringsLeft",6);
+    ensure("shields",3); ensure("weapons",6);
+    out.bag = out.bag || { items: [] };
+    if(!Array.isArray(out.bag.items)) out.bag.items=[];
+    return out;
+  }
 
-    // Modal
-    const pickModal = document.getElementById("pickModal");
-    const closePickModal = document.getElementById("closePickModal");
-    const pickModalBody = document.getElementById("pickModalBody");
-    closePickModal.addEventListener("click", ()=>hidePickModal());
-    pickModal.addEventListener("click", (e)=>{ if (e.target === pickModal) hidePickModal(); });
-    function showPickModal(){ pickModal.classList.add("show"); }
-    function hidePickModal(){ pickModal.classList.remove("show"); pickModalBody.innerHTML=""; }
-
-    function enforceCap20(nextAbilities){
-      const out = { ...nextAbilities };
-      for (const a of abilityList) out[a] = Math.min(20, clampInt(out[a], 1, 30));
-      return out;
-    }
-
-    function openPickModal(){
-      const earned = earnedPickSlots(state);
-      const used = Array.isArray(state.picks) ? state.picks.length : 0;
-      const available = Math.max(0, earned - used);
-
-      pickModalBody.innerHTML = "";
-      pickModalBody.appendChild(el("div", { class:"pill" }, ["Available picks: ", el("b", {}, [String(available)])]));
-
-      if (available <= 0){
-        showPickModal();
-        return;
-      }
-
-      const row = el("div", { class:"row", style:"margin-top:10px" }, [
-        el("button", { class:"btn", type:"button", onclick:()=>renderFeatPicker() }, ["Add Feat or Feature"]),
-        el("button", { class:"btn", type:"button", onclick:()=>renderAsiPicker() }, ["Take ASI"]),
-      ]);
-      pickModalBody.appendChild(row);
-
-      function renderFeatPicker(){
-        pickModalBody.innerHTML = "";
-        pickModalBody.appendChild(el("div", { class:"lbl" }, ["Requirements are shown, you decide if you qualify."]));
-
-        const sel = el("select", {}, [el("option", { value:"" }, ["Select..."])]);
-        const items = Array.isArray(traits?.items) ? traits.items : [];
-        for (const it of items) sel.appendChild(el("option", { value: it.id }, [`${it.name} (${it.type || "item"})`]));
-
-        const req = el("div", { class:"lbl", style:"margin-top:10px" }, [""]);
-        const addBtn = el("button", { class:"btn", type:"button", disabled:true, style:"margin-top:10px" }, ["Add"]);
-
-        sel.addEventListener("change", ()=>{
-          const it = items.find(x=>x.id===sel.value);
-          req.textContent = it?.requirementsText || "";
-          addBtn.disabled = !sel.value;
-        });
-        addBtn.addEventListener("click", ()=>{
-          const it = items.find(x=>x.id===sel.value);
-          if (!it) return;
-          writeState({ ...state, picks: [...(state.picks||[]), { kind:"trait", id: it.id, name: it.name, type: it.type || "item" }] });
-          hidePickModal();
-          render();
-        });
-
-        pickModalBody.appendChild(field("Feat or feature", sel));
-        pickModalBody.appendChild(req);
-        pickModalBody.appendChild(el("div", { class:"row" }, [addBtn, el("button", { class:"btn", type:"button", onclick:()=>openPickModal() }, ["Back"])]));
-      }
-
-      function renderAsiPicker(){
-        pickModalBody.innerHTML = "";
-        pickModalBody.appendChild(el("div", { class:"lbl" }, ["ASI: +2 to one ability, or +1 to two different abilities. Cap 20 enforced."]));
-
-        const mode = el("select", {}, [
-          el("option", { value:"plus2" }, ["+2 to one ability"]),
-          el("option", { value:"plus1plus1" }, ["+1 to two abilities"]),
-        ]);
-        const a1 = el("select", {}, [el("option", { value:"" }, ["Select ability..."]), ...abilityList.map(a=>el("option",{value:a},[a]))]);
-        const a2 = el("select", {}, [el("option", { value:"" }, ["Select second ability..."]), ...abilityList.map(a=>el("option",{value:a},[a]))]);
-        a2.disabled = true;
-        mode.addEventListener("change", ()=>{ a2.disabled = mode.value !== "plus1plus1"; });
-
-        const applyBtn = el("button", { class:"btn", type:"button", style:"margin-top:10px" }, ["Apply ASI"]);
-        applyBtn.addEventListener("click", ()=>{
-          if (!a1.value) return alert("Pick an ability.");
-          if (mode.value === "plus1plus1" && (!a2.value || a2.value === a1.value)) return alert("Pick two different abilities.");
-
-          let nextAbilities = { ...state.abilities };
-          if (mode.value === "plus2") nextAbilities[a1.value] = (nextAbilities[a1.value] || 0) + 2;
-          else {
-            nextAbilities[a1.value] = (nextAbilities[a1.value] || 0) + 1;
-            nextAbilities[a2.value] = (nextAbilities[a2.value] || 0) + 1;
-          }
-          nextAbilities = enforceCap20(nextAbilities);
-
-          const nextPick = { kind:"asi", mode: mode.value, a1: a1.value, a2: (mode.value==="plus1plus1") ? a2.value : null };
-          writeState({ ...state, abilities: nextAbilities, picks: [...(state.picks||[]), nextPick] });
-          hidePickModal();
-          render();
-        });
-
-        pickModalBody.appendChild(field("ASI type", mode));
-        pickModalBody.appendChild(field("Ability", a1));
-        pickModalBody.appendChild(field("Second ability", a2));
-        pickModalBody.appendChild(el("div", { class:"row" }, [applyBtn, el("button", { class:"btn", type:"button", onclick:()=>openPickModal() }, ["Back"])]));
-      }
-
-      showPickModal();
-    }
-
-    function classBlock(isSecondary){
-      const data = isSecondary ? state.secondary : state.primary;
-      if (isSecondary && !state.multiclass) return null;
-      const title = state.multiclass ? (isSecondary ? "Class 2" : "Class 1") : "Class";
-
-      const classSel = el("select", { onchange:(e)=>{ 
-        const className = e.target.value;
-        const next = { ...data, className, subclass:"", subclassPackageUrl:"" };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-        render();
-      }}, [el("option",{value:""},["Select class..."])]);
-
-      for (const c of classes) classSel.appendChild(el("option",{value:c.name, selected:(c.name===data.className)?true:null},[c.name]));
-
-      const subSel = el("select", { onchange:(e)=>{
-        const subName = e.target.value;
-        const entry = (subclasses?.classes||[]).find(x=>x.class===data.className);
-        const sub = (entry?.subclasses||[]).find(x=>x.name===subName) || null;
-        const next = { ...data, subclass: subName, subclassPackageUrl: (sub?.packageUrl || "") };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-        render();
-      }}, [el("option",{value:""},["Select subclass..."])]);
-
-      const entry = (subclasses?.classes||[]).find(x=>x.class===data.className);
-      const subs = Array.isArray(entry?.subclasses) ? entry.subclasses : [];
-      for (const s of subs) subSel.appendChild(el("option",{value:s.name, selected:(s.name===data.subclass)?true:null},[s.name]));
-
-      const lvl = el("input",{type:"number",min:"0",max:"20",value:data.classLevel,oninput:(e)=>{
-        const v = clampInt(e.target.value,0,20);
-        const next = { ...data, classLevel:v };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-        render();
-      }});
-
-      const spellMod = el("input",{type:"number",value:data.spellMod,oninput:(e)=>{
-        const v = clampInt(e.target.value,-10,20);
-        const next = { ...data, spellMod:v };
-        writeState(isSecondary ? { ...state, secondary: next } : { ...state, primary: next });
-      }});
-
-      return box(title, null, [
-        el("div",{class:"formGrid2"},[
-          field("Class", classSel),
-          field("Class level", lvl),
-          field("Subclass", subSel),
-          field("Spellcasting modifier (if applicable)", spellMod),
-        ])
-      ]);
-    }
-
-    async function render(dataError){
-      state = loadCharacterState();
-      root.innerHTML = "";
-
-      if (!classes) await ensureData();
-
-      const pb = proficiencyBonus(state.level) + (Number(state.proficiencyMisc)||0);
-      const pp = passivePerception(state);
-
-      if (page === "details"){
-        root.appendChild(box("Details", null, [
-          el("div",{class:"formGrid2"},[
-            field("Appearance", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,appearance:e.target.value}})},[state.details.appearance||""])),
-            field("Backstory", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,backstory:e.target.value}})},[state.details.backstory||""])),
-            field("Allies and Organizations", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,allies:e.target.value}})},[state.details.allies||""])),
-            field("Treasure", el("textarea",{oninput:(e)=>writeState({...state,details:{...state.details,treasure:e.target.value}})},[state.details.treasure||""])),
-          ])
-        ]));
-        return;
-      }
-
-      if (page === "spells"){
-        root.appendChild(box("Spells", null, [
-          el("div",{class:"lbl"},["This page stays lightweight for now. Spell slots are tracked in Combat Tracker."]),
-          field("Spell notes", el("textarea",{oninput:(e)=>writeState({...state,spells:{...state.spells,notes:e.target.value}})},[state.spells.notes||""])),
-        ]));
-        if (page === "notes"){
-  root.appendChild(box("Notes", null, [
-    field("Notes", el("textarea",{oninput:(e)=>writeState({...state,notes:e.target.value})},[state.notes||""]))
-  ]));
-  return;
-}
-
-if (page === "equipment"){
-  const eq = state.equipment || { slots:{} };
-  eq.slots = eq.slots || {};
-  const groups = [
-    { id:"head", label:"Head", slots:3 },
-    { id:"neck", label:"Neck", slots:3 },
-    { id:"body", label:"Body/Armor", slots:3, ac:true },
-    { id:"waist", label:"Waist", slots:3 },
-    { id:"legs", label:"Legs", slots:3 },
-    { id:"feet", label:"Feet", slots:3 },
-    { id:"face", label:"Face", slots:3 },
-    { id:"shoulders", label:"Shoulders", slots:3 },
-    { id:"torso", label:"Torso", slots:3 },
-    { id:"arms", label:"Arms", slots:3 },
-    { id:"ringsRight", label:"Rings, Right", slots:6 },
-    { id:"ringsLeft", label:"Rings, Left", slots:6 },
-    { id:"shields", label:"Shields", slots:3, ac:true },
-    { id:"weapons", label:"Weapons", slots:6, hitDice:true, equipped:true },
-    { id:"bag", label:"Bag" }
+  let page = "core";
+  let equipGroupId = "head";
+  const tabs = [
+    ["tabCore","core"],
+    ["tabDetails","details"],
+    ["tabSpells","spells"],
+    ["tabEquipment","equipment"],
+    ["tabNotes","notes"],
   ];
-
-  // Ensure arrays exist
-  function ensureArr(id, n, extra){
-    if (!Array.isArray(eq.slots[id])) {
-      eq.slots[id] = Array.from({length:n}).map(()=>({ name:"", short:"", long:"", acBonus:"", hitDice:"", equipped:false, ...extra }));
-    } else {
-      // normalize objects
-      for (let i=0;i<eq.slots[id].length;i++){
-        eq.slots[id][i] = { name:"", short:"", long:"", acBonus:"", hitDice:"", equipped:false, ...extra, ...(eq.slots[id][i]||{}) };
-      }
-      while (eq.slots[id].length < n) eq.slots[id].push({ name:"", short:"", long:"", acBonus:"", hitDice:"", equipped:false, ...extra });
+  function setActive(){
+    for (const [id,p] of tabs){
+      const b = document.getElementById(id);
+      if (!b) continue;
+      b.classList.toggle("active", page===p);
     }
   }
-  for (const g of groups){
-    if (g.id === "bag") continue;
-    ensureArr(g.id, g.slots, {});
-  }
-  eq.bag = eq.bag || { items: [] };
-
-  // local UI state, NOT persisted
-  if (!window.__equipGroupId) window.__equipGroupId = "head";
-
-  function commitEq(){
-    writeState({ ...state, equipment: eq });
-  }
-
-  function openItemModal(title, item){
-    const ta = el("textarea", {}, [item.long || ""]);
-    const pasteBtn = el("button", { class:"btn", type:"button", onclick: async ()=>{
-      try { const txt = await navigator.clipboard.readText(); ta.value = txt; item.long = txt; commitEq(); }
-      catch { alert("Clipboard paste blocked by browser."); }
-    }}, ["Paste from clipboard"]);
-    const saveBtn = el("button", { class:"btn", type:"button", onclick:()=>{ item.long = ta.value; commitEq(); closePickModal(); }}, ["Save"]);
-    pickModalBody.innerHTML = "";
-    pickModalBody.appendChild(field("Extended effect", ta));
-    pickModalBody.appendChild(el("div",{class:"row",style:"margin-top:10px"},[pasteBtn, saveBtn]));
-    pickModal.classList.add("show");
-  }
-
-  function slotCard(group, idx, it){
-    const parts = [];
-    parts.push(field("Name", el("input",{value:it.name||"", oninput:(e)=>{it.name=e.target.value; commitEq();}})));
-    parts.push(field("Short", el("input",{value:it.short||"", oninput:(e)=>{it.short=e.target.value; commitEq();}})));
-    if (group.ac) parts.push(field("AC", el("input",{value:it.acBonus||"", oninput:(e)=>{it.acBonus=e.target.value; commitEq();}})));
-    if (group.hitDice) parts.push(field("Hit dice", el("input",{value:it.hitDice||"", oninput:(e)=>{it.hitDice=e.target.value; commitEq();}})));
-    if (group.equipped) {
-      parts.push(el("label",{class:"pill"},[
-        el("input",{type:"checkbox",checked:it.equipped?true:null,onchange:(e)=>{
-          const w=eq.slots.weapons;
-          for (const x of w) x.equipped=false;
-          it.equipped = e.target.checked;
-          commitEq();
-        }}),
-        "Equipped"
-      ]));
+  function bindTabs(){
+    for (const [id,p] of tabs){
+      const b = document.getElementById(id);
+      if (!b) continue;
+      b.addEventListener("click", ()=>{ page=p; setActive(); render(); });
     }
-    parts.push(el("div",{class:"row"},[
-      el("button",{class:"btn",type:"button",onclick:()=>openItemModal(`${group.label} ${idx+1}`, it)},["Open"])
-    ]));
-    return el("div",{class:"smallCard",style:"margin-top:10px"},parts);
   }
 
-  // Selector bar
-  const selector = el("div",{class:"row",style:"gap:6px;flex-wrap:wrap"}, groups.map(g=>{
-    const active = g.id === window.__equipGroupId;
-    return el("button",{
-      class:"tab"+(active?" active":""),
-      type:"button",
-      onclick:()=>{
-        window.__equipGroupId = g.id;
-        // No full re-render needed, just rebuild equipment section by calling render()
-        render();
-      }
-    },[g.label]);
-  }));
+  // Buttons placeholders to avoid "dead UI" feeling
+  document.getElementById("shortRestBtn").addEventListener("click", ()=> alert("Short Rest popup will be here (kept stable)."));
+  document.getElementById("longRestBtn").addEventListener("click", ()=> alert("Long Rest will be here (kept stable)."));
+  document.getElementById("cloudSaveBtn").addEventListener("click", ()=> alert("Cloud is optional. If you want Supabase, keep js/cloud.js."));
+  document.getElementById("cloudLoadBtn").addEventListener("click", ()=> alert("Cloud is optional."));
 
-  root.appendChild(box("Equipment", null, [selector]));
+  function render(){
+    const st = loadState();
+    root.innerHTML = "";
 
-  const current = groups.find(x=>x.id===window.__equipGroupId) || groups[0];
-
-  if (current.id === "bag") {
-    const add = el("button",{class:"btn",type:"button",onclick:()=>{
-      eq.bag.items.push({name:"",short:"",long:""});
-      commitEq(); render();
-    }},["+ Add item"]);
-    const list = el("div",{}, eq.bag.items.map((it,idx)=>el("div",{class:"smallCard",style:"margin-top:10px"},[
-      field("Name", el("input",{value:it.name||"", oninput:(e)=>{it.name=e.target.value; commitEq();}})),
-      field("Short", el("input",{value:it.short||"", oninput:(e)=>{it.short=e.target.value; commitEq();}})),
-      el("div",{class:"row"},[
-        el("button",{class:"btn",type:"button",onclick:()=>openItemModal("Bag item", it)},["Open"]),
-        el("button",{class:"btn",type:"button",onclick:()=>{eq.bag.items.splice(idx,1); commitEq(); render();}},["Remove"]),
-      ])
-    ])));
-    root.appendChild(box("Bag", null, [add, list]));
-    return;
-  }
-
-  const arr = eq.slots[current.id] || [];
-  root.appendChild(box(current.label, null, arr.map((it,i)=>slotCard(current,i,it))));
-  return;
-}
-
-return;
-      }
-
-      // Core Header row: name, race, alignment
-      root.appendChild(box("Core Header", null, [
-        el("div",{class:"formRow"},[
-          field("Character name", el("input",{value:state.name,oninput:(e)=>writeState({...state,name:e.target.value})})),
-          field("Race", el("input",{value:state.race,oninput:(e)=>writeState({...state,race:e.target.value})})),
-          field("Alignment", el("input",{value:state.alignment,oninput:(e)=>writeState({...state,alignment:e.target.value})})),
-        ])
+    if (page==="details"){
+      root.appendChild(box("Details", [
+        el("div",{class:"note"},["Details section placeholder (kept stable while we iterate)."])
       ]));
+      return;
+    }
+    if (page==="spells"){
+      root.appendChild(box("Spells", [
+        el("div",{class:"note"},["Spells section placeholder (kept stable while we iterate)."])
+      ]));
+      return;
+    }
+    if (page==="notes"){
+      const ta = el("textarea",{oninput:(e)=>{ st.notes=e.target.value; saveState(st);} }, [st.notes||""]);
+      root.appendChild(box("Notes", [ field("Notes", ta) ]));
+      return;
+    }
+    if (page==="equipment"){
+      const groups = [
+        ["head","Head"],["neck","Neck"],["body","Body/Armor"],["waist","Waist"],["legs","Legs"],["feet","Feet"],
+        ["face","Face"],["shoulders","Shoulders"],["torso","Torso"],["arms","Arms"],
+        ["ringsRight","Rings, Right"],["ringsLeft","Rings, Left"],
+        ["shields","Shields"],["weapons","Weapons"],["bag","Bag"]
+      ];
+      const selector = el("div",{class:"equipSelector"}, groups.map(([id,label])=>{
+        const active = id===equipGroupId;
+        return el("button",{class:"tab"+(active?" active":""),type:"button",onclick:()=>{ equipGroupId=id; render(); }},[label]);
+      }));
+      root.appendChild(box("Equipment", [selector]));
 
-      const left = box("Class and Background", null, [
-        el("div",{class:"formGrid2"},[
-          field("Background", el("input",{value:state.background,oninput:(e)=>writeState({...state,background:e.target.value})})),
-          el("div",{class:"row"},[
-            el("label",{class:"pill"},[
-              el("input",{type:"checkbox",checked:state.multiclass?true:null,onchange:(e)=>{writeState({...state,multiclass:e.target.checked}); render();}}),
-              "Multiclass"
-            ]),
-            el("div",{class:"pill"},["Total level: ", el("b",{},[String(state.level)])])
-          ])
-        ]),
-        classBlock(false),
-        classBlock(true),
-      ].filter(Boolean));
-
-      const combat = box("Combat", null, [
-        el("div",{class:"formGrid2"},[
-          field("Armor class", el("input",{type:"number",min:"0",value:state.combat.acBase,oninput:(e)=>writeState({...state,combat:{...state.combat,acBase:clampInt(e.target.value,0,99)}})})),
-          field("Speed", el("input",{type:"number",min:"0",value:state.combat.speed,oninput:(e)=>writeState({...state,combat:{...state.combat,speed:clampInt(e.target.value,0,999)}})})),
-          field("Max HP", el("input",{type:"number",min:"0",value:state.combat.hpMax,oninput:(e)=>{
-            const v=clampInt(e.target.value,0,9999);
-            writeState({...state,combat:{...state.combat,hpMax:v,hpNow:Math.min(state.combat.hpNow,v)}});
-          }})),
-          field("Current HP", el("input",{type:"number",min:"0",value:state.combat.hpNow,oninput:(e)=>writeState({...state,combat:{...state.combat,hpNow:clampInt(e.target.value,0,state.combat.hpMax)}})})),
-          field("Temp HP", el("input",{type:"number",min:"0",value:state.combat.hpTemp,oninput:(e)=>writeState({...state,combat:{...state.combat,hpTemp:clampInt(e.target.value,0,9999)}})})),
-          field("Initiative misc", el("input",{type:"number",value:state.combat.initiativeMisc,oninput:(e)=>{writeState({...state,combat:{...state.combat,initiativeMisc:clampInt(e.target.value,-99,99)}}); render();}})),
-        ])
-      ]);
-
-      root.appendChild(el("div",{class:"gridTop"},[left,combat]));
-
-      // Quick Stats (inspiration, pb, pp, init)
-      root.appendChild(box("Quick Stats", null, [
-        el("div", { class:"row" }, [
-          el("button", { class:"btn", type:"button", onclick:()=>openHitDiceModal() }, ["Short Rest"]),
-          el("button", { class:"btn", type:"button", onclick:()=>doLongRest() }, ["Long Rest"]),
-        ]),
-        el("div",{class:"formGrid2"},[
-          box("Inspiration Points", null, [
+      if (equipGroupId==="bag"){
+        const add = el("button",{class:"btn",type:"button",onclick:()=>{ st.equipment.bag.items.push({name:"",short:"",long:""}); saveState(st); render(); }},["+ Add item"]);
+        const list = el("div",{},[]);
+        st.equipment.bag.items.forEach((it,idx)=>{
+          list.appendChild(el("div",{class:"smallCard equipCard",style:"margin-top:10px"},[
+            field("Name", el("input",{value:it.name||"",oninput:(e)=>{it.name=e.target.value; saveState(st);}})),
+            field("Short", el("input",{value:it.short||"",oninput:(e)=>{it.short=e.target.value; saveState(st);}})),
             el("div",{class:"row"},[
-              el("button",{class:"btn",type:"button",onclick:()=>writeState({...state,inspirationPoints:clampInt(state.inspirationPoints-1,0,99)})},["-"]),
-              el("div",{class:"kpi"},[String(state.inspirationPoints)]),
-              el("button",{class:"btn",type:"button",onclick:()=>writeState({...state,inspirationPoints:clampInt(state.inspirationPoints+1,0,99)})},["+"]),
+              el("button",{class:"btn",type:"button",onclick:()=>openLong(it)},["Open"]),
+              el("button",{class:"btn",type:"button",onclick:()=>{ st.equipment.bag.items.splice(idx,1); saveState(st); render(); }},["Remove"])
             ])
-          ]),
-          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Proficiency bonus"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(pb)])])]),
-          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Passive perception"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[String(pp)])])]),
-          el("div",{class:"smallCard"},[el("div",{class:"smallLabel"},["Initiative"]), el("div",{class:"smallValue"},[el("div",{class:"kpi"},[formatSigned(initiative(state))])])]),
-        ])
-      ]));
-
-      // Abilities & saves
-      root.appendChild(box("Abilities and Saving Throws", null, [
-        el("div",{class:"abilitiesGrid"}, abilityList.map(a=>{
-          const score=state.abilities[a];
-          const mod=abilityMod(score);
-          const saveProf=!!state.saves[a];
-          const saveVal=saveBonus(state,a);
-          return el("div",{class:"abilityCard"},[
-            el("div",{class:"abilityName"},[a]),
-            el("input",{type:"number",min:"1",max:"30",value:score,oninput:(e)=>{writeState({...state,abilities:{...state.abilities,[a]:clampInt(e.target.value,1,30)}}); render();}}),
-            el("div",{class:"abilityMod"},[formatSigned(mod)]),
-            el("div",{class:"smallCard",style:"margin-top:10px"},[
-              el("div",{class:"smallLabel"},["Saving throw"]),
-              el("div",{class:"smallValue"},[
-                el("label",{class:"pill"},[
-                  el("input",{type:"checkbox",checked:saveProf?true:null,onchange:(e)=>{writeState({...state,saves:{...state.saves,[a]:e.target.checked}}); render();}}),
-                  "Proficient"
-                ]),
-                el("div",{class:"kpi"},[formatSigned(saveVal)])
-              ])
-            ])
-          ]);
-        }))
-      ]));
-
-      // Skills
-      root.appendChild(box("Skills", null, [
-        el("div",{class:"skillsGrid"}, skillMeta.map(s=>{
-          const lvl=Number(state.skills[s.id]||0);
-          return el("div",{class:"skillRow"},[
-            el("div",{},[
-              el("div",{class:"skillName"},[s.label]),
-              el("div",{class:"skillMeta"},[s.ability]),
-            ]),
-            el("div",{class:"skillMid"},[
-              skillBtn("None", lvl===0, ()=>{writeState({...state,skills:{...state.skills,[s.id]:0}}); render();}),
-              skillBtn("Prof", lvl===1, ()=>{writeState({...state,skills:{...state.skills,[s.id]:1}}); render();}),
-              skillBtn("Expert", lvl===2, ()=>{writeState({...state,skills:{...state.skills,[s.id]:2}}); render();}),
-            ]),
-            el("div",{class:"kpi",style:"text-align:right"},[formatSigned(skillBonus(state,s.id))])
-          ]);
-        }))
-      ]));
-
-      // Picks
-      const earned=earnedPickSlots(state);
-      const used=Array.isArray(state.picks)?state.picks.length:0;
-      const available=Math.max(0,earned-used);
-      const right = el("div",{class:"row"},[
-        el("div",{class:"pill"},["Available picks: ", el("b",{},[String(available)])]),
-        el("button",{class:"btn",type:"button",onclick:async()=>{await ensureData(); openPickModal();}},["+ Add"]),
-      ]);
-
-      const chips = [];
-      for (let i=0;i<(state.picks||[]).length;i++){
-        const p=state.picks[i];
-        const label = p.kind==="asi"
-          ? (p.mode==="plus2" ? `ASI: +2 ${p.a1}` : `ASI: +1 ${p.a1} +1 ${p.a2}`)
-          : (p.name || p.id);
-        chips.push(el("div",{class:"chip"},[
-          el("span",{},[label]),
-          el("button",{class:"chipX",type:"button",onclick:()=>{const next=[...state.picks]; next.splice(i,1); writeState({...state,picks:next}); render();}},["✕"])
-        ]));
+          ]));
+        });
+        root.appendChild(box("Bag", [add, list]));
+        return;
       }
-      if (chips.length===0) chips.push(el("div",{class:"lbl"},["No picks added yet."]));
 
-      root.appendChild(box("Features, Traits, Feats, ASI", right, [
-        el("div",{class:"lbl"},["Unlocks at level 1 and at class-specific ASI levels (Fighter and Rogue get extras)."]),
-        el("div",{},chips)
-      ]));
+      const arr = st.equipment.slots[equipGroupId] || [];
+      const isArmor = equipGroupId==="body";
+      const isShield = equipGroupId==="shields";
+      const isWeapon = equipGroupId==="weapons";
+
+      const cards = arr.map((it,i)=> {
+        const wrap = el("div",{class:"smallCard equipCard",style:"margin-top:10px"},[
+          field("Name", el("input",{value:it.name||"",oninput:(e)=>{it.name=e.target.value; saveState(st);}})),
+          field("Short", el("input",{value:it.short||"",oninput:(e)=>{it.short=e.target.value; saveState(st);}})),
+          el("div",{class:"row"},[
+            el("button",{class:"btn",type:"button",onclick:()=>openLong(it)},["Open"])
+          ])
+        ]);
+        if (isArmor || isShield){
+          wrap.insertBefore(field("AC", el("input",{value:it.acBonus||"",oninput:(e)=>{it.acBonus=e.target.value; saveState(st);}})), wrap.children[2]);
+        }
+        if (isWeapon){
+          wrap.insertBefore(field("Hit dice", el("input",{value:it.hitDice||"",oninput:(e)=>{it.hitDice=e.target.value; saveState(st);}})), wrap.children[2]);
+          wrap.insertBefore(el("label",{class:"pill"},[
+            el("input",{type:"checkbox",checked:it.equipped?true:null,onchange:(e)=>{
+              for (const w of st.equipment.slots.weapons) w.equipped=false;
+              it.equipped = e.target.checked;
+              saveState(st);
+              render();
+            }}),
+            "Equipped"
+          ]), wrap.children[3]);
+        }
+        return wrap;
+      });
+
+      root.appendChild(box(groups.find(g=>g[0]===equipGroupId)[1], cards));
+      return;
+
+      function openLong(item){
+        const ta = el("textarea",{},[item.long||""]);
+        const saveBtn = el("button",{class:"btn",type:"button",onclick:()=>{ item.long=ta.value; saveState(st); closeModal(); }},["Save"]);
+        showModal("Extended effect", el("div",{},[field("Extended effect", ta), el("div",{class:"row",style:"margin-top:10px"},[saveBtn])]));
+      }
     }
-    let dataError = "";
-    try { await ensureData(); } catch (e) { dataError = (e && e.message) ? e.message : String(e); console.error(e); }
-    render(dataError);
-  </script>
+
+    // Core
+    root.appendChild(box("Core", [
+      el("div",{class:"note"},["Core section placeholder (kept stable while we iterate). Use the tabs to confirm navigation stays working."])
+    ]));
+  }
+
+  bindTabs();
+  setActive();
+  render();
+})();
+</script>
 </body>
 </html>
