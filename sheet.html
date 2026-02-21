@@ -62,8 +62,17 @@
     .spellRow:last-child{border-bottom:none}
     .spellName{font-weight:800}
     .spellMeta2{color:var(--muted);font-size:12px}
-    .equipCols{display:grid;grid-template-columns:1fr;gap:12px}
-    .portraitBox{border:1px dashed var(--border);border-radius:16px;min-height:320px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:var(--muted);background:rgba(0,0,0,.10);padding:10px}
+    .equipCols{display:grid;grid-template-columns:1fr;gap:10px}
+    .portraitBox{border:1px dashed var(--border);border-radius:16px;min-height:180px;display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;color:var(--muted);background:rgba(0,0,0,.10);padding:10px}
+/* Equipment compact sizing */
+.equipWrap input,.equipWrap select,.equipWrap textarea{padding:6px 8px;border-radius:10px;font-size:13px}
+.equipWrap label.field{gap:4px}
+.equipWrap .lbl{font-size:11px}
+.equipWrap .smallCard{padding:6px;border-radius:12px}
+.equipWrap .row{gap:8px}
+.equipWrap .boxBody{padding:10px}
+.equipWrap .portraitBox{min-height:180px;padding:8px}
+.equipWrap textarea{min-height:90px}
     @media (min-width:900px){
       .grid2{grid-template-columns:1.2fr .8fr}
       .abilitiesGrid{grid-template-columns:1fr 1fr 1fr}
@@ -788,7 +797,7 @@
         bagBtn
       ]);
 
-      root.appendChild(el("div",{class:"equipCols"},[leftCol, portrait, rightCol]));
+      root.appendChild(el("div",{class:"equipWrap equipCols"},[leftCol, portrait, rightCol]));
     }
 
     // ----------------- features/traits/ASI -----------------
