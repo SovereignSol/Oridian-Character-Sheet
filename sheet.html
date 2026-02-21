@@ -178,6 +178,7 @@
 
     let page = "core";
     let state = null;
+    let equipGroupId = "head";
 
     let data = { backgrounds:null, classes:null, subclasses:null, traits:null, spells:null, spellcasting:null };
 
@@ -712,9 +713,7 @@
       if (!Array.isArray(eq.slots.weapons)) eq.slots.weapons = Array.from({length:6}).map(()=>({...emptyItem(), hitDice:"", equipped:false}));
       eq.bag = eq.bag || { items: [] };
 
-      // UI state
-      state.ui = state.ui || {};
-      const groups = [
+      // UI state      const groups = [
         { id:"head", label:"Head" },
         { id:"neck", label:"Neck" },
         { id:"body", label:"Body/Armor" },
@@ -730,10 +729,7 @@
         { id:"shields", label:"Shields" },
         { id:"weapons", label:"Weapons" },
         { id:"bag", label:"Bag" },
-      ];
-      const current = state.ui.equipGroupId || "head";
-
-      function commitEq(){
+      ];      const current = equipGroupId || "head";function commitEq(){
         writeState({ ...state, equipment: eq, ui: { ...(state.ui||{}), equipGroupId: current } });
       }
 
