@@ -700,171 +700,144 @@
     // ----------------- equipment -----------------
     function renderEquipment(){
       const eq=state.equipment || defaultEquipment();
+
       // normalize missing slots
-      state.equipment = eq;
-      saveState(state);
+      eq.slots = eq.slots || {};
+      for (const g of [...EQUIP_GROUPS_LEFT, ...EQUIP_GROUPS_RIGHT]) {
+        if (!Array.isArray(eq.slots[g.id])) eq.slots[g.id] = Array.from({length:g.slots}).map(()=>emptyItem());
+      }
+      if (!Array.isArray(eq.slots.ringsRight)) eq.slots.ringsRight = Array.from({length:6}).map(()=>emptyItem());
+      if (!Array.isArray(eq.slots.ringsLeft)) eq.slots.ringsLeft = Array.from({length:6}).map(()=>emptyItem());
+      if (!Array.isArray(eq.slots.shields)) eq.slots.shields = Array.from({length:3}).map(()=>({...emptyItem(), acBonus:""}));
+      if (!Array.isArray(eq.slots.weapons)) eq.slots.weapons = Array.from({length:6}).map(()=>({...emptyItem(), hitDice:"", equipped:false}));
+      eq.bag = eq.bag || { items: [] };
 
-      function commit(){ saveState(state); }
+      // UI state
+      state.ui = state.ui || {};
+      const groups = [
+        { id:"head", label:"Head" },
+        { id:"neck", label:"Neck" },
+        { id:"body", label:"Body/Armor" },
+        { id:"waist", label:"Waist" },
+        { id:"legs", label:"Legs" },
+        { id:"feet", label:"Feet" },
+        { id:"face", label:"Face" },
+        { id:"shoulders", label:"Shoulders" },
+        { id:"torso", label:"Torso" },
+        { id:"arms", label:"Arms" },
+        { id:"ringsRight", label:"Rings, Right" },
+        { id:"ringsLeft", label:"Rings, Left" },
+        { id:"shields", label:"Shields" },
+        { id:"weapons", label:"Weapons" },
+        { id:"bag", label:"Bag" },
+      ];
+      const current = state.ui.equipGroupId || "head";
 
-      function openItemModal(title, item){
-        const ta=el("textarea",{},[item.long||""]);
-        const pasteBtn=el("button",{class:"btn",type:"button",onclick:async()=>{
-          try{ const txt=await navigator.clipboard.readText(); ta.value=txt; item.long=txt; commit(); }
-          catch{ alert("Clipboard paste blocked by browser."); }
-        }},["Paste from clipboard"]);
-        const saveBtn=el("button",{class:"btn",type:"button",onclick:()=>{ item.long=ta.value; commit(); closeModal(); }},["Save"]);
-        showModal(title, el("div",{},[field("Extended effect", ta), el("div",{class:"row",style:"margin-top:10px"},[pasteBtn, saveBtn])]));
+      function commitEq(){
+        writeState({ ...state, equipment: eq, ui: { ...(state.ui||{}), equipGroupId: current } });
       }
 
-      function slotCard(label, idx, item, opts){
-        const name=el("input",{value:item.name||"",oninput:(e)=>{item.name=e.target.value; commit();}});
-        const short=el("input",{value:item.short||"",oninput:(e)=>{item.short=e.target.value; commit();}});
-        const openBtn=el("button",{class:"btn",type:"button",onclick:()=>openItemModal(`${label} ${idx+1}`, item)},["Open"]);
-        const body=[field("Name",name),field("Short effect",short)];
-        if(opts.ac){
-          body.push(field("AC", el("input",{value:item.acBonus||"",oninput:(e)=>{item.acBonus=e.target.value; commit();}})));
-        }
-        if(opts.hitDice){
-          body.push(field("Hit dice", el("input",{value:item.hitDice||"",oninput:(e)=>{item.hitDice=e.target.value; commit();}})));
-        }
-        if(opts.equipped){
-          body.push(el("label",{class:"pill"},[
-            el("input",{type:"checkbox",checked:item.equipped?true:null,onchange:(e)=>{
-              const w=eq.slots.weapons;
-              w.forEach(x=>x.equipped=false);
-              item.equipped=e.target.checked;
-              commit();
+      function openItemModal(title, item){
+        const ta = el("textarea", {}, [item.long || ""]);
+        const pasteBtn = el("button", { class:"btn equipBtn", type:"button", onclick: async ()=>{
+          try { const txt = await navigator.clipboard.readText(); ta.value = txt; item.long = txt; commitEq(); }
+          catch { alert("Clipboard paste blocked by browser."); }
+        }}, ["Paste from clipboard"]);
+        const saveBtn = el("button", { class:"btn equipBtn", type:"button", onclick:()=>{ item.long = ta.value; commitEq(); closeModal(); }}, ["Save"]);
+        const wrap = el("div", {}, [ field("Extended effect", ta), el("div",{class:"row",style:"margin-top:10px"},[pasteBtn, saveBtn]) ]);
+        showModal(title, wrap);
+      }
+
+      function slotCard(title, item, opts){
+        const name = el("input", { class:"equipInput", value:item.name||"", oninput:(e)=>{ item.name=e.target.value; commitEq(); }});
+        const short = el("input", { class:"equipInput", value:item.short||"", oninput:(e)=>{ item.short=e.target.value; commitEq(); }});
+        const openBtn = el("button", { class:"btn equipBtn", type:"button", onclick:()=>openItemModal(title, item) }, ["Open"]);
+        const parts = [
+          field("Name", name),
+          field("Short effect", short),
+        ];
+        if (opts.ac) parts.push(field("AC", el("input", { class:"equipInput", value:item.acBonus||"", oninput:(e)=>{ item.acBonus=e.target.value; commitEq(); } })));
+        if (opts.hitDice) parts.push(field("Hit dice", el("input", { class:"equipInput", value:item.hitDice||"", oninput:(e)=>{ item.hitDice=e.target.value; commitEq(); } })));
+        if (opts.equipped) {
+          parts.push(el("label", { class:"pill" }, [
+            el("input",{type:"checkbox", checked:item.equipped?true:null, onchange:(e)=>{
+              const w = eq.slots.weapons;
+              for (const x of w) x.equipped = false;
+              item.equipped = e.target.checked;
+              commitEq();
             }}),
             "Equipped"
           ]));
         }
-        body.push(el("div",{class:"row"},[openBtn]));
-        return el("div",{class:"smallCard",style:"margin-top:10px"}, body);
+        parts.push(el("div",{class:"row"},[openBtn]));
+        return el("div", { class:"smallCard equipCard", style:"margin-top:10px" }, parts);
       }
 
-      function groupBox(g){
-        const arr=eq.slots[g.id] || [];
-        return box(g.label, null, arr.map((it,i)=>slotCard(g.label, i, it, {ac:!!g.ac})));
+      // Top selector bar
+      const selector = el("div", { class:"equipSelector row", style:"gap:6px; flex-wrap:wrap" }, groups.map(g=>{
+        const active = g.id === current;
+        return el("button", {
+          class: "tab" + (active ? " active" : ""),
+          type:"button",
+          onclick: ()=>{
+            writeState({ ...state, equipment:eq, ui:{ ...(state.ui||{}), equipGroupId: g.id } });
+            render();
+          }
+        }, [g.label]);
+      }));
+
+      // Portrait small + selector
+      root.appendChild(box("Equipment", null, [
+        el("div", { class:"equipWrap" }, [
+          selector,
+          el("div", { class:"portraitBox equipPortrait", style:"min-height:160px;margin-top:10px" }, ["Portrait area (image upload later)"]),
+        ])
+      ]));
+
+      // Render only the selected group
+      const g = groups.find(x=>x.id===current) || groups[0];
+
+      if (g.id === "bag") {
+        const openBag = el("button", { class:"btn equipBtn", type:"button", onclick:()=>{
+          const bag = eq.bag || (eq.bag={items:[]});
+          const list = el("div", {}, []);
+          function renderBag(){
+            list.innerHTML = "";
+            if (bag.items.length===0) list.appendChild(el("div",{class:"note"},["No bag items yet."]));
+            bag.items.forEach((it, idx)=>{
+              const row = el("div",{class:"smallCard equipCard",style:"margin-top:10px"},[
+                field("Name", el("input",{class:"equipInput", value:it.name||"", oninput:(e)=>{it.name=e.target.value; commitEq();}})),
+                field("Short", el("input",{class:"equipInput", value:it.short||"", oninput:(e)=>{it.short=e.target.value; commitEq();}})),
+                el("div",{class:"row"},[
+                  el("button",{class:"btn equipBtn",type:"button",onclick:()=>openItemModal("Bag item", it)},["Open"]),
+                  el("button",{class:"btn equipBtn",type:"button",onclick:()=>{bag.items.splice(idx,1); commitEq(); renderBag();}},["Remove"])
+                ])
+              ]);
+              list.appendChild(row);
+            });
+          }
+          const add = el("button",{class:"btn equipBtn",type:"button",onclick:()=>{bag.items.push({name:"",short:"",long:""}); commitEq(); renderBag();}},["+ Add item"]);
+          const wrap = el("div",{},[add,list]);
+          renderBag();
+          showModal("Bag (misc equipment and loot)", wrap);
+        }}, ["Open Bag"]);
+        root.appendChild(box("Bag", null, [openBag]));
+        return;
       }
 
-      const leftCol=el("div",{},[]);
-      EQUIP_GROUPS_LEFT.forEach(g=>leftCol.appendChild(groupBox(g)));
-      leftCol.appendChild(box("Rings (right)", null, (eq.slots.ringsRight||[]).map((it,i)=>slotCard("Ring",i,it,{}))));
+      // Determine options per group
+      const arr = (g.id in eq.slots) ? eq.slots[g.id] : [];
+      const isArmor = g.id === "body";
+      const isShield = g.id === "shields";
+      const isWeapons = g.id === "weapons";
+      const cards = arr.map((it,i)=>{
+        const label = `${g.label} ${i+1}`;
+        return slotCard(label, it, { ac: isArmor || isShield, hitDice: isWeapons, equipped: isWeapons });
+      });
+      root.appendChild(box(g.label, null, cards));
+}
 
-      const rightCol=el("div",{},[]);
-      EQUIP_GROUPS_RIGHT.forEach(g=>rightCol.appendChild(groupBox(g)));
-      rightCol.appendChild(box("Rings (left)", null, (eq.slots.ringsLeft||[]).map((it,i)=>slotCard("Ring",i,it,{}))));
-      rightCol.appendChild(box("Shields", null, (eq.slots.shields||[]).map((it,i)=>slotCard("Shield",i,it,{ac:true}))));
-      rightCol.appendChild(box("Weapons", null, (eq.slots.weapons||[]).map((it,i)=>slotCard("Weapon",i,it,{hitDice:true,equipped:true}))));
-
-      const portraitImg = state.equipment.portraitDataUrl ? el("img",{src:state.equipment.portraitDataUrl,style:"max-width:100%;border-radius:12px"}) : null;
-      const upload = el("input",{type:"file",accept:"image/*",onchange:async(e)=>{
-        const f=e.target.files && e.target.files[0];
-        if(!f) return;
-        const reader=new FileReader();
-        reader.onload=()=>{
-          state.equipment.portraitDataUrl = String(reader.result||"");
-          commit(); render();
-        };
-        reader.readAsDataURL(f);
-      }});
-      const bagBtn=el("button",{class:"btn",type:"button",onclick:()=>{
-        const bag=state.equipment.bag || (state.equipment.bag={items:[]});
-        const list=el("div",{},[]);
-        function renderBag(){
-          list.innerHTML="";
-          if(bag.items.length===0) list.appendChild(el("div",{class:"note"},["No bag items yet."]));
-          bag.items.forEach((it,idx)=>{
-            list.appendChild(el("div",{class:"smallCard",style:"margin-top:10px"},[
-              field("Name", el("input",{value:it.name||"",oninput:(e)=>{it.name=e.target.value; commit();}})),
-              field("Short", el("input",{value:it.short||"",oninput:(e)=>{it.short=e.target.value; commit();}})),
-              el("div",{class:"row"},[
-                el("button",{class:"btn",type:"button",onclick:()=>openItemModal("Bag item",it)},["Open"]),
-                el("button",{class:"btn",type:"button",onclick:()=>{bag.items.splice(idx,1); commit(); renderBag();}},["Remove"])
-              ])
-            ]));
-          });
-        }
-        const add=el("button",{class:"btn",type:"button",onclick:()=>{bag.items.push({name:"",short:"",long:""}); commit(); renderBag();}},["+ Add item"]);
-        const wrap=el("div",{},[add,list]);
-        renderBag();
-        showModal("Bag (misc equipment and loot)", wrap);
-      }},["Open Bag"]);
-
-      const portrait=el("div",{class:"portraitBox"},[
-        portraitImg || el("div",{},["Portrait area"]),
-        upload,
-        bagBtn
-      ]);
-
-      root.appendChild(el("div",{class:"equipWrap equipCols"},[leftCol, portrait, rightCol]));
-    }
-
-    // ----------------- features/traits/ASI -----------------
-    function openPickModal(){
-      const earned=earnedPickSlots();
-      const used=(state.picks||[]).length;
-      const available=Math.max(0, earned-used);
-      const wrap=el("div",{},[el("div",{class:"note"},[`Available picks: ${available}. Add a feat/feature or take an ASI.`])]);
-      if(available<=0){ showModal("Add Pick", wrap); return; }
-
-      const addTraitBtn=el("button",{class:"btn",type:"button",onclick:()=>renderTraitPicker()},["Add Feat or Feature"]);
-      const addAsiBtn=el("button",{class:"btn",type:"button",onclick:()=>renderAsiPicker()},["Take ASI"]);
-      wrap.appendChild(el("div",{class:"row",style:"margin-top:10px"},[addTraitBtn, addAsiBtn]));
-      showModal("Add Pick", wrap);
-
-      function renderTraitPicker(){
-        const items=Array.isArray(data.traits?.items)?data.traits.items:[];
-        const sel=el("select",{},[el("option",{value:""},["Select..."])]);
-        items.forEach(it=>sel.appendChild(el("option",{value:it.id},[`${it.name} (${it.type||"item"})`])));
-        const req=el("div",{class:"note"},[""]);
-        const addBtn=el("button",{class:"btn",type:"button",disabled:true},["Add"]);
-        sel.addEventListener("change", ()=>{
-          const it=items.find(x=>x.id===sel.value);
-          req.textContent = it?.requirementsText || "";
-          addBtn.disabled = !it;
-        });
-        addBtn.addEventListener("click", ()=>{
-          const it=items.find(x=>x.id===sel.value);
-          if(!it) return;
-          const next=structuredClone(state);
-          next.picks=[...(next.picks||[]), {kind:"trait", id:it.id, name:it.name, type:it.type||"item"}];
-          saveState(next); closeModal(); render();
-        });
-        showModal("Add Pick: Feat/Feature", el("div",{},[field("Feat or feature", sel), req, el("div",{class:"row",style:"margin-top:10px"},[addBtn])]));
-      }
-
-      function renderAsiPicker(){
-        const mode=el("select",{},[
-          el("option",{value:"plus2"},["+2 to one ability"]),
-          el("option",{value:"plus1plus1"},["+1 to two abilities"]),
-        ]);
-        const optAbil=()=>[el("option",{value:""},["Select ability..."]), ...abilityList.map(a=>el("option",{value:a},[a]))];
-        const a1=el("select",{},optAbil());
-        const a2=el("select",{disabled:true},optAbil());
-        mode.addEventListener("change", ()=>{ a2.disabled = mode.value!=="plus1plus1"; });
-        const apply=el("button",{class:"btn",type:"button",onclick:()=>{
-          const m=mode.value, first=a1.value, second=a2.value;
-          if(!first) return alert("Pick an ability.");
-          if(m==="plus1plus1" && (!second || second===first)) return alert("Pick two different abilities.");
-          const next=structuredClone(state);
-          if(m==="plus2") next.abilities[first]=Math.min(20,(next.abilities[first]||0)+2);
-          else{ next.abilities[first]=Math.min(20,(next.abilities[first]||0)+1); next.abilities[second]=Math.min(20,(next.abilities[second]||0)+1); }
-          next.picks=[...(next.picks||[]), {kind:"asi", mode:m, a1:first, a2:(m==="plus1plus1")?second:null}];
-          saveState(next); closeModal(); render();
-        }},["Apply ASI"]);
-        showModal("Add Pick: ASI", el("div",{},[
-          el("div",{class:"note"},["ASI: +2 to one ability, or +1 to two different abilities. Cap 20 enforced."]),
-          field("ASI type", mode),
-          field("Ability", a1),
-          field("Second ability", a2),
-          el("div",{class:"row",style:"margin-top:10px"},[apply])
-        ]));
-      }
-    }
-
-    // ----------------- core render -----------------
-    function renderCore(){
+function renderCore(){
       const pb = proficiencyBonus(state.level) + (Number(state.proficiencyMisc)||0);
       const pp = passivePerception();
       const init = initiative();
