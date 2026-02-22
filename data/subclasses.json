@@ -1,24 +1,35 @@
-[
-  {
-    "name": "Eldritch Knight",
-    "packageUrl": "",
-    "spellRules": {
-      "type": "known",
-      "progression": "third",
-      "spellSourceClass": "Wizard",
-      "alwaysPrepared": []
+{
+  "version": 2,
+  "classes": [
+    {
+      "class": "Fighter",
+      "subclasses": [
+        {
+          "name": "Eldritch Knight",
+          "packageUrl": "",
+          "spellRules": {
+            "type": "known",
+            "progression": "third",
+            "spellSourceClass": "Wizard",
+            "alwaysPrepared": []
+          }
+        }
+      ]
     },
-    "class": "Fighter"
-  },
-  {
-    "name": "Arcane Trickster",
-    "packageUrl": "",
-    "spellRules": {
-      "type": "known",
-      "progression": "third",
-      "spellSourceClass": "Wizard",
-      "alwaysPrepared": []
-    },
-    "class": "Rogue"
-  }
-]
+    {
+      "class": "Rogue",
+      "subclasses": [
+        {
+          "name": "Arcane Trickster",
+          "packageUrl": "",
+          "spellRules": {
+            "type": "known",
+            "progression": "third",
+            "spellSourceClass": "Wizard",
+            "alwaysPrepared": []
+          }
+        }
+      ]
+    }
+  ]
+}
