@@ -384,10 +384,10 @@ UI10 Spell Notes box
 	        ], "UI1"),
 	        box("Class", [
 	          classBlockEditor(st, "primary", "Primary", "UI2-2"),
-	          field("Multiclass", el("select", { "data-ui":"UI2-1", onchange: (e)=>{ st.multiclass = e.target.value === "yes"; saveState(st); render(); } }), [
+	          field("Multiclass", el("select", { "data-ui":"UI2-1", onchange: (e)=>{ st.multiclass = e.target.value === "yes"; saveState(st); render(); } }, [
 	            el("option", { value: "no", selected: !st.multiclass }, ["No"]),
 	            el("option", { value: "yes", selected: !!st.multiclass }, ["Yes"]),
-	          ])),
+	          ]), "UI2-1"),
 	          st.multiclass ? classBlockEditor(st, "secondary", "Secondary", "UI2-3") : el("div", { class: "note" }, ["Enable multiclass to add a secondary class."])
 	        ], "UI2"),
 	      ]),
