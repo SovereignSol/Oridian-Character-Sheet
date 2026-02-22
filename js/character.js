@@ -47,8 +47,14 @@ export function defaultCharacterState(){
     details:{appearance:"",backstory:"",allies:"",treasure:""},
   };
 }
+
+function deepCloneState(value){
+  if (typeof globalThis.structuredClone === "function") return globalThis.structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
+
 export function deriveAndClamp(state){
-  const s=structuredClone(state);
+  const s=deepCloneState(state);
   s.inspirationPoints=clampInt(s.inspirationPoints,0,99);
   for(const a of abilityList) s.abilities[a]=clampInt(s.abilities[a],1,30);
   s.primary={...defaultCharacterState().primary,...(s.primary||{})};
@@ -118,4 +124,11 @@ export function skillBonus(state, skillId){
 }
 export function passivePerception(state){return 10+skillBonus(state,"perception")+clampInt(state.perceptionMisc,-50,50);}
 export function initiative(state){return abilityMod(state.abilities.DEX)+clampInt(state.combat.initiativeMisc,-99,99);}
-function cryptoRandomId(){const arr=new Uint8Array(12);crypto.getRandomValues(arr);return Array.from(arr).map(x=>x.toString(16).padStart(2,"0")).join("");}
+function cryptoRandomId(){
+  if (globalThis.crypto?.getRandomValues){
+    const arr=new Uint8Array(12);
+    globalThis.crypto.getRandomValues(arr);
+    return Array.from(arr).map(x=>x.toString(16).padStart(2,"0")).join("");
+  }
+  return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2,14)}`;
+}
