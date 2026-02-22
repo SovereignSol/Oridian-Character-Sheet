@@ -384,7 +384,7 @@ UI10 Spell Notes box
 	        ], "UI1"),
 	        box("Class", [
 	          classBlockEditor(st, "primary", "Primary", "UI2-2"),
-	          field("Multiclass", el("select", { "data-ui":"UI2-1", onchange: (e)=>{ st.multiclass = e.target.value === "yes"; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-1"}:{}), [
+	          field("Multiclass", el("select", { "data-ui":"UI2-1", onchange: (e)=>{ st.multiclass = e.target.value === "yes"; saveState(st); render(); } }), [
 	            el("option", { value: "no", selected: !st.multiclass }, ["No"]),
 	            el("option", { value: "yes", selected: !!st.multiclass }, ["Yes"]),
 	          ])),
@@ -488,7 +488,7 @@ UI10 Spell Notes box
 	    const lvlInp = el("input", Object.assign({ type:"number", min:"0", max:"20", value: String(blk.classLevel ?? (key==="primary"?1:0)), oninput:(e)=>{ blk.classLevel = Number(e.target.value||0); st[key]=blk; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-2"}:{}));
 	
 	    const subs = blk.className ? subclassesForClass(blk.className) : [];
-	    const subSel = el("select", Object.assign({ onchange:(e)=>{ blk.subclass = e.target.value; const chosen = subs.find(x=>x.name===blk.subclass); blk.subclassPackageUrl = chosen?.packageUrl || ""; st[key]=blk; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-3"}:{}), [
+	    const subSel = el("select", Object.assign({ onchange:(e)=>{ blk.subclass = e.target.value; const chosen = subs.find(x=>x.name===blk.subclass); blk.subclassPackageUrl = chosen?.packageUrl || ""; st[key]=blk; saveState(st); render(); } }), [
 	      el("option", { value:"", selected: !blk.subclass }, ["(none)"]),
 	      ...subs.map(su => el("option", { value:su.name, selected: blk.subclass===su.name }, [su.name]))
 	    ]);
