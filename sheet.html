@@ -480,7 +480,8 @@ UI10 Spell Notes box
 	  function classBlockEditor(st, key, label, uiBase){
 	    const blk = st[key] || {};
 	    const classNames = classesForDropdown();
-	    const classSel = el("select", Object.assign({ onchange:(e)=>{ blk.className = e.target.value; blk.subclass = ""; st[key]=blk; saveState(st); render(); } }, [
+	    const classSelAttrs = Object.assign({ onchange:(e)=>{ blk.className = e.target.value; blk.subclass = ""; st[key]=blk; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-1"}:{});
+	    const classSel = el("select", classSelAttrs, [
 	      el("option", { value:"", selected: !blk.className }, ["(choose)"]),
 	      ...classNames.map(n => el("option", { value:n, selected: blk.className===n }, [n]))
 	    ]);
