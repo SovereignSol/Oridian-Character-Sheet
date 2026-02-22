@@ -93,6 +93,17 @@ textarea{min-height:140px;resize:vertical}
 	  isPreparedCaster,
 	  isKnownCaster,
 	} from "./js/spells_engine.js";
+	import {
+	  totalCharacterLevel,
+	  proficiencyBonusByTotalLevel,
+	  spellSlotsForState,
+	  spellLimitsForState,
+	  recommendedHpMax,
+	  spellsKnownLimit,
+	  cantripsKnownLimit,
+	  preparedSpellsLimit,
+	} from "./js/rules_5e2014.js";
+
 
 	(() => {
   const root = document.getElementById("root");
@@ -376,7 +387,34 @@ textarea{min-height:140px;resize:vertical}
 	          field("Temp HP", el("input", { type:"number", min:"0", max:"9999", value: String(st.combat?.hpTemp ?? 0), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpTemp=Number(e.target.value||0); saveState(st); } })),
 	          field("AC Base", el("input", { type:"number", min:"0", max:"99", value: String(st.combat?.acBase ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.acBase=Number(e.target.value||0); saveState(st); } })),
 	          field("Speed", el("input", { type:"number", min:"0", max:"999", value: String(st.combat?.speed ?? 30), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.speed=Number(e.target.value||0); saveState(st); } })),
-	          el("div", { class: "note" }, [`Proficiency bonus: ${formatSigned(proficiencyBonus(st.level))} (Level ${st.level})`])
+	          (() => {
+              const totalLv = totalCharacterLevel(st);
+              const pb = proficiencyBonusByTotalLevel(totalLv);
+              const slots = data.spellcasting ? spellSlotsForState(st, data.spellcasting) : null;
+              const recHp = recommendedHpMax(st);
+              const parts = [];
+              parts.push(`Level ${totalLv} (Proficiency ${formatSigned(pb)})`);
+              if (slots){
+                const sc = slots.spellcastingSlots || {};
+                const slotStr = Object.keys(sc).sort((a,b)=>Number(a)-Number(b)).map(k=>`${k}⟶${sc[k]}`).join(", ");
+                if (slotStr) parts.push(`Spellcasting slots: ${slotStr} (caster level ${slots.effectiveSpellcasterLevel||0})`);
+                if (slots.pactMagic?.slots){
+                  const pm = slots.pactMagic;
+                  const arc = (pm.arcanum||[]).length ? `, Arcanum ${pm.arcanum.join("/")}` : "";
+                  parts.push(`Pact Magic: ${pm.slots} slot(s) at level ${pm.slotLevel}${arc}`);
+                }
+              }
+              parts.push(`Suggested HP Max (avg): ${recHp}`);
+              const body = el("div",{class:"note"},[parts.join(" | ")]);
+              const btn = el("button",{class:"btn",type:"button",style:"margin-top:8px",onclick:()=>{
+                st.combat=st.combat||{};
+                st.combat.hpMax = recHp;
+                if((st.combat.hpNow||0) > recHp) st.combat.hpNow = recHp;
+                saveState(st);
+                render();
+              }},["Apply Suggested HP Max"]);
+              return el("div",{},[body, btn]);
+            })()
 	        ]),
 	      ])
 	    ]);
@@ -447,107 +485,240 @@ textarea{min-height:140px;resize:vertical}
 	    ]);
 	  }
 
-	  function renderSpells(st){
+	  
+function renderSpells(st){
 	    const hasData = !!(data.spellcasting && data.subclasses && data.spells);
 	    if (!hasData) {
 	      return box("Spells", [el("div", { class:"note" }, ["Spell data is still loading."])]);
 	    }
 
-	    const className = (st.primary?.className || "").trim();
-	    const subName = (st.primary?.subclass || "").trim();
-	    const prepCaster = isPreparedCaster(className);
-	    const knownCaster = isKnownCaster(className, subName);
-	
+	    // Back-compat: allow old saves where known/prepared were arrays of string ids.
 	    st.spells = st.spells || { known: [], prepared: [], pendingLearn: 0, notes: "" };
 	    if (!Array.isArray(st.spells.known)) st.spells.known = [];
 	    if (!Array.isArray(st.spells.prepared)) st.spells.prepared = [];
+	    const normalizeArr = (arr) => arr.map(x => (typeof x === "string") ? ({ id:x, source:"" }) : x).filter(x => x && typeof x.id === "string");
+	    st.spells.known = normalizeArr(st.spells.known);
+	    st.spells.prepared = normalizeArr(st.spells.prepared);
+
+	    const blocks = [
+	      { label:"Primary", ...st.primary },
+	      st.multiclass ? { label:"Secondary", ...st.secondary } : null,
+	    ].filter(Boolean);
+
+	    const blockAllowedSets = new Map();
+	    const blockMaxSpellLevel = new Map();
+	    for (const b of blocks){
+	      const className = (b.className || "").trim();
+	      const subName = (b.subclass || "").trim();
+	      const classLevel = Number(b.classLevel || 0);
+	      if (!className || classLevel <= 0) {
+	        blockAllowedSets.set(b.label, new Set());
+	        blockMaxSpellLevel.set(b.label, 0);
+	        continue;
+	      }
+
+	      let progression = data.spellcasting?.classes?.[className]?.progression || null;
+	      const sub = (data.subclasses?.classes || []).find(x => x?.class === className)?.subclasses?.find(s => s?.name === subName) || null;
+	      if (sub?.spellRules?.progression) progression = sub.spellRules.progression;
+
+	      const prog = data.spellcasting?.progressions?.[progression];
+	      const maxLv = Number(prog?.maxSpellLevel?.[String(classLevel)] || 0);
+
+	      let list = data.spellcasting?.classes?.[className]?.spellListByLevel || null;
+	      if (sub?.spellRules?.spellSourceClass){
+	        const src = sub.spellRules.spellSourceClass;
+	        list = data.spellcasting?.classes?.[src]?.spellListByLevel || list;
+	      }
+
+	      const set = new Set();
+	      if (list){
+	        for (let lv=0; lv<=maxLv; lv++){
+	          const arr = list[String(lv)] || [];
+	          for (const s of arr) set.add(s.id);
+	        }
+	      }
+	      blockAllowedSets.set(b.label, set);
+	      blockMaxSpellLevel.set(b.label, maxLv);
+	    }
 
 	    const allowed = allowedSpellIds(st, data.spellcasting, data.subclasses);
 	    const always = alwaysPreparedIds(st, data.subclasses);
-	
+	    const catalog = (data.spells?.spells) ? data.spells.spells : (Array.isArray(data.spells) ? data.spells : []);
+	    const spellById = new Map(catalog.map(s => [s.id, s]));
 	    const map = spellsByLevel(data.spells, allowed);
 	    const levels = Array.from(map.keys()).sort((a,b)=>a-b);
 
+	    const limits = spellLimitsForState(st);
+	    const slots = spellSlotsForState(st, data.spellcasting);
+
+	    const summaryLines = [];
+	    const totalLv = totalCharacterLevel(st);
+	    summaryLines.push(`Total level ${totalLv}, proficiency ${formatSigned(proficiencyBonusByTotalLevel(totalLv))}.`);
+	    if (slots?.effectiveSpellcasterLevel){
+	      const sc = slots.spellcastingSlots || {};
+	      const slotStr = Object.keys(sc).sort((a,b)=>Number(a)-Number(b)).map(k=>`${k}⟶${sc[k]}`).join(", ");
+	      if (slotStr) summaryLines.push(`Spellcasting slots: ${slotStr} (caster level ${slots.effectiveSpellcasterLevel}).`);
+	    }
+	    if (slots?.pactMagic?.slots){
+	      const pm = slots.pactMagic;
+	      const arc = (pm.arcanum||[]).length ? `, Mystic Arcanum ${pm.arcanum.join("/")}` : "";
+	      summaryLines.push(`Pact Magic: ${pm.slots} slot(s), slot level ${pm.slotLevel}${arc}.`);
+	    }
+
+	    const limitLines = limits.map(l => {
+	      const parts = [];
+	      if (Number.isFinite(l.knownSpellsMax)) parts.push(`Known ${l.knownSpellsMax}`);
+	      if (Number.isFinite(l.preparedSpellsMax)) parts.push(`Prepared ${l.preparedSpellsMax}`);
+	      if (Number.isFinite(l.cantripsKnownMax)) parts.push(`Cantrips ${l.cantripsKnownMax}`);
+	      const p = parts.length ? parts.join(", ") : "No spell limits tracked";
+	      return `${l.label}: ${l.className} ${l.classLevel} (${p})`;
+	    });
+
 	    const top = el("div", { class:"note" }, [
-	      className ? `Spell list is based on ${className}${subName?` (${subName})`:``}.` : "Pick a class on the Core tab to enable spell selection.",
+	      ...summaryLines,
+	      limitLines.length ? "\n" + limitLines.join("\n") : "\nPick a class on the Core tab to enable spell selection.",
 	    ]);
+
+	    function inferSourceForSpell(id){
+	      const pSet = blockAllowedSets.get("Primary") || new Set();
+	      const sSet = blockAllowedSets.get("Secondary") || new Set();
+	      if (pSet.has(id)) return (st.primary?.className || "").trim();
+	      if (sSet.has(id)) return (st.secondary?.className || "").trim();
+	      return (st.primary?.className || "").trim();
+	    }
+
+	    function countKnownForClass(className){
+	      const name = (className||"").trim();
+	      let cantrips = 0, leveled = 0;
+	      for (const k of st.spells.known){
+	        const sp = spellById.get(k.id);
+	        if (!sp) continue;
+	        if ((k.source||"") && (k.source||"")!==name) continue;
+	        if (Number(sp.level) === 0) cantrips++;
+	        else leveled++;
+	      }
+	      return { cantrips, leveled };
+	    }
+
+	    function countPreparedForClass(className){
+	      const name = (className||"").trim();
+	      let prepared = 0;
+	      for (const p of st.spells.prepared){
+	        const sp = spellById.get(p.id);
+	        if (!sp) continue;
+	        if ((p.source||"") && (p.source||"")!==name) continue;
+	        if (always.includes(p.id)) continue;
+	        if (Number(sp.level) === 0) continue;
+	        prepared++;
+	      }
+	      return prepared;
+	    }
+
+	    function canToggleKnown(id, sourceClass){
+	      const sp = spellById.get(id);
+	      if (!sp) return false;
+	      if (Number(sp.level) === 0){
+	        const lim = cantripsKnownLimit(sourceClass, sourceClass === (st.primary?.className||"").trim() ? Number(st.primary?.classLevel||0) : Number(st.secondary?.classLevel||0));
+	        if (!Number.isFinite(lim)) return true;
+	        const cur = countKnownForClass(sourceClass).cantrips;
+	        return cur < lim;
+	      } else {
+	        const lim = spellsKnownLimit(sourceClass, sourceClass === (st.primary?.className||"").trim() ? Number(st.primary?.classLevel||0) : Number(st.secondary?.classLevel||0));
+	        if (!Number.isFinite(lim)) return true;
+	        const cur = countKnownForClass(sourceClass).leveled;
+	        return cur < lim;
+	      }
+	    }
+
+	    function canTogglePrepared(id, sourceClass){
+	      const sp = spellById.get(id);
+	      if (!sp) return false;
+	      if (Number(sp.level) === 0) return true;
+	      const block = (sourceClass === (st.primary?.className||"").trim()) ? st.primary : st.secondary;
+	      const lim = preparedSpellsLimit({ className: sourceClass, classLevel: Number(block?.classLevel||0), spellAbilityMod: Number(block?.spellMod||0) });
+	      if (!Number.isFinite(lim)) return true;
+	      const cur = countPreparedForClass(sourceClass);
+	      return cur < lim;
+	    }
 
 	    const alwaysBox = always.length
 	      ? box("Always Prepared", [
-	          el("div", { class:"note" }, ["These are granted by subclass rules and do not count against your prepared list."]),
+	          el("div", { class:"note" }, ["Granted by subclass rules. They do not count against prepared limits."]),
 	          el("ul", {}, always.map(id => el("li", {}, [spellNameById(id)])))
 	        ])
 	      : null;
-	
+
 	    const list = levels.length ? levels.map(lv => {
 	      const arr = map.get(lv) || [];
 	      const title = lv === 0 ? "Cantrips" : `Level ${lv}`;
 	      const rows = arr.map(sp => {
 	        const id = sp.id;
-	        const known = st.spells.known.includes(id);
-	        const prepared = st.spells.prepared.includes(id) || always.includes(id);
-	
-	        const knownCb = el("input", { type:"checkbox", checked: known, disabled: !(knownCaster || prepCaster), onchange:(e)=>{
+	        const source = inferSourceForSpell(id);
+
+	        const knownObj = st.spells.known.find(x => x.id === id);
+	        const known = !!knownObj;
+	        const preparedObj = st.spells.prepared.find(x => x.id === id);
+	        const prepared = !!preparedObj || always.includes(id);
+
+	        const knownDisabled = known ? false : !canToggleKnown(id, source);
+	        const prepDisabled = always.includes(id) ? true : (prepared ? false : !canTogglePrepared(id, source));
+
+	        const knownCb = el("input", { type:"checkbox", checked: known, disabled: knownDisabled, onchange:(e)=>{
 	          if (e.target.checked) {
-	            if (!st.spells.known.includes(id)) st.spells.known.push(id);
+	            if (!st.spells.known.find(x=>x.id===id)) st.spells.known.push({ id, source });
 	          } else {
-	            st.spells.known = st.spells.known.filter(x=>x!==id);
+	            st.spells.known = st.spells.known.filter(x=>x.id!==id);
+	            st.spells.prepared = st.spells.prepared.filter(x=>x.id!==id);
 	          }
 	          saveState(st);
 	          render();
 	        }});
-	
-	        const prepCb = el("input", { type:"checkbox", checked: prepared, disabled: (!prepCaster || always.includes(id)), onchange:(e)=>{
+
+	        const prepCb = el("input", { type:"checkbox", checked: prepared, disabled: prepDisabled, onchange:(e)=>{
 	          if (e.target.checked) {
-	            if (!st.spells.prepared.includes(id)) st.spells.prepared.push(id);
+	            if (!st.spells.prepared.find(x=>x.id===id)) st.spells.prepared.push({ id, source });
 	          } else {
-	            st.spells.prepared = st.spells.prepared.filter(x=>x!==id);
+	            st.spells.prepared = st.spells.prepared.filter(x=>x.id!==id);
 	          }
 	          saveState(st);
 	          render();
 	        }});
-	
+
 	        const infoBtn = el("button", { class:"btn", type:"button", onclick:()=>{
 	          const body = el("div", {}, [
-	            el("div", { style:"font-weight:900; font-size:16px" }, [sp.name]),
-	            el("div", { class:"note" }, [`Level ${sp.level} ${sp.school || ""}`]),
-	            el("div", { style:"margin-top:10px; white-space:pre-wrap" }, [sp.description || ""]) 
+	            el("div", { class:"note" }, [`${sp.school || ""} | cast ${sp.castingTime || ""} | range ${sp.range || ""} | duration ${sp.duration || ""}`]),
+	            el("pre", { style:"white-space:pre-wrap; margin:0; font-family:inherit" }, [String(sp.description || sp.descrip || "")]),
 	          ]);
 	          showModal(sp.name, body);
 	        }}, ["View"]);
-	
+
 	        return el("div", { class:"smallCard" }, [
 	          el("div", { style:"display:flex; justify-content:space-between; align-items:center; gap:10px" }, [
-	            el("div", { style:"font-weight:900" }, [sp.name]),
-	            infoBtn,
+	            el("div", {}, [
+	              el("div", { style:"font-weight:900" }, [sp.name]),
+	              el("div", { style:"color:var(--muted); font-size:12px" }, [`Source: ${source || "?"}`]),
+	            ]),
+	            el("div", { style:"display:flex; gap:10px; align-items:center" }, [
+	              el("label", { style:"display:flex; gap:6px; align-items:center; font-size:12px" }, [knownCb, "Known"]),
+	              el("label", { style:"display:flex; gap:6px; align-items:center; font-size:12px" }, [prepCb, "Prepared"]),
+	              infoBtn,
+	            ]),
 	          ]),
-	          el("div", { style:"display:flex; gap:10px; margin-top:8px; align-items:center; flex-wrap:wrap" }, [
-	            el("label", { style:"display:flex; gap:8px; align-items:center" }, [knownCb, el("span", { class:"lbl" }, ["Known"]) ]),
-	            el("label", { style:"display:flex; gap:8px; align-items:center" }, [prepCb, el("span", { class:"lbl" }, ["Prepared"]) ]),
-	            el("span", { class:"lbl" }, [sp.castingTime ? `Cast: ${sp.castingTime}` : ""]),
-	            el("span", { class:"lbl" }, [sp.range ? `Range: ${sp.range}` : ""]),
-	          ])
 	        ]);
 	      });
-	      return box(title, rows);
-	    }) : [box("Spell List", [el("div", { class:"note" }, ["No spells are available for the current class and level."])])];
-	
-	    const notesTa = el("textarea", { oninput:(e)=>{ st.spells.notes = e.target.value; saveState(st);} }, [String(st.spells.notes||"")]);
-	
+	      return box(title, rows.length ? rows : [el("div",{class:"note"},["No spells at this level."])]);
+	    }) : [el("div",{class:"note"},["Pick a class and levels on the Core tab to populate spell options."])];
+
+	    const notesTa = el("textarea",{oninput:(e)=>{ st.spells.notes = e.target.value; saveState(st);} }, [st.spells.notes||""]);
+
 	    return el("div", {}, [
-	      top,
-	      el("div", { style:"margin-top:10px" }, [
-	        box("Spell Mode", [
-	          el("div", { class:"note" }, [
-	            prepCaster ? "Prepared caster: use Prepared toggles." : (knownCaster ? "Known caster: use Known toggles." : "This class does not normally cast spells (unless subclass grants it)."),
-	          ])
-	        ]),
-	      ]),
+	      box("Spells", [top]),
 	      alwaysBox,
 	      ...list,
 	      box("Spell Notes", [ field("Notes", notesTa) ])
 	    ].filter(Boolean));
 	  }
+
 
 	  async function init(){
 	    bindTabs();
