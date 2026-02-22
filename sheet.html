@@ -3,1523 +3,297 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Oridian Character Sheet</title>
+<title>Character Sheet</title>
 <style>
-:root{
-  --bg:#0b0f14;--panel:rgba(18,26,35,.92);--panel2:rgba(14,20,28,.92);
-  --border:#223041;--text:#e9eef5;--muted:#97a6b8;
-  --accent:rgba(124,230,165,.65);--danger:#ff6b6b;--warn:#ffd166;
-}
+:root{--bg:#0b0f14;--panel:rgba(18,26,35,.92);--border:#223041;--text:#e9eef5;--muted:#97a6b8;--accent:rgba(124,230,165,.65);}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-a{color:inherit}
-.wrap{max-width:1200px;margin:0 auto;padding:12px 12px 84px}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(to bottom, rgba(11,15,20,.98), rgba(11,15,20,.72));backdrop-filter: blur(8px);border-bottom:1px solid rgba(34,48,65,.55)}
-header .bar{max-width:1200px;margin:0 auto;padding:10px 12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
-.brand{display:flex;flex-direction:column;gap:2px}
-.brand .t{font-weight:800;letter-spacing:.2px}
-.brand .s{font-size:12px;color:var(--muted)}
-.pill{border:1px solid rgba(34,48,65,.85);background:rgba(18,26,35,.6);padding:8px 10px;border-radius:999px;font-size:12px}
-.row{display:flex;gap:10px;align-items:center}
-.btn{
-  border:1px solid rgba(34,48,65,.85);background:rgba(18,26,35,.8);color:var(--text);
-  padding:10px 12px;border-radius:12px;font-weight:650;cursor:pointer
-}
-.btn:active{transform:translateY(1px)}
-.btn.secondary{background:rgba(14,20,28,.8)}
-.btn.danger{border-color:rgba(255,107,107,.55);background:rgba(255,107,107,.10)}
-.btn.small{padding:8px 10px;border-radius:10px;font-size:12px}
-.btn.icon{display:flex;align-items:center;gap:8px}
-.grid{display:grid;gap:10px}
-.card{
-  border:1px solid rgba(34,48,65,.75);background:var(--panel);
-  border-radius:18px;padding:12px;box-shadow:0 10px 30px rgba(0,0,0,.22)
-}
-.card h2{margin:0 0 10px 0;font-size:16px}
-.card h3{margin:0 0 8px 0;font-size:14px;color:var(--muted);font-weight:700}
-.muted{color:var(--muted)}
-hr{border:0;border-top:1px solid rgba(34,48,65,.55);margin:10px 0}
-input, select, textarea{
-  width:100%;color:var(--text);
-  border:1px solid rgba(34,48,65,.85);background:rgba(14,20,28,.85);
-  border-radius:12px;padding:10px 10px;font-size:14px;outline:none
-}
-textarea{min-height:120px;resize:vertical}
-label{display:block;font-size:12px;color:var(--muted);margin:2px 0 6px}
-.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.kv3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-@media (max-width: 520px){ .kv, .kv3 {grid-template-columns:1fr} }
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
-.tab{
-  border:1px solid rgba(34,48,65,.85);
-  background:rgba(18,26,35,.65);
-  padding:10px 12px;border-radius:999px;font-size:13px;font-weight:750;cursor:pointer;user-select:none
-}
-.tab[aria-selected="true"]{outline:2px solid rgba(124,230,165,.25);border-color:rgba(124,230,165,.55)}
-.section{display:none}
-.section.active{display:block}
-.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid rgba(34,48,65,.75);background:rgba(14,20,28,.7);font-size:12px}
-.table{width:100%;border-collapse:separate;border-spacing:0 8px}
-.table th{font-size:12px;color:var(--muted);font-weight:800;text-align:left;padding:0 8px}
-.table td{padding:10px 8px;background:rgba(14,20,28,.55);border:1px solid rgba(34,48,65,.65)}
-.table td:first-child{border-top-left-radius:12px;border-bottom-left-radius:12px}
-.table td:last-child{border-top-right-radius:12px;border-bottom-right-radius:12px}
-.tog{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.chip{
-  border:1px solid rgba(34,48,65,.75);background:rgba(14,20,28,.7);
-  padding:8px 10px;border-radius:999px;font-size:12px;font-weight:750;cursor:pointer;user-select:none
-}
-.chip.on{border-color:rgba(124,230,165,.55);outline:2px solid rgba(124,230,165,.18)}
-.mini{font-size:12px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media (max-width: 820px){ .two{grid-template-columns:1fr} }
-.fixedCols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.fixedCols .col{min-width:0}
-.spellItem{border:1px solid rgba(34,48,65,.65);background:rgba(14,20,28,.55);border-radius:14px;padding:10px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.spellItem .name{font-weight:800}
-.spellItem .meta{font-size:12px;color:var(--muted)}
-footerBar{
-  position:fixed;left:0;right:0;bottom:0;z-index:6;
-  background:linear-gradient(to top, rgba(11,15,20,.98), rgba(11,15,20,.72));
-  border-top:1px solid rgba(34,48,65,.55);
-  backdrop-filter: blur(8px);
-}
-.footerInner{max-width:1200px;margin:0 auto;padding:10px 12px;display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-#errPanel{
-  display:none;position:fixed;left:10px;right:10px;bottom:74px;z-index:50;
-  border:1px solid rgba(255,107,107,.65);background:rgba(20,10,12,.92);
-  border-radius:18px;padding:12px;max-height:46vh;overflow:auto
-}
-#errPanel h3{margin:0 0 8px 0;font-size:14px}
-.errLine{font-family:ui-monospace,Consolas,Menlo,monospace;font-size:12px;white-space:pre-wrap;word-break:break-word}
-#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;align-items:center;justify-content:center;padding:12px}
-#modal .box{width:min(720px, 100%);background:rgba(10,14,19,.98);border:1px solid rgba(34,48,65,.75);border-radius:18px;padding:12px}
-#modalTitle{font-weight:900;margin:0 0 8px 0}
-#modalBody{color:var(--text)}
+header{max-width:1200px;margin:0 auto;padding:14px 14px 6px}
+h1{margin:0;font-size:20px;font-weight:900}
+.wrap{max-width:1200px;margin:0 auto;padding:0 14px 18px}
+.panel{margin-top:10px;border-radius:16px;border:1px solid var(--border);background:var(--panel);overflow:hidden}
+.topBar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.10)}
+.topTitle{font-weight:900}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{padding:9px 10px;border-radius:12px;border:1px solid var(--border);background:rgba(26,39,53,.9);color:var(--text);cursor:pointer}
+a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border)}
+.tab{padding:8px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(0,0,0,.12);color:var(--text);cursor:pointer;font-size:12px}
+.tab.active{outline:2px solid var(--accent)}
+.content{padding:12px}
+.box{border:1px solid var(--border);border-radius:16px;background:rgba(0,0,0,.14);overflow:hidden}
+.boxHead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.boxTitle{font-weight:900}
+.boxBody{padding:12px}
+.note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+.smallCard{border:1px solid var(--border);border-radius:14px;padding:8px;background:rgba(0,0,0,.12)}
+label.field{display:grid;gap:6px;margin-top:10px}
+.lbl{color:var(--muted);font-size:12px}
+input,textarea,select{width:100%;padding:8px 8px;border-radius:12px;border:1px solid var(--border);background:rgba(15,22,32,.95);color:var(--text);outline:none}
+textarea{min-height:140px;resize:vertical}
+.equipSelector{display:flex;gap:6px;flex-wrap:wrap}
+.equipCard input{padding:7px 8px;font-size:12px}
+.equipCard .btn{padding:7px 8px;font-size:12px}
+.modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;padding:14px}
+.modalBackdrop.show{display:flex}
+.modal{width:100%;max-width:820px;border:1px solid var(--border);background:rgba(18,26,35,.98);border-radius:16px;overflow:hidden}
+.modalHead{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border)}
+.modalBody{padding:12px;max-height:70vh;overflow:auto}
 </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="brand">
-      <div class="t">Oridian Character Sheet</div>
-      <div class="s">Single-file, stability-first</div>
-    </div>
-    <div class="row">
-      <span class="pill" id="statusPill">Ready</span>
-      <button class="btn small secondary" id="btnExport">Export</button>
-      <button class="btn small secondary" id="btnImport">Import</button>
-    </div>
-  </div>
-</header>
-
-<div class="wrap" id="root">
-  <div class="card">
-    <div class="tabs" id="tabs">
-      <div class="tab" data-tab="core" id="tabCore" aria-selected="true">Core</div>
-      <div class="tab" data-tab="spells" id="tabSpells" aria-selected="false">Spells</div>
-      <div class="tab" data-tab="equipment" id="tabEquipment" aria-selected="false">Equipment</div>
-      <div class="tab" data-tab="details" id="tabDetails" aria-selected="false">Details</div>
-      <div class="tab" data-tab="notes" id="tabNotes" aria-selected="false">Notes</div>
-    </div>
-    <div class="mini muted" style="margin-top:8px" id="breadcrumbs">init</div>
-  </div>
-
-  <div id="section-core" class="section active">
-    <div class="grid">
-      <div class="card">
-        <h2>Identity</h2>
-        <div class="kv3">
-          <div><label>Character Name</label><input id="f_name" placeholder="Name" /></div>
-          <div><label>Race</label><input id="f_race" placeholder="Race" /></div>
-          <div><label>Alignment</label><input id="f_alignment" placeholder="Alignment" /></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Background and Class</h2>
-        <div class="kv3">
-          <div>
-            <label>Background</label>
-            <select id="f_background"><option value="">Loading…</option></select>
-          </div>
-          <div>
-            <label>Class</label>
-            <select id="f_class"><option value="">Loading…</option></select>
-          </div>
-          <div>
-            <label>Subclass</label>
-            <select id="f_subclass"><option value="">Select class first</option></select>
-          </div>
-        </div>
-        <div class="row" style="margin-top:10px;flex-wrap:wrap">
-          <span class="badge">Total Level: <strong id="v_totalLevel" style="margin-left:6px">1</strong></span>
-          <span class="badge">Proficiency Bonus: <strong id="v_profBonus" style="margin-left:6px">+2</strong></span>
-          <span class="badge">AC: <strong id="v_ac" style="margin-left:6px">10</strong></span>
-          <span class="badge">Equipped Weapon: <strong id="v_weaponDice" style="margin-left:6px">1d4</strong></span>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Quick Stats</h2>
-        <div class="kv3">
-          <div>
-            <label>Inspiration</label>
-            <div class="row">
-              <button class="btn small" id="inspMinus">-</button>
-              <input id="f_inspiration" inputmode="numeric" />
-              <button class="btn small" id="inspPlus">+</button>
-            </div>
-          </div>
-          <div>
-            <label>Passive Perception</label>
-            <input id="v_passive" disabled />
-          </div>
-          <div>
-            <label>Initiative</label>
-            <input id="v_init" disabled />
-          </div>
-        </div>
-      </div>
-
-      <div class="two">
-        <div class="card">
-          <h2>Abilities</h2>
-          <table class="table" id="tblAbilities">
-            <thead><tr><th>Ability</th><th>Score</th><th>Mod</th><th>Save</th><th>Prof?</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="card">
-          <h2>Skills</h2>
-          <div class="mini muted">Tap chips to toggle proficiency or expertise.</div>
-          <table class="table" id="tblSkills">
-            <thead><tr><th>Skill</th><th>Bonus</th><th>Pro</th><th>Exp</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Features</h2>
-        <div class="mini muted" id="featureHint">Background feature will appear here.</div>
-        <div id="featuresList"></div>
+<header><h1>Character Sheet</h1></header>
+<div class="wrap">
+  <div class="panel">
+    <div class="topBar">
+      <div class="topTitle">Character Sheet</div>
+      <div class="row">
+        <button class="btn" id="shortRestBtn" type="button">Short Rest</button>
+        <button class="btn" id="longRestBtn" type="button">Long Rest</button>
+        <button class="btn" id="cloudSaveBtn" type="button">Save to Cloud</button>
+        <button class="btn" id="cloudLoadBtn" type="button">Load from Cloud</button>
+        <a class="btn" href="index.html">Back</a>
       </div>
     </div>
-  </div>
-
-  <div id="section-equipment" class="section">
-    <div class="grid">
-      <div class="card">
-        <h2>Equipment</h2>
-        <div class="tog" id="equipCats"></div>
-        <div class="mini muted" style="margin-top:8px">One category shown at a time. Slots support extended notes popups.</div>
-      </div>
-      <div class="card" id="equipBody"></div>
+    <div class="tabs">
+      <button class="tab active" id="tabCore" type="button">Core</button>
+      <button class="tab" id="tabDetails" type="button">Details</button>
+      <button class="tab" id="tabSpells" type="button">Spells</button>
+      <button class="tab" id="tabEquipment" type="button">Equipment</button>
+      <button class="tab" id="tabNotes" type="button">Notes</button>
     </div>
-  </div>
-
-  <div id="section-spells" class="section">
-    <div class="grid">
-      <div class="card">
-        <h2>Spellcasting</h2>
-        <div class="kv3">
-          <div><label>Casting Type</label><input id="v_castType" disabled /></div>
-          <div><label>Prepared Changes</label><input id="v_prepLock" disabled /></div>
-          <div><label>Spell Slots</label><input id="v_slotsSummary" disabled /></div>
-        </div>
-        <div class="row" style="margin-top:10px;flex-wrap:wrap">
-          <button class="btn small" id="btnLongRest">Long Rest</button>
-          <button class="btn small" id="btnShortRest">Short Rest</button>
-          <button class="btn small secondary" id="btnCloud">Cloud</button>
-        </div>
-      </div>
-      <div class="card">
-        <h2>Spellbook</h2>
-        <div id="spellLevels"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="section-details" class="section">
-    <div class="grid">
-      <div class="card">
-        <h2>Details</h2>
-        <label>Appearance, backstory, allies, treasure</label>
-        <textarea id="f_details"></textarea>
-      </div>
-    </div>
-  </div>
-
-  <div id="section-notes" class="section">
-    <div class="grid">
-      <div class="card">
-        <h2>Notes</h2>
-        <label>Freeform notes</label>
-        <textarea id="f_notes"></textarea>
-      </div>
-    </div>
+    <div class="content" id="root"></div>
   </div>
 </div>
 
-<div id="errPanel">
-  <div class="row" style="justify-content:space-between;align-items:flex-start;gap:10px">
-    <div>
-      <h3>Something broke, UI stayed alive</h3>
-      <div class="mini muted">Errors are shown here so tabs never go “dead” silently.</div>
+<div class="modalBackdrop" id="modal">
+  <div class="modal">
+    <div class="modalHead">
+      <div class="boxTitle" id="modalTitle">Modal</div>
+      <button class="btn" id="modalClose" type="button">Close</button>
     </div>
-    <button class="btn small danger" id="btnErrClose">Hide</button>
-  </div>
-  <div id="errLines" style="margin-top:10px"></div>
-</div>
-
-<div id="modal">
-  <div class="box">
-    <div class="row" style="justify-content:space-between">
-      <div id="modalTitle">Modal</div>
-      <button class="btn small" id="modalClose">Close</button>
-    </div>
-    <div id="modalBody"></div>
+    <div class="modalBody" id="modalBody"></div>
   </div>
 </div>
-
-<footerBar>
-  <div class="footerInner">
-    <div class="row" style="flex-wrap:wrap">
-      <span class="badge">HP add on Hit Dice spend (your rule)</span>
-      <span class="badge">Long Rest: full hit dice reset (your rule 2B)</span>
-    </div>
-    <div class="row">
-      <button class="btn small secondary" id="btnSync">Sync Now</button>
-    </div>
-  </div>
-</footerBar>
 
 <script>
 (() => {
-  "use strict";
+  const root = document.getElementById("root");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  document.getElementById("modalClose").addEventListener("click", () => closeModal());
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
-  // ===== Phase 1: Stability contract (crash panel + defensive bindings) =====
-  const $ = (id) => document.getElementById(id);
-  const breadcrumbsEl = $("breadcrumbs");
-  const statusPill = $("statusPill");
-  const errPanel = $("errPanel");
-  const errLines = $("errLines");
-  const btnErrClose = $("btnErrClose");
-  const modal = $("modal");
-  const modalTitle = $("modalTitle");
-  const modalBody = $("modalBody");
-
-  const breadcrumb = (msg) => {
-    try { breadcrumbsEl.textContent = msg; } catch {}
-  };
-
-  const showStatus = (msg) => { try { statusPill.textContent = msg; } catch {} };
-
-  const showError = (title, err) => {
-    try {
-      errPanel.style.display = "block";
-      const line = document.createElement("div");
-      line.className = "errLine";
-      const stack = (err && (err.stack || err.message)) ? (err.stack || err.message) : String(err);
-      line.textContent = `[${new Date().toLocaleTimeString()}] ${title}\n${stack}\n`;
-      errLines.prepend(line);
-      showStatus("Error (see panel)");
-    } catch {}
-  };
-
-  window.addEventListener("error", (e) => showError("Unhandled error", e.error || e.message));
-  window.addEventListener("unhandledrejection", (e) => showError("Unhandled promise rejection", e.reason));
-
-  if (btnErrClose) btnErrClose.addEventListener("click", () => { errPanel.style.display = "none"; });
-
-  const onClick = (id, fn) => {
-    const el = $(id);
-    if (!el) return false;
-    el.addEventListener("click", (ev) => { try { fn(ev); } catch (err) { showError(`Click handler failed: ${id}`, err); }});
-    return true;
-  };
-
-  const onInput = (id, fn) => {
-    const el = $(id);
-    if (!el) return false;
-    el.addEventListener("input", (ev) => { try { fn(ev); } catch (err) { showError(`Input handler failed: ${id}`, err); }});
-    return true;
-  };
-
-  const showModal = (title, contentNode) => {
+  function showModal(title, bodyEl){
     modalTitle.textContent = title;
     modalBody.innerHTML = "";
-    if (contentNode) modalBody.appendChild(contentNode);
-    modal.style.display = "flex";
-  };
-  const closeModal = () => { modal.style.display = "none"; };
-
-  onClick("modalClose", () => closeModal());
-  if (modal) modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
-
-  // ===== Base path helper for GitHub Pages project sites =====
-  function basePrefix() {
-    // If hosted at https://user.github.io/repo/... then prefix is /repo/
-    // If hosted at https://user.github.io/... then prefix is /
-    const host = location.host.toLowerCase();
-    const parts = location.pathname.split("/").filter(Boolean); // no empty
-    if (host.endsWith("github.io") && parts.length >= 2) {
-      // assume first segment is repo name for project sites
-      return "/" + parts[0] + "/";
-    }
-    return "/";
+    modalBody.appendChild(bodyEl);
+    modal.classList.add("show");
   }
-  const BASE = basePrefix();
-  const dataUrl = (rel) => new URL(rel.replace(/^\/+/, ""), location.origin + BASE).toString();
+  function closeModal(){
+    modal.classList.remove("show");
+    modalBody.innerHTML = "";
+  }
 
-  // ===== Shared character state (single object in localStorage) =====
-  const CHAR_STORAGE_KEY = "dnd_character_state_v1";
-  const abilityList = ["STR","DEX","CON","INT","WIS","CHA"];
-  const skillMeta = [
-    { id:"acrobatics", label:"Acrobatics", ability:"DEX" },
-    { id:"animalHandling", label:"Animal Handling", ability:"WIS" },
-    { id:"arcana", label:"Arcana", ability:"INT" },
-    { id:"athletics", label:"Athletics", ability:"STR" },
-    { id:"deception", label:"Deception", ability:"CHA" },
-    { id:"history", label:"History", ability:"INT" },
-    { id:"insight", label:"Insight", ability:"WIS" },
-    { id:"intimidation", label:"Intimidation", ability:"CHA" },
-    { id:"investigation", label:"Investigation", ability:"INT" },
-    { id:"medicine", label:"Medicine", ability:"WIS" },
-    { id:"nature", label:"Nature", ability:"INT" },
-    { id:"perception", label:"Perception", ability:"WIS" },
-    { id:"performance", label:"Performance", ability:"CHA" },
-    { id:"persuasion", label:"Persuasion", ability:"CHA" },
-    { id:"religion", label:"Religion", ability:"INT" },
-    { id:"sleightOfHand", label:"Sleight of Hand", ability:"DEX" },
-    { id:"stealth", label:"Stealth", ability:"DEX" },
-    { id:"survival", label:"Survival", ability:"WIS" },
-  ];
+  function el(tag, attrs={}, kids=[]){
+    const n = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)){
+      if (k==="class") n.className = v;
+      else if (k==="style") n.setAttribute("style", v);
+      else if (k.startsWith("on") && typeof v === "function") n.addEventListener(k.slice(2).toLowerCase(), v);
+      else if (v !== false && v != null) n.setAttribute(k, String(v));
+    }
+    for (const c of kids){
+      if (c==null) continue;
+      if (typeof c==="string") n.appendChild(document.createTextNode(c));
+      else n.appendChild(c);
+    }
+    return n;
+  }
+  function field(label, control){
+    return el("label",{class:"field"},[el("div",{class:"lbl"},[label]), control]);
+  }
+  function box(title, bodyKids){
+    return el("section",{class:"box"},[
+      el("div",{class:"boxHead"},[el("div",{class:"boxTitle"},[title])]),
+      el("div",{class:"boxBody"}, bodyKids || [])
+    ]);
+  }
 
-  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-  function mod(score){ const s = Number(score||10); return Math.floor((s-10)/2); }
-  function fmtSigned(n){ return (n>=0?"+":"") + n; }
+  const KEY = "dnd_character_state_v1";
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return { equipment: defaultEquipment(), notes:"", details:{}, spells:{} };
+      const j = JSON.parse(raw);
+      j.equipment = normalizeEquipment(j.equipment || defaultEquipment());
+      return j;
+    }catch{
+      return { equipment: defaultEquipment(), notes:"", details:{}, spells:{} };
+    }
+  }
+  function saveState(s){
+    localStorage.setItem(KEY, JSON.stringify(s));
+  }
 
-  function defaultState() {
-    const abilities = {};
-    abilityList.forEach(a => abilities[a] = 10);
-    const saves = {};
-    abilityList.forEach(a => saves[a] = { prof:false });
-    const skills = {};
-    skillMeta.forEach(s => skills[s.id] = { prof:false, exp:false });
-
-    return {
-      version: 1,
-      identity: { name:"", race:"", alignment:"" },
-      backgroundId: "",
-      classId: "",
-      subclassId: "",
-      classLevels: { }, // classId -> level
-      inspiration: 0,
-
-      abilities,
-      saves,
-      skills,
-
-      // derived integrations
-      equipment: {
-        acBonus: 0,
-        equippedWeaponDice: "1d4",
-        categories: {}
-      },
-
-      spells: {
-        preparedLocked: false,
-        known: {},      // level -> [spellId]
-        prepared: {},   // level -> [spellId]
-        slots: {}       // level -> { max, used }
-      },
-
-      rest: {
-        hitDiceSpent: {},  // die -> spent count
-        lastLongRest: null
-      },
-
-      details: "",
-      notes: "",
-
-      // optional command channel (Combat Tracker can write here)
-      commands: []
+  function emptyItem(){ return {name:"",short:"",long:"",acBonus:"",hitDice:"",equipped:false}; }
+  function defaultEquipment(){
+    const mk=(n)=>Array.from({length:n}).map(()=>emptyItem());
+    return { slots:{
+      head:mk(3),neck:mk(3),body:mk(3),waist:mk(3),legs:mk(3),feet:mk(3),
+      face:mk(3),shoulders:mk(3),torso:mk(3),arms:mk(3),
+      ringsRight:mk(6),ringsLeft:mk(6),
+      shields:mk(3),weapons:mk(6)
+    }, bag:{items:[]} };
+  }
+  function normalizeEquipment(eq){
+    const out = eq && typeof eq==="object" ? eq : defaultEquipment();
+    out.slots = out.slots || {};
+    const ensure=(k,n)=>{
+      if(!Array.isArray(out.slots[k])) out.slots[k]=Array.from({length:n}).map(()=>emptyItem());
+      while(out.slots[k].length<n) out.slots[k].push(emptyItem());
+      for(let i=0;i<out.slots[k].length;i++) out.slots[k][i]=Object.assign(emptyItem(), out.slots[k][i]||{});
     };
+    ["head","neck","body","waist","legs","feet","face","shoulders","torso","arms"].forEach(k=>ensure(k,3));
+    ensure("ringsRight",6); ensure("ringsLeft",6);
+    ensure("shields",3); ensure("weapons",6);
+    out.bag = out.bag || { items: [] };
+    if(!Array.isArray(out.bag.items)) out.bag.items=[];
+    return out;
   }
 
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(CHAR_STORAGE_KEY);
-      if (!raw) return defaultState();
-      const parsed = JSON.parse(raw);
-
-      // Merge defaults without stripping unknown properties (schema-safe)
-      const d = defaultState();
-      const merged = structuredClone ? structuredClone(d) : JSON.parse(JSON.stringify(d));
-      deepMerge(merged, parsed);
-      // normalize a few critical branches
-      if (!merged.classLevels || typeof merged.classLevels !== "object") merged.classLevels = {};
-      if (!merged.equipment) merged.equipment = d.equipment;
-      if (!merged.spells) merged.spells = d.spells;
-      if (!merged.rest) merged.rest = d.rest;
-      return merged;
-    } catch (err) {
-      showError("Failed to load state, using defaults", err);
-      return defaultState();
-    }
-  }
-
-  function deepMerge(target, src) {
-    if (!src || typeof src !== "object") return target;
-    for (const k of Object.keys(src)) {
-      const sv = src[k];
-      const tv = target[k];
-      if (Array.isArray(sv)) target[k] = sv.slice();
-      else if (sv && typeof sv === "object") {
-        if (!tv || typeof tv !== "object" || Array.isArray(tv)) target[k] = {};
-        deepMerge(target[k], sv);
-      } else {
-        target[k] = sv;
-      }
-    }
-    return target;
-  }
-
-  function saveState() {
-    try {
-      localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(state));
-      showStatus("Saved");
-    } catch (err) {
-      showError("Failed to save state", err);
-    }
-  }
-
-  function emitSync() {
-    // Combat Tracker can listen to storage events (same-origin), and/or postMessage
-    try {
-      localStorage.setItem(CHAR_STORAGE_KEY, JSON.stringify(state));
-      window.postMessage({ type:"ORIDIAN_CHARACTER_STATE_UPDATED" }, location.origin);
-    } catch {}
-  }
-
-  // ===== Data cache =====
-  const data = {
-    backgrounds: null,
-    classes: null,
-    subclasses: null,
-    spells: null,
-    spellcasting: null
-  };
-
-  async function loadJson(rel) {
-    const url = dataUrl(rel);
-    const res = await fetch(url, { cache:"no-store" });
-    if (!res.ok) throw new Error(`Fetch failed: ${rel} (${res.status})`);
-    return await res.json();
-  }
-
-  async function ensureData() {
-    // Each in its own try/catch boundary so one failure doesn't kill UI
-    if (!data.backgrounds) {
-      try { data.backgrounds = await loadJson("data/backgrounds.json"); } catch (e) { showError("backgrounds.json failed", e); data.backgrounds = []; }
-    }
-    if (!data.classes) {
-      try { data.classes = await loadJson("data/classes.json"); } catch (e) { showError("classes.json failed", e); data.classes = []; }
-    }
-    if (!data.subclasses) {
-      try { data.subclasses = await loadJson("data/subclasses.json"); } catch (e) { showError("subclasses.json failed", e); data.subclasses = {}; }
-    }
-    if (!data.spells) {
-      try { data.spells = await loadJson("data/spells.json"); } catch (e) { showError("spells.json failed", e); data.spells = []; }
-    }
-    if (!data.spellcasting) {
-      try { data.spellcasting = await loadJson("data/spellcasting.json"); } catch (e) { showError("spellcasting.json failed", e); data.spellcasting = {}; }
-    }
-  }
-
-  // ===== Derived calcs =====
-  function totalLevel() {
-    // source of truth: classLevels
-    let t = 0;
-    for (const k of Object.keys(state.classLevels || {})) t += Number(state.classLevels[k] || 0);
-    return Math.max(1, t || 1);
-  }
-  function profBonus() {
-    const lvl = totalLevel();
-    return 2 + Math.floor((lvl - 1) / 4);
-  }
-  function ac() {
-    return 10 + Number(state.equipment?.acBonus || 0);
-  }
-  function equippedWeaponDice() {
-    return state.equipment?.equippedWeaponDice || "1d4";
-  }
-  function passivePerception() {
-    const base = 10 + mod(state.abilities.WIS);
-    const sk = state.skills.perception;
-    const pb = profBonus();
-    const add = (sk?.exp ? 2*pb : (sk?.prof ? pb : 0));
-    return base + add;
-  }
-  function initiative() {
-    return mod(state.abilities.DEX);
-  }
-
-  // ===== UI: Tabs =====
-  function setActiveTab(tabId) {
-    breadcrumb(`tab:${tabId}`);
-    const tabs = document.querySelectorAll(".tab");
-    tabs.forEach(t => t.setAttribute("aria-selected", (t.dataset.tab === tabId) ? "true" : "false"));
-    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-    const sec = $("section-" + tabId);
-    if (sec) sec.classList.add("active");
-  }
-
-  function bindTabs() {
-    const tabEls = document.querySelectorAll(".tab");
-    tabEls.forEach(t => {
-      t.addEventListener("click", () => setActiveTab(t.dataset.tab));
-    });
-  }
-
-  // ===== UI: Core bindings =====
-  function bindCore() {
-    onInput("f_name", () => { state.identity.name = $("f_name").value; saveAndSync(); });
-    onInput("f_race", () => { state.identity.race = $("f_race").value; saveAndSync(); });
-    onInput("f_alignment", () => { state.identity.alignment = $("f_alignment").value; saveAndSync(); });
-
-    onClick("inspMinus", () => { state.inspiration = clamp(Number(state.inspiration||0) - 1, 0, 99); renderCore(); saveAndSync(); });
-    onClick("inspPlus", () => { state.inspiration = clamp(Number(state.inspiration||0) + 1, 0, 99); renderCore(); saveAndSync(); });
-    onInput("f_inspiration", () => { state.inspiration = clamp(Number($("f_inspiration").value||0), 0, 99); renderCore(); saveAndSync(); });
-
-    onInput("f_details", () => { state.details = $("f_details").value; saveAndSync(); });
-    onInput("f_notes", () => { state.notes = $("f_notes").value; saveAndSync(); });
-  }
-
-  // ===== Background/Class/Subclass dropdowns =====
-  function applyBackground(bgId) {
-    state.backgroundId = bgId || "";
-    const bg = (data.backgrounds || []).find(b => b.id === bgId);
-    // Apply skills/tools/languages safely (upgrade only, do not overwrite expertise)
-    if (bg && Array.isArray(bg.skills)) {
-      bg.skills.forEach(sid => {
-        const entry = state.skills[sid];
-        if (entry) entry.prof = true;
-      });
-    }
-    // Insert background feature (into features list) without destroying user content
-    const feat = bg?.feature ? { source:"background", name:bg.feature.name, text:bg.feature.text } : null;
-    state.features = Array.isArray(state.features) ? state.features : [];
-    state.features = state.features.filter(f => f.source !== "background");
-    if (feat) state.features.unshift(feat);
-  }
-
-  function setClassLevel(classId, level) {
-    if (!classId) return;
-    state.classLevels = state.classLevels || {};
-    // single-class for now: keep only chosen class as the source of truth
-    // If you later add multiclass UI, remove this deletion.
-    Object.keys(state.classLevels).forEach(k => { if (k !== classId) delete state.classLevels[k]; });
-    state.classLevels[classId] = clamp(Number(level || 1), 1, 20);
-  }
-
-  function refreshSubclassOptions() {
-    const sel = $("f_subclass");
-    if (!sel) return;
-    const cls = state.classId;
-    sel.innerHTML = "";
-    if (!cls) {
-      const o = document.createElement("option");
-      o.value = ""; o.textContent = "Select class first";
-      sel.appendChild(o);
-      return;
-    }
-    const list = (data.subclasses && data.subclasses[cls]) ? data.subclasses[cls] : [];
-    const o0 = document.createElement("option");
-    o0.value = ""; o0.textContent = "None";
-    sel.appendChild(o0);
-    list.forEach(sc => {
-      const o = document.createElement("option");
-      o.value = sc.id; o.textContent = sc.name;
-      sel.appendChild(o);
-    });
-    sel.value = state.subclassId || "";
-  }
-
-  function bindDropdowns() {
-    const bgSel = $("f_background");
-    const clsSel = $("f_class");
-    const scSel = $("f_subclass");
-
-    if (bgSel) bgSel.addEventListener("change", () => {
-      try {
-        applyBackground(bgSel.value);
-        saveAndSync(); renderCore();
-      } catch (e) { showError("Background apply failed", e); }
-    });
-
-    if (clsSel) clsSel.addEventListener("change", () => {
-      try {
-        state.classId = clsSel.value || "";
-        if (state.classId) setClassLevel(state.classId, state.classLevels[state.classId] || 1);
-        // reset subclass when class changes
-        state.subclassId = "";
-        refreshSubclassOptions();
-        recalcSpellSlots();
-        saveAndSync(); renderAll();
-      } catch (e) { showError("Class change failed", e); }
-    });
-
-    if (scSel) scSel.addEventListener("change", () => {
-      try {
-        state.subclassId = scSel.value || "";
-        recalcSpellSlots();
-        saveAndSync(); renderAll();
-      } catch (e) { showError("Subclass change failed", e); }
-    });
-  }
-
-  // ===== Abilities / skills tables =====
-  function renderAbilitiesTable() {
-    const tbody = $("tblAbilities")?.querySelector("tbody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-    const pb = profBonus();
-
-    abilityList.forEach(a => {
-      const tr = document.createElement("tr");
-
-      const tdA = document.createElement("td"); tdA.textContent = a;
-      const tdScore = document.createElement("td");
-      const inp = document.createElement("input");
-      inp.value = state.abilities[a];
-      inp.inputMode = "numeric";
-      inp.addEventListener("input", () => {
-        state.abilities[a] = clamp(Number(inp.value||10), 1, 30);
-        renderCore();
-        saveAndSync();
-      });
-      tdScore.appendChild(inp);
-
-      const tdMod = document.createElement("td"); tdMod.textContent = fmtSigned(mod(state.abilities[a]));
-      const tdSave = document.createElement("td");
-      const saveProf = state.saves[a]?.prof;
-      const saveVal = mod(state.abilities[a]) + (saveProf ? pb : 0);
-      tdSave.textContent = fmtSigned(saveVal);
-
-      const tdTog = document.createElement("td");
-      const chip = document.createElement("div");
-      chip.className = "chip" + (saveProf ? " on" : "");
-      chip.textContent = saveProf ? "PROF" : "NO";
-      chip.addEventListener("click", () => {
-        state.saves[a].prof = !state.saves[a].prof;
-        renderCore(); saveAndSync();
-      });
-      tdTog.appendChild(chip);
-
-      [tdA, tdScore, tdMod, tdSave, tdTog].forEach(td => tr.appendChild(td));
-      tbody.appendChild(tr);
-    });
-  }
-
-  function renderSkillsTable() {
-    const tbody = $("tblSkills")?.querySelector("tbody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-    const pb = profBonus();
-
-    skillMeta.forEach(s => {
-      const tr = document.createElement("tr");
-      const tdName = document.createElement("td");
-      tdName.innerHTML = `<div style="font-weight:800">${s.label}</div><div class="mini muted">${s.ability}</div>`;
-
-      const tdBonus = document.createElement("td");
-      const st = state.skills[s.id] || { prof:false, exp:false };
-      const base = mod(state.abilities[s.ability]);
-      const add = st.exp ? 2*pb : (st.prof ? pb : 0);
-      tdBonus.textContent = fmtSigned(base + add);
-
-      const tdP = document.createElement("td");
-      const cp = document.createElement("div");
-      cp.className = "chip" + (st.prof ? " on" : "");
-      cp.textContent = "PRO";
-      cp.addEventListener("click", () => {
-        st.prof = !st.prof;
-        if (!st.prof) st.exp = false;
-        state.skills[s.id] = st;
-        renderCore(); saveAndSync();
-      });
-      tdP.appendChild(cp);
-
-      const tdE = document.createElement("td");
-      const ce = document.createElement("div");
-      ce.className = "chip" + (st.exp ? " on" : "");
-      ce.textContent = "EXP";
-      ce.addEventListener("click", () => {
-        // expertise implies proficiency
-        st.exp = !st.exp;
-        if (st.exp) st.prof = true;
-        state.skills[s.id] = st;
-        renderCore(); saveAndSync();
-      });
-      tdE.appendChild(ce);
-
-      [tdName, tdBonus, tdP, tdE].forEach(td => tr.appendChild(td));
-      tbody.appendChild(tr);
-    });
-  }
-
-  function renderFeatures() {
-    const list = $("featuresList");
-    if (!list) return;
-    list.innerHTML = "";
-    const feats = Array.isArray(state.features) ? state.features : [];
-    if (feats.length === 0) {
-      $("featureHint").style.display = "block";
-      return;
-    }
-    $("featureHint").style.display = "none";
-    feats.forEach((f, idx) => {
-      const box = document.createElement("div");
-      box.className = "card";
-      box.style.background = "rgba(14,20,28,.55)";
-      box.style.borderRadius = "14px";
-      box.style.padding = "10px";
-      box.innerHTML = `<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
-        <div><div style="font-weight:900">${escapeHtml(f.name || "Feature")}</div>
-        <div class="mini muted">${escapeHtml(f.source || "custom")}</div></div>
-        <button class="btn small danger">Remove</button>
-      </div>
-      <div class="mini" style="margin-top:8px;white-space:pre-wrap">${escapeHtml(f.text || "")}</div>`;
-      box.querySelector("button").addEventListener("click", () => {
-        state.features = feats.filter((_, i) => i !== idx);
-        renderFeatures(); saveAndSync();
-      });
-      list.appendChild(box);
-    });
-  }
-
-  function escapeHtml(s){
-    return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  }
-
-  function renderCore() {
-    $("f_name").value = state.identity.name || "";
-    $("f_race").value = state.identity.race || "";
-    $("f_alignment").value = state.identity.alignment || "";
-
-    $("f_inspiration").value = String(state.inspiration ?? 0);
-    $("v_totalLevel").textContent = String(totalLevel());
-    $("v_profBonus").textContent = fmtSigned(profBonus());
-    $("v_ac").textContent = String(ac());
-    $("v_weaponDice").textContent = equippedWeaponDice();
-    $("v_passive").value = String(passivePerception());
-    $("v_init").value = fmtSigned(initiative());
-
-    renderAbilitiesTable();
-    renderSkillsTable();
-    renderFeatures();
-
-    $("f_details").value = state.details || "";
-    $("f_notes").value = state.notes || "";
-  }
-
-  // ===== Equipment (category-based, stable) =====
-  const EQUIP_CATS = [
-    { id:"head", label:"Head" },
-    { id:"neck", label:"Neck" },
-    { id:"body", label:"Body/Armor" },
-    { id:"hands", label:"Hands" },
-    { id:"feet", label:"Feet" },
-    { id:"rings", label:"Rings" },
-    { id:"shield", label:"Shield" },
-    { id:"weapons", label:"Weapons" },
-    { id:"bag", label:"Bag" }
+  let page = "core";
+  let equipGroupId = "head";
+  const tabs = [
+    ["tabCore","core"],
+    ["tabDetails","details"],
+    ["tabSpells","spells"],
+    ["tabEquipment","equipment"],
+    ["tabNotes","notes"],
   ];
-
-  function emptyItem(){ return { name:"", short:"", long:"", acBonus:0, weaponDice:"", equipped:false }; }
-
-  function normalizeEquipment() {
-    state.equipment = state.equipment || { acBonus:0, equippedWeaponDice:"1d4", categories:{} };
-    state.equipment.categories = state.equipment.categories || {};
-    EQUIP_CATS.forEach(c => {
-      if (!state.equipment.categories[c.id]) {
-        if (c.id === "rings") state.equipment.categories[c.id] = [emptyItem(), emptyItem(), emptyItem(), emptyItem()];
-        else if (c.id === "weapons") state.equipment.categories[c.id] = [emptyItem(), emptyItem(), emptyItem(), emptyItem()];
-        else state.equipment.categories[c.id] = [emptyItem()];
-      }
-    });
+  function setActive(){
+    for (const [id,p] of tabs){
+      const b = document.getElementById(id);
+      if (!b) continue;
+      b.classList.toggle("active", page===p);
+    }
+  }
+  function bindTabs(){
+    for (const [id,p] of tabs){
+      const b = document.getElementById(id);
+      if (!b) continue;
+      b.addEventListener("click", ()=>{ page=p; setActive(); render(); });
+    }
   }
 
-  function calcEquipmentBonuses() {
-    normalizeEquipment();
-    let acB = 0;
-    let weaponDice = "1d4";
+  // Buttons placeholders to avoid "dead UI" feeling
+  document.getElementById("shortRestBtn").addEventListener("click", ()=> alert("Short Rest popup will be here (kept stable)."));
+  document.getElementById("longRestBtn").addEventListener("click", ()=> alert("Long Rest will be here (kept stable)."));
+  document.getElementById("cloudSaveBtn").addEventListener("click", ()=> alert("Cloud is optional. If you want Supabase, keep js/cloud.js."));
+  document.getElementById("cloudLoadBtn").addEventListener("click", ()=> alert("Cloud is optional."));
 
-    const cats = state.equipment.categories;
+  function render(){
+    const st = loadState();
+    root.innerHTML = "";
 
-    // Armor/body and shield contribute AC bonus (sum)
-    const sumAC = (arr) => (arr||[]).reduce((t,it) => t + Number(it.acBonus||0), 0);
-    acB += sumAC(cats.body);
-    acB += sumAC(cats.shield);
-
-    // single equipped weapon
-    const weapons = cats.weapons || [];
-    const eq = weapons.find(w => w.equipped);
-    if (eq && eq.weaponDice) weaponDice = eq.weaponDice;
-
-    state.equipment.acBonus = acB;
-    state.equipment.equippedWeaponDice = weaponDice;
-  }
-
-  function renderEquipCategory(catId) {
-    breadcrumb(`equip:${catId}`);
-    normalizeEquipment();
-    const body = $("equipBody");
-    if (!body) return;
-
-    body.innerHTML = "";
-    const title = document.createElement("h2");
-    const cat = EQUIP_CATS.find(c => c.id === catId);
-    title.textContent = cat ? cat.label : "Equipment";
-    body.appendChild(title);
-
-    const arr = state.equipment.categories[catId] || [];
-    if (catId === "shield") {
-      const hint = document.createElement("div");
-      hint.className = "mini muted";
-      hint.textContent = "Shields contribute AC bonus (sum).";
-      body.appendChild(hint);
+    if (page==="details"){
+      root.appendChild(box("Details", [
+        el("div",{class:"note"},["Details section placeholder (kept stable while we iterate)."])
+      ]));
+      return;
     }
-    if (catId === "weapons") {
-      const hint = document.createElement("div");
-      hint.className = "mini muted";
-      hint.textContent = "Weapons: set hit dice and choose a single equipped weapon.";
-      body.appendChild(hint);
+    if (page==="spells"){
+      root.appendChild(box("Spells", [
+        el("div",{class:"note"},["Spells section placeholder (kept stable while we iterate)."])
+      ]));
+      return;
     }
-    if (catId === "bag") {
-      const hint = document.createElement("div");
-      hint.className = "mini muted";
-      hint.textContent = "Bag block can later open inventory/loot view.";
-      body.appendChild(hint);
+    if (page==="notes"){
+      const ta = el("textarea",{oninput:(e)=>{ st.notes=e.target.value; saveState(st);} }, [st.notes||""]);
+      root.appendChild(box("Notes", [ field("Notes", ta) ]));
+      return;
     }
+    if (page==="equipment"){
+      const groups = [
+        ["head","Head"],["neck","Neck"],["body","Body/Armor"],["waist","Waist"],["legs","Legs"],["feet","Feet"],
+        ["face","Face"],["shoulders","Shoulders"],["torso","Torso"],["arms","Arms"],
+        ["ringsRight","Rings, Right"],["ringsLeft","Rings, Left"],
+        ["shields","Shields"],["weapons","Weapons"],["bag","Bag"]
+      ];
+      const selector = el("div",{class:"equipSelector"}, groups.map(([id,label])=>{
+        const active = id===equipGroupId;
+        return el("button",{class:"tab"+(active?" active":""),type:"button",onclick:()=>{ equipGroupId=id; render(); }},[label]);
+      }));
+      root.appendChild(box("Equipment", [selector]));
 
-    arr.forEach((it, idx) => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.style.background = "rgba(14,20,28,.55)";
-      card.style.borderRadius = "14px";
-
-      const grid = document.createElement("div");
-      grid.className = "grid";
-
-      const row1 = document.createElement("div");
-      row1.className = "kv";
-      row1.innerHTML = `
-        <div><label>Name</label><input data-k="name" placeholder="Item name" value="${escapeHtml(it.name)}"></div>
-        <div><label>Short effect</label><input data-k="short" placeholder="Short effect" value="${escapeHtml(it.short)}"></div>
-      `;
-      grid.appendChild(row1);
-
-      const row2 = document.createElement("div");
-      row2.className = "kv";
-      const extraLeft = document.createElement("div");
-      const extraRight = document.createElement("div");
-
-      if (catId === "body" || catId === "shield") {
-        extraLeft.innerHTML = `<label>AC bonus</label><input data-k="acBonus" inputmode="numeric" value="${Number(it.acBonus||0)}">`;
-      } else {
-        extraLeft.innerHTML = `<label>AC bonus</label><input data-k="acBonus" inputmode="numeric" value="${Number(it.acBonus||0)}" disabled>`;
-      }
-
-      if (catId === "weapons") {
-        extraRight.innerHTML = `<label>Hit dice (example 1d8)</label><input data-k="weaponDice" placeholder="1d8" value="${escapeHtml(it.weaponDice||"")}">`;
-      } else {
-        extraRight.innerHTML = `<label>Hit dice</label><input data-k="weaponDice" placeholder="-" value="" disabled>`;
-      }
-
-      row2.appendChild(extraLeft);
-      row2.appendChild(extraRight);
-      grid.appendChild(row2);
-
-      const row3 = document.createElement("div");
-      row3.className = "row";
-      row3.style.justifyContent = "space-between";
-      row3.style.flexWrap = "wrap";
-
-      const left = document.createElement("div");
-      left.className = "row";
-      left.style.flexWrap = "wrap";
-
-      if (catId === "weapons") {
-        const chip = document.createElement("div");
-        chip.className = "chip" + (it.equipped ? " on" : "");
-        chip.textContent = it.equipped ? "Equipped" : "Equip";
-        chip.addEventListener("click", () => {
-          // enforce single equipped weapon
-          state.equipment.categories.weapons.forEach(w => w.equipped = false);
-          it.equipped = true;
-          calcEquipmentBonuses();
-          renderEquipCategory(catId);
-          renderCore();
-          saveAndSync();
+      if (equipGroupId==="bag"){
+        const add = el("button",{class:"btn",type:"button",onclick:()=>{ st.equipment.bag.items.push({name:"",short:"",long:""}); saveState(st); render(); }},["+ Add item"]);
+        const list = el("div",{},[]);
+        st.equipment.bag.items.forEach((it,idx)=>{
+          list.appendChild(el("div",{class:"smallCard equipCard",style:"margin-top:10px"},[
+            field("Name", el("input",{value:it.name||"",oninput:(e)=>{it.name=e.target.value; saveState(st);}})),
+            field("Short", el("input",{value:it.short||"",oninput:(e)=>{it.short=e.target.value; saveState(st);}})),
+            el("div",{class:"row"},[
+              el("button",{class:"btn",type:"button",onclick:()=>openLong(it)},["Open"]),
+              el("button",{class:"btn",type:"button",onclick:()=>{ st.equipment.bag.items.splice(idx,1); saveState(st); render(); }},["Remove"])
+            ])
+          ]));
         });
-        left.appendChild(chip);
+        root.appendChild(box("Bag", [add, list]));
+        return;
       }
 
-      const btnLong = document.createElement("button");
-      btnLong.className = "btn small secondary";
-      btnLong.textContent = "Extended effect";
-      btnLong.addEventListener("click", () => openLong(catId, idx));
-      left.appendChild(btnLong);
+      const arr = st.equipment.slots[equipGroupId] || [];
+      const isArmor = equipGroupId==="body";
+      const isShield = equipGroupId==="shields";
+      const isWeapon = equipGroupId==="weapons";
 
-      const btnPaste = document.createElement("button");
-      btnPaste.className = "btn small secondary";
-      btnPaste.textContent = "Paste";
-      btnPaste.addEventListener("click", async () => {
-        try {
-          const text = await navigator.clipboard.readText();
-          it.long = text || it.long || "";
-          saveAndSync();
-          showStatus("Pasted");
-        } catch (e) {
-          showError("Clipboard paste failed", e);
+      const cards = arr.map((it,i)=> {
+        const wrap = el("div",{class:"smallCard equipCard",style:"margin-top:10px"},[
+          field("Name", el("input",{value:it.name||"",oninput:(e)=>{it.name=e.target.value; saveState(st);}})),
+          field("Short", el("input",{value:it.short||"",oninput:(e)=>{it.short=e.target.value; saveState(st);}})),
+          el("div",{class:"row"},[
+            el("button",{class:"btn",type:"button",onclick:()=>openLong(it)},["Open"])
+          ])
+        ]);
+        if (isArmor || isShield){
+          wrap.insertBefore(field("AC", el("input",{value:it.acBonus||"",oninput:(e)=>{it.acBonus=e.target.value; saveState(st);}})), wrap.children[2]);
         }
-      });
-      left.appendChild(btnPaste);
-
-      const btnClear = document.createElement("button");
-      btnClear.className = "btn small danger";
-      btnClear.textContent = "Clear";
-      btnClear.addEventListener("click", () => {
-        state.equipment.categories[catId][idx] = emptyItem();
-        calcEquipmentBonuses();
-        renderEquipCategory(catId);
-        renderCore();
-        saveAndSync();
-      });
-
-      row3.appendChild(left);
-      row3.appendChild(btnClear);
-      grid.appendChild(row3);
-
-      card.appendChild(grid);
-      body.appendChild(card);
-
-      // inputs
-      card.querySelectorAll("input[data-k]").forEach(inp => {
-        inp.addEventListener("input", () => {
-          const k = inp.getAttribute("data-k");
-          if (k === "acBonus") it.acBonus = Number(inp.value||0);
-          else if (k === "weaponDice") it.weaponDice = inp.value.trim();
-          else it[k] = inp.value;
-          calcEquipmentBonuses();
-          renderCore();
-          saveAndSync(false); // don't re-render equipment while typing
-        });
-      });
-    });
-  }
-
-  function openLong(catId, idx) {
-    const it = state.equipment.categories[catId][idx];
-    const wrap = document.createElement("div");
-    wrap.className = "grid";
-    const ta = document.createElement("textarea");
-    ta.value = it.long || "";
-    const hint = document.createElement("div");
-    hint.className = "mini muted";
-    hint.textContent = "This is stored in character state. Use Paste button for clipboard.";
-    ta.addEventListener("input", () => { it.long = ta.value; saveAndSync(false); });
-
-    wrap.appendChild(hint);
-    wrap.appendChild(ta);
-    showModal("Extended effect", wrap);
-  }
-
-  function renderEquipment() {
-    normalizeEquipment();
-    const cats = $("equipCats");
-    if (cats) {
-      cats.innerHTML = "";
-      EQUIP_CATS.forEach(c => {
-        const chip = document.createElement("div");
-        chip.className = "chip" + (state.ui?.equipCat === c.id ? " on" : "");
-        chip.textContent = c.label;
-        chip.addEventListener("click", () => {
-          state.ui = state.ui || {};
-          state.ui.equipCat = c.id;
-          renderEquipment();
-          saveAndSync(false);
-        });
-        cats.appendChild(chip);
-      });
-    }
-    const active = state.ui?.equipCat || "body";
-    renderEquipCategory(active);
-  }
-
-  // ===== Spells (Phase 4 foundation, uses JSON) =====
-  function classSpellRule() {
-    const cls = state.classId;
-    if (!cls) return null;
-    const rule = data.spellcasting?.classes?.[cls] || data.spellcasting?.[cls] || null;
-    return rule;
-  }
-
-  function subclassSpellRule() {
-    const cls = state.classId;
-    const sc = state.subclassId;
-    if (!cls || !sc) return null;
-    const list = data.subclasses?.[cls] || [];
-    return list.find(x => x.id === sc)?.spellRules || null;
-  }
-
-  function isPreparedCaster(rule) {
-    if (!rule) return false;
-    return String(rule.type || rule.castingType || "").toLowerCase().includes("prepared");
-  }
-
-  function recalcSpellSlots() {
-    // Minimal: set slots by spellcasting.json progression if present
-    try {
-      state.spells = state.spells || { preparedLocked:false, known:{}, prepared:{}, slots:{} };
-      const rule = classSpellRule();
-      const lvl = totalLevel();
-      const slotsTable = rule?.slotsByLevel || rule?.slots || null;
-      if (!slotsTable) return;
-
-      const row = slotsTable[String(lvl)] || slotsTable[lvl] || null;
-      if (!row) return;
-
-      // row might be {1:2,2:0...} or array
-      const newSlots = {};
-      if (Array.isArray(row)) {
-        row.forEach((n, i) => { if (i>0) newSlots[i] = { max:Number(n||0), used: clamp(Number(state.spells.slots?.[i]?.used||0), 0, Number(n||0)) }; });
-      } else {
-        Object.keys(row).forEach(k => {
-          const L = Number(k);
-          const max = Number(row[k]||0);
-          newSlots[L] = { max, used: clamp(Number(state.spells.slots?.[L]?.used||0), 0, max) };
-        });
-      }
-      state.spells.slots = newSlots;
-    } catch (e) { showError("Spell slot recalculation failed", e); }
-  }
-
-  function canEditPrepared() {
-    const rule = classSpellRule();
-    if (!rule) return false;
-    if (!isPreparedCaster(rule)) return false;
-    return !state.spells.preparedLocked;
-  }
-
-  function alwaysPreparedList() {
-    const sr = subclassSpellRule();
-    const ap = sr?.alwaysPreparedByLevel;
-    if (!ap) return [];
-    const lvl = totalLevel();
-    const out = [];
-    // ap may be {1:[id],3:[id]} where key is character level
-    Object.keys(ap).forEach(k => {
-      const req = Number(k);
-      if (lvl >= req) out.push(...(ap[k] || []));
-    });
-    return Array.from(new Set(out));
-  }
-
-  function spellsByLevel(level) {
-    const all = data.spells || [];
-    return all.filter(s => Number(s.level) === Number(level));
-  }
-
-  function spellName(id) {
-    const s = (data.spells || []).find(x => x.id === id);
-    return s ? s.name : id;
-  }
-
-  function renderSpells() {
-    const rule = classSpellRule();
-    const castType = rule ? (rule.type || rule.castingType || "None") : "None";
-    $("v_castType").value = castType;
-    $("v_prepLock").value = canEditPrepared() ? "Unlocked (edit prepared now)" : (isPreparedCaster(rule) ? "Locked until Long Rest" : "N/A");
-    const slots = state.spells?.slots || {};
-    const parts = Object.keys(slots).sort((a,b)=>Number(a)-Number(b)).map(k => `${k}: ${slots[k].max - slots[k].used}/${slots[k].max}`);
-    $("v_slotsSummary").value = parts.length ? parts.join("  |  ") : "No slots";
-
-    const levelsHost = $("spellLevels");
-    if (!levelsHost) return;
-    levelsHost.innerHTML = "";
-
-    const ap = alwaysPreparedList();
-    const preparedEdit = canEditPrepared();
-
-    for (let L=0; L<=9; L++) {
-      const levelCard = document.createElement("div");
-      levelCard.className = "card";
-      levelCard.style.background = "rgba(14,20,28,.55)";
-      levelCard.style.borderRadius = "14px";
-      levelCard.innerHTML = `<h3>Level ${L}</h3>`;
-
-      const cols = document.createElement("div");
-      cols.className = "fixedCols";
-
-      const colLeft = document.createElement("div");
-      colLeft.className = "col";
-      const colRight = document.createElement("div");
-      colRight.className = "col";
-
-      const known = (state.spells.known?.[L] || []).slice();
-      const prepared = (state.spells.prepared?.[L] || []).slice();
-      const list = spellsByLevel(L);
-
-      // Fixed two columns: known and prepared (or available)
-      colLeft.appendChild(makeSpellColumn("Known", list, known, (id, on) => toggleSpell("known", L, id, on, true)));
-      colRight.appendChild(makeSpellColumn(isPreparedCaster(rule) ? "Prepared" : "Selected", list, prepared, (id, on) => toggleSpell("prepared", L, id, on, preparedEdit)));
-
-      // Apply always prepared overlay (read-only and auto included)
-      if (isPreparedCaster(rule) && ap.length) {
-        const apIds = ap.filter(id => (data.spells||[]).find(s => s.id===id && Number(s.level)===L));
-        if (apIds.length) {
-          const tag = document.createElement("div");
-          tag.className = "mini muted";
-          tag.textContent = "Subclass spells auto-prepared.";
-          colRight.prepend(tag);
-          apIds.forEach(id => {
-            if (!prepared.includes(id)) prepared.push(id);
-          });
-          state.spells.prepared[L] = Array.from(new Set(prepared));
+        if (isWeapon){
+          wrap.insertBefore(field("Hit dice", el("input",{value:it.hitDice||"",oninput:(e)=>{it.hitDice=e.target.value; saveState(st);}})), wrap.children[2]);
+          wrap.insertBefore(el("label",{class:"pill"},[
+            el("input",{type:"checkbox",checked:it.equipped?true:null,onchange:(e)=>{
+              for (const w of st.equipment.slots.weapons) w.equipped=false;
+              it.equipped = e.target.checked;
+              saveState(st);
+              render();
+            }}),
+            "Equipped"
+          ]), wrap.children[3]);
         }
+        return wrap;
+      });
+
+      root.appendChild(box(groups.find(g=>g[0]===equipGroupId)[1], cards));
+      return;
+
+      function openLong(item){
+        const ta = el("textarea",{},[item.long||""]);
+        const saveBtn = el("button",{class:"btn",type:"button",onclick:()=>{ item.long=ta.value; saveState(st); closeModal(); }},["Save"]);
+        showModal("Extended effect", el("div",{},[field("Extended effect", ta), el("div",{class:"row",style:"margin-top:10px"},[saveBtn])]));
       }
-
-      cols.appendChild(colLeft);
-      cols.appendChild(colRight);
-      levelCard.appendChild(cols);
-      levelsHost.appendChild(levelCard);
-    }
-  }
-
-  function makeSpellColumn(title, list, selectedIds, onToggle) {
-    const wrap = document.createElement("div");
-    const head = document.createElement("div");
-    head.className = "row";
-    head.style.justifyContent = "space-between";
-    head.style.marginBottom = "8px";
-    head.innerHTML = `<div style="font-weight:900">${title}</div><div class="mini muted">${selectedIds.length}</div>`;
-    wrap.appendChild(head);
-
-    const container = document.createElement("div");
-    container.className = "grid";
-
-    if (!list.length) {
-      const none = document.createElement("div");
-      none.className = "mini muted";
-      none.textContent = "No spells loaded for this level.";
-      container.appendChild(none);
-    } else {
-      // Keep layout stable: show all spells with toggle
-      list
-        .slice()
-        .sort((a,b) => a.name.localeCompare(b.name))
-        .forEach(sp => {
-          const on = selectedIds.includes(sp.id);
-          const item = document.createElement("div");
-          item.className = "spellItem";
-          item.innerHTML = `
-            <div>
-              <div class="name">${escapeHtml(sp.name)}</div>
-              <div class="meta">${escapeHtml(sp.school || "")} ${sp.ritual ? "· Ritual" : ""}</div>
-            </div>
-            <div class="chip ${on ? "on" : ""}">${on ? "ON" : "OFF"}</div>
-          `;
-          item.querySelector(".chip").addEventListener("click", () => onToggle(sp.id, !on));
-          item.addEventListener("click", (e) => {
-            if (e.target.classList.contains("chip")) return;
-            const node = document.createElement("div");
-            node.className = "grid";
-            const pre = document.createElement("div");
-            pre.className = "mini";
-            pre.style.whiteSpace = "pre-wrap";
-            pre.textContent = sp.description || sp.desc || "(No description)";
-            node.appendChild(pre);
-            showModal(sp.name, node);
-          });
-          container.appendChild(item);
-        });
     }
 
-    wrap.appendChild(container);
-    return wrap;
+    // Core
+    root.appendChild(box("Core", [
+      el("div",{class:"note"},["Core section placeholder (kept stable while we iterate). Use the tabs to confirm navigation stays working."])
+    ]));
   }
 
-  function toggleSpell(bucket, level, id, on, allowEdit) {
-    try {
-      if (!allowEdit) return;
-      state.spells[bucket] = state.spells[bucket] || {};
-      const arr = new Set(state.spells[bucket][level] || []);
-      if (on) arr.add(id); else arr.delete(id);
-      state.spells[bucket][level] = Array.from(arr);
-      saveAndSync();
-      renderSpells();
-    } catch (e) { showError("Spell toggle failed", e); }
-  }
-
-  // ===== Rest actions =====
-  function shortRest() {
-    try {
-      // Hit dice UI (simple, per die type input)
-      const node = document.createElement("div");
-      node.className = "grid";
-      const hint = document.createElement("div");
-      hint.className = "mini muted";
-      hint.textContent = "Enter spent hit dice per die type (adds to HP by your rule). Spent dice restore on Long Rest.";
-      node.appendChild(hint);
-
-      const input = document.createElement("textarea");
-      input.placeholder = "Example:\nd8=2\nd10=1";
-      node.appendChild(input);
-
-      const btn = document.createElement("button");
-      btn.className = "btn";
-      btn.textContent = "Apply";
-      btn.addEventListener("click", () => {
-        const lines = input.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-        state.rest.hitDiceSpent = state.rest.hitDiceSpent || {};
-        let totalSpent = 0;
-        lines.forEach(line => {
-          const m = line.match(/(d\d+)\s*=\s*(\d+)/i);
-          if (!m) return;
-          const die = m[1].toLowerCase();
-          const n = clamp(Number(m[2]||0), 0, 99);
-          state.rest.hitDiceSpent[die] = (Number(state.rest.hitDiceSpent[die]||0) + n);
-          totalSpent += n;
-        });
-        // Your rule: total spent adds to current HP. We store a command for tracker/sheet HP system to apply.
-        state.commands = Array.isArray(state.commands) ? state.commands : [];
-        state.commands.push({ type:"SHORT_REST_SPEND_HIT_DICE", totalDice: totalSpent, at: Date.now() });
-        saveAndSync();
-        closeModal();
-        showStatus("Short Rest applied");
-      });
-      node.appendChild(btn);
-      showModal("Short Rest", node);
-
-      // Warlock short rest slot restore can remain in combat tracker logic.
-      state.commands = Array.isArray(state.commands) ? state.commands : [];
-      state.commands.push({ type:"SHORT_REST", at: Date.now() });
-      saveAndSync();
-    } catch (e) { showError("Short rest failed", e); }
-  }
-
-  function longRest() {
-    try {
-      // Your rule 2B: fully reset hit dice pool (we track spent, so clear it)
-      state.rest.hitDiceSpent = {};
-      state.rest.lastLongRest = new Date().toISOString();
-      // Unlock prepared changes
-      state.spells.preparedLocked = false;
-      // Restore spell slots (set used to 0)
-      Object.keys(state.spells.slots || {}).forEach(k => state.spells.slots[k].used = 0);
-
-      state.commands = Array.isArray(state.commands) ? state.commands : [];
-      state.commands.push({ type:"LONG_REST", at: Date.now() });
-
-      saveAndSync();
-      renderAll();
-      showStatus("Long Rest applied");
-    } catch (e) { showError("Long rest failed", e); }
-  }
-
-  // ===== Cloud (lazy load, never blocks UI) =====
-  async function openCloud() {
-    try {
-      // Lazy-load existing js/cloud.js as a plain script
-      const src = dataUrl("js/cloud.js");
-      await loadScriptOnce(src, "oridian-cloud");
-      if (window.OridianCloud && typeof window.OridianCloud.open === "function") {
-        window.OridianCloud.open({
-          getState: () => state,
-          setState: (s) => { state = s; saveAndSync(); renderAll(); },
-          showError
-        });
-      } else {
-        showError("Cloud module loaded but API missing", new Error("window.OridianCloud.open not found"));
-      }
-    } catch (e) { showError("Cloud load failed", e); }
-  }
-
-  function loadScriptOnce(src, id) {
-    return new Promise((resolve, reject) => {
-      if (document.getElementById(id)) return resolve();
-      const s = document.createElement("script");
-      s.id = id;
-      s.src = src;
-      s.onload = () => resolve();
-      s.onerror = () => reject(new Error("Script load failed: " + src));
-      document.head.appendChild(s);
-    });
-  }
-
-  // ===== Import/Export =====
-  function exportState() {
-    try {
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type:"application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `oridian_character_${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) { showError("Export failed", e); }
-  }
-
-  async function importState() {
-    try {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "application/json";
-      input.onchange = async () => {
-        const file = input.files && input.files[0];
-        if (!file) return;
-        const text = await file.text();
-        const obj = JSON.parse(text);
-        const d = defaultState();
-        deepMerge(d, obj);
-        state = d;
-        saveAndSync();
-        renderAll();
-        showStatus("Imported");
-      };
-      input.click();
-    } catch (e) { showError("Import failed", e); }
-  }
-
-  // ===== Sync helper =====
-  function saveAndSync(emit=true) {
-    saveState();
-    if (emit) emitSync();
-  }
-
-  // ===== Combat Tracker commands intake (optional) =====
-  function handleCommands() {
-    // If combat tracker writes commands into state, this sheet will reflect them.
-    // For now: if a rest command is seen, apply sheet-side effects.
-    try {
-      const cmds = Array.isArray(state.commands) ? state.commands : [];
-      if (!cmds.length) return;
-      // Process and clear
-      const pending = cmds.slice();
-      state.commands = [];
-      pending.forEach(c => {
-        if (c.type === "LONG_REST") {
-          state.rest.hitDiceSpent = {};
-          state.spells.preparedLocked = false;
-          Object.keys(state.spells.slots || {}).forEach(k => state.spells.slots[k].used = 0);
-        }
-        if (c.type === "SHORT_REST") {
-          // Warlock slot restore can be applied elsewhere, no-op here
-        }
-      });
-      saveAndSync(false);
-    } catch (e) { showError("Command processing failed", e); }
-  }
-
-  // ===== Render all =====
-  function renderAll() {
-    calcEquipmentBonuses();
-    renderCore();
-    renderEquipment();
-    renderSpells();
-  }
-
-  async function init() {
-    breadcrumb("init:begin");
-    showStatus("Initializing…");
-
-    // Bind navigation first (so even later failures don't kill tabs)
-    try { bindTabs(); } catch (e) { showError("Tab binding failed", e); }
-
-    // Bind core inputs
-    try { bindCore(); } catch (e) { showError("Core binding failed", e); }
-
-    // Bind top actions
-    onClick("btnExport", () => exportState());
-    onClick("btnImport", () => importState());
-    onClick("btnSync", () => { emitSync(); showStatus("Synced"); });
-    onClick("btnShortRest", () => shortRest());
-    onClick("btnLongRest", () => longRest());
-    onClick("btnCloud", () => openCloud());
-
-    // Load data (safe)
-    try {
-      await ensureData();
-      populateDropdowns();
-      bindDropdowns();
-    } catch (e) { showError("Data init failed", e); }
-
-    // Normalize and compute derived
-    try {
-      normalizeEquipment();
-      calcEquipmentBonuses();
-      recalcSpellSlots();
-      handleCommands();
-    } catch (e) { showError("Normalization failed", e); }
-
-    // Initial render
-    try { renderAll(); } catch (e) { showError("Initial render failed", e); }
-
-    showStatus("Ready");
-    breadcrumb("init:ready");
-  }
-
-  function populateDropdowns() {
-    const bgSel = $("f_background");
-    const clsSel = $("f_class");
-
-    if (bgSel) {
-      bgSel.innerHTML = "";
-      const o0 = document.createElement("option");
-      o0.value = ""; o0.textContent = "None";
-      bgSel.appendChild(o0);
-      (data.backgrounds || []).forEach(bg => {
-        const o = document.createElement("option");
-        o.value = bg.id; o.textContent = bg.name;
-        bgSel.appendChild(o);
-      });
-      bgSel.value = state.backgroundId || "";
-    }
-
-    if (clsSel) {
-      clsSel.innerHTML = "";
-      const o0 = document.createElement("option");
-      o0.value = ""; o0.textContent = "None";
-      clsSel.appendChild(o0);
-
-      // classes.json may be array or object, support both
-      const classes = Array.isArray(data.classes) ? data.classes : (data.classes?.classes || []);
-      classes.forEach(c => {
-        const o = document.createElement("option");
-        o.value = c.id; o.textContent = c.name;
-        clsSel.appendChild(o);
-      });
-      clsSel.value = state.classId || "";
-    }
-
-    refreshSubclassOptions();
-
-    // Apply background once after population (ensures feature injection)
-    if (state.backgroundId) applyBackground(state.backgroundId);
-
-    // Ensure classLevels aligns
-    if (state.classId) setClassLevel(state.classId, state.classLevels[state.classId] || 1);
-  }
-
-  // ===== Start =====
-  let state = loadState();
-  init().catch(err => showError("Init crashed", err));
+  bindTabs();
+  setActive();
+  render();
 })();
 </script>
 </body>
