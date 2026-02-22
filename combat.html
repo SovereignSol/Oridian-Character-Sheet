@@ -1,11 +1,11 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Combat Tracker</title>
+<!DOCTYPE html>
 
-    <style>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Combat Tracker</title>
+<style>
       .topRow{display:flex;justify-content:space-between;align-items:center;gap:10px}
 
       :root {
@@ -491,356 +491,338 @@
 
       .footer { margin-top: 16px; font-size: 13px; color: var(--muted); }
     </style>
-  </head>
+</head>
+<body>
+&lt;!--
+UI LABEL MAP
+UI101 Core / Turn controls / Level &amp; Classes
+  UI101-1 Total Level (levelInput)
+  UI101-2 Multiclass toggle (multiclassToggle)
+  UI101-3 Class blocks container (classBlocks)
+  UI101-4 Short Rest (shortRest)
+  UI101-5 Long Rest (longRest)
+  UI101-6 Next Turn (nextTurn)
+  UI101-7 Open Calculator (openCalcTop)
+  UI101-8 Open Spellbook (openSpellbookTop)
+UI102 Spell Slots (spellSlotsWrap)
+  UI102-1 Reset Slots (spellsResetSlots)
+  UI102-2 Open Spellbook (openSpellbookSlots)
+UI103 Health and AC (combatCard)
+  UI103-1 HP Now display (hpNowText)
+  UI103-2 HP Max display (hpMaxText)
+  UI103-3 Temp HP display (hpTempText)
+  UI103-4 AC display (acText)
+  UI103-5 HP Max input (hpMaxInput)
+  UI103-6 Temp HP input (hpTempInput)
+  UI103-7 AC input (acInput)
+  UI103-8 Full Heal (hpFull)
+  UI103-9 Clear Temp HP (hpZeroTemp)
+  UI103-10 Open Calculator (openCalc)
+UI104 Spells (spellsCard)
+UI105 Abilities (abilitiesCard)
+UI106 Passive Abilities (passivesCard)
+--&gt;
 
-  <body>
-    <main class="wrap">
-      <header class="header">
-        <div class="topRow"><h1 style="margin:0">Combat Tracker</h1><a class="btn" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">Back</a></div>
-        <p class="sub">Spellcasting: ./data/spellcasting.json, Spells: ./data/spells.json</p>
-      </header>
-
-      <section class="card" id="coreCard" aria-label="Core">
-        <div class="row">
-          <label for="levelInput" class="label">Character Level (1 to 20)</label>
-          <input id="levelInput" type="number" min="1" max="20" step="1" />
-        </div>
-
-        <div class="row" style="margin-top: 10px;">
-          <label for="multiclassToggle" class="label">Multiclass</label>
-          <div class="controls" style="margin-top:0; justify-content:flex-end;">
-            <label class="pill"><input id="multiclassToggle" type="checkbox" /> Enable (2 classes max, pooled slots)</label>
-          </div>
-        </div>
-
-        <div class="classBlockWrap" aria-label="Class selection">
-          <div class="classBlockTitle">Class Spellcasting</div>
-          <div id="classBlocks"></div>
-          <div class="sub" id="classWarning"></div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="row">
-          <label for="buildManifestUrl" class="label">Build Manifest URL (optional)</label>
-          <input id="buildManifestUrl" type="url" placeholder="./data/builds/paladin_base.json (example)" />
-        </div>
-        <div class="controls" style="margin-top: 10px;">
-          <button id="loadManifest" class="btn" type="button">Load Manifest</button>
-          <button id="addPackage" class="btn" type="button">Add Package URL</button>
-          <button id="clearPackages" class="btn" type="button">Clear Packages</button>
-          <div class="sub" id="packageSummary" style="margin-left:auto;"></div>
-        </div>
-
-        <div class="topStats">
-          <div class="statBox">
-            <div class="statLabel" id="statALabel">Resource A</div>
-            <div class="statValue" id="statAText">0</div>
-          </div>
-          <div class="statBox">
-            <div class="statLabel" id="statBLabel">Resource B</div>
-            <div class="statValue" id="statBText">-</div>
-          </div>
-          <div class="statBox">
-            <div class="statLabel" id="statCLabel">Resource C</div>
-            <div class="statValue" id="statCText">-</div>
-          </div>
-        </div>
-
-        <div class="controls">
-          <button id="shortRest" class="btn" type="button">Short Rest</button>
-          <button id="longRest" class="btn" type="button">Long Rest</button>
-          <button id="nextTurn" class="btn" type="button">Next Turn</button>
-          <button id="openCalcTop" class="btn" type="button">Open Calculator</button>
-          <button id="openSpellbookTop" class="btn" type="button">Open Spellbook</button>
-        </div>
-
-        <div class="card" style="margin-top: 12px;">
-          <div class="sectionTitle">
-            <h2>Spell Slots</h2>
-            <div class="sub" id="spellMetaText"></div>
-          </div>
-
-          <div id="spellSlotsWrap"></div>
-
-          <div class="controls" style="margin-top: 12px;">
-            <button id="spellsResetSlots" class="btn" type="button">Reset Slots</button>
-            <button id="openSpellbookSlots" class="btn" type="button">Open Spellbook</button>
-          </div>
-
-          <div id="spellStatus" class="statusBar" role="status" aria-live="polite"></div>
-        </div>
-
-        <div class="economyWrap" aria-label="Action economy">
-          <div class="econRow">
-            <div class="econLeft">
-              <div class="econIcon"><img id="iconAction" alt="Action" /></div>
-              <div>Action</div>
-            </div>
-            <div class="econBtns">
-              <button id="basicAttack" class="btn" type="button">Basic Attack <span id="weaponDiceBadge" style="opacity:.75;font-weight:800"></span></button>
-              <button id="actionOptions" class="btn" type="button">Additional Options</button>
-            </div>
-          </div>
-
-          <div class="econRow">
-            <div class="econLeft">
-              <div class="econIcon"><img id="iconBonus" alt="Bonus action" /></div>
-              <div>Bonus Action</div>
-            </div>
-            <div class="econBtns">
-              <button id="offhandAttack" class="btn" type="button">Offhand Attack</button>
-              <button id="bonusOptions" class="btn" type="button">Additional Options</button>
-            </div>
-          </div>
-
-          <div class="econRow">
-            <div class="econLeft">
-              <div class="econIcon"><img id="iconReaction" alt="Reaction" /></div>
-              <div>Reaction</div>
-            </div>
-            <div class="econBtns">
-              <button id="oppAttack" class="btn" type="button">Attack of Opportunity</button>
-              <button id="readiedAttack" class="btn" type="button">Readied Attack</button>
-              <button id="readiedInfo" class="qBtn" type="button" aria-label="Readied action details">?</button>
-              <button id="reactionOptions" class="btn" type="button">Additional Options</button>
-            </div>
-          </div>
-        </div>
-
-        <div id="statusBar" class="statusBar" role="status" aria-live="polite"></div>
-      </section>
-
-      <section class="card" id="combatCard" aria-label="Health and AC">
-        <div class="sectionTitle">
-          <h2>Health and AC</h2>
-          <div class="sub"></div>
-        </div>
-
-        <div class="hpGrid">
-          <div class="statBox">
-            <div class="statLabel">Current HP</div>
-            <div class="statValue" id="hpNowText">0</div>
-          </div>
-          <div class="statBox">
-            <div class="statLabel">Max HP</div>
-            <div class="statValue" id="hpMaxText">0</div>
-          </div>
-          <div class="statBox">
-            <div class="statLabel">Temp HP</div>
-            <div class="statValue" id="hpTempText">0</div>
-          </div>
-          <div class="statBox">
-            <div class="statLabel">AC</div>
-            <div class="statValue" id="acText">10</div>
-          </div>
-        </div>
-
-        <div class="hpControls">
-          <div>
-            <label class="label" for="hpMaxInput">Set Max HP</label>
-            <input id="hpMaxInput" type="number" min="0" step="1" />
-          </div>
-          <div>
-            <label class="label" for="hpTempInput">Set Temp HP</label>
-            <input id="hpTempInput" type="number" min="0" step="1" />
-          </div>
-          <div>
-            <label class="label" for="acInput">Set AC</label>
-            <input id="acInput" type="number" min="0" step="1" />
-          </div>
-          <div class="controls" style="margin-top:0">
-            <button id="hpFull" class="btn" type="button">Full Heal</button>
-            <button id="hpZeroTemp" class="btn" type="button">Clear Temp</button>
-            <button id="openCalc" class="btn" type="button">Open Calculator</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="card" id="spellsCard" aria-label="Spells">
-        <div class="sectionTitle">
-          <h2 id="spellsSectionTitle">Spells</h2>
-          <div class="sub" id="spellsSectionSub">Prepared casters: manage prepared spells. Known casters: manage known spells.</div>
-        </div>
-
-        <div class="controls" style="margin-top: 12px;">
-          <button id="spellsManageBtn" class="btn" type="button">Manage Spells</button>
-          <div class="sub" id="spellsLimitText" style="margin-left:auto;"></div>
-        </div>
-
-        <div id="spellsGrid" class="spellGrid"></div>
-        <div id="spellsStatus" class="statusBar" role="status" aria-live="polite"></div>
-      </section>
-
-      <section class="card" id="abilitiesCard" aria-label="Abilities">
-        <div class="sectionTitle">
-          <h2>Abilities</h2>
-          <div class="sub">Loaded from packages, spend action economy when used.</div>
-        </div>
-        <div id="abilitiesGrid" class="abilityGrid"></div>
-      </section>
-
-      <section class="card" id="passivesCard" aria-label="Passive Abilities">
-        <div class="sectionTitle">
-          <h2>Passive Abilities</h2>
-          <div class="sub">Loaded from packages, reference only.</div>
-        </div>
-        <div id="passivesGrid" class="abilityGrid"></div>
-      </section>
-
-      <footer class="footer">Saved in your browser (localStorage).</footer>
-
-      <dialog id="infoDialog" aria-label="Info dialog">
-        <div class="dlgHead">
-          <h3 class="dlgTitle" id="dlgTitle">Info</h3>
-          <button class="qBtn" id="dlgX" type="button" aria-label="Close dialog">×</button>
-        </div>
-        <div class="dlgBody">
-          <p id="dlgDesc"></p>
-          <div class="dlgMeta" id="dlgMeta"></div>
-        </div>
-        <div class="dlgActions">
-          <button class="btn" id="dlgClose" type="button">Close</button>
-        </div>
-      </dialog>
-
-      <dialog id="spellbookDialog" aria-label="Spellbook dialog">
-        <div class="dlgHead">
-          <h3 class="dlgTitle" id="spellbookTitle">Spellbook</h3>
-          <button class="qBtn" id="spellbookX" type="button" aria-label="Close dialog">×</button>
-        </div>
-
-        <div class="dlgBody">
-          <div class="controls" style="margin-top: 0;">
-            <input id="spellSearch" type="text" placeholder="Search spells..." />
-            <select id="spellLevelFilter">
-              <option value="all">All levels</option>
-              <option value="0">Cantrips</option>
-              <option value="1">Level 1</option>
-              <option value="2">Level 2</option>
-              <option value="3">Level 3</option>
-              <option value="4">Level 4</option>
-              <option value="5">Level 5</option>
-              <option value="6">Level 6</option>
-              <option value="7">Level 7</option>
-              <option value="8">Level 8</option>
-              <option value="9">Level 9</option>
-            </select>
-          </div>
-
-          <div class="popupGrid" style="margin-top: 12px;">
-            <div class="popupSection">
-              <div class="popupSectionTitle" id="spellbookMainTitle">Class Spells</div>
-              <div id="spellbookList" class="popupBtns"></div>
-            </div>
-
-            <div class="popupSection">
-              <div class="popupSectionTitle" id="spellbookRightTitle">Package (Subclass) Spells</div>
-              <div id="spellbookRightList" class="popupBtns"></div>
-            </div>
-          </div>
-
-          <div class="statusBar" id="spellbookStatus" role="status" aria-live="polite"></div>
-        </div>
-
-        <div class="dlgActions">
-          <button class="btn" id="spellbookClose" type="button">Close</button>
-        </div>
-      </dialog>
-
-      <dialog id="castDialog" aria-label="Cast spell dialog">
-        <div class="dlgHead">
-          <h3 class="dlgTitle" id="castTitle">Cast Spell</h3>
-          <button class="qBtn" id="castX" type="button" aria-label="Close dialog">×</button>
-        </div>
-        <div class="dlgBody">
-          <div class="row" style="grid-template-columns: 1fr 280px;">
-            <label class="label" for="castSlotLevel">Spell Slot Level</label>
-            <select id="castSlotLevel"></select>
-          </div>
-
-          <div class="row" style="margin-top: 10px; grid-template-columns: 1fr 280px;">
-            <label class="label" for="castEconomy">Consumes</label>
-            <select id="castEconomy"></select>
-          </div>
-
-          <div class="statBox" style="margin-top: 12px;">
-            <div class="statLabel">Spell Details</div>
-            <div class="statValue" style="font-size: 13px; font-weight: 500; margin-top: 8px; white-space: pre-wrap;" id="castDetailsText"></div>
-          </div>
-
-          <div class="statBox" style="margin-top: 10px;">
-            <div class="statLabel">Rules Text</div>
-            <div class="statValue" style="font-size: 13px; font-weight: 500; margin-top: 8px; white-space: pre-wrap;" id="castRulesText"></div>
-          </div>
-
-          <div class="statBox" style="margin-top: 10px;">
-            <div class="statLabel">At Higher Levels</div>
-            <div class="statValue" style="font-size: 13px; font-weight: 500; margin-top: 8px; white-space: pre-wrap;" id="castHigherText"></div>
-          </div>
-
-          <div class="statusBar" id="castStatus" role="status" aria-live="polite"></div>
-        </div>
-        <div class="dlgActions">
-          <button class="btn" id="castConfirm" type="button">Cast</button>
-          <button class="btn" id="castClose" type="button">Close</button>
-        </div>
-      </dialog>
-
-      <dialog id="calcDialog" aria-label="Calculator dialog">
-        <div class="dlgHead">
-          <h3 class="dlgTitle">Calculator</h3>
-          <button class="qBtn" id="calcX" type="button" aria-label="Close dialog">×</button>
-        </div>
-        <div class="dlgBody">
-          <div class="calcDisplayBox">
-            <div class="calcExpr" id="calcExpr"></div>
-            <div class="calcResult" id="calcResult">0</div>
-          </div>
-
-          <div class="controls" style="margin-top: 12px">
-            <button id="applyAsDamage" class="btn" type="button">Apply Result as Damage</button>
-            <button id="applyAsHeal" class="btn" type="button">Apply Result as Healing</button>
-            <button id="calcCopy" class="btn" type="button">Copy Result</button>
-          </div>
-
-          <div class="calcGrid" id="calcGrid">
-            <button class="calcKey danger" data-k="C" type="button">C</button>
-            <button class="calcKey" data-k="(" type="button">(</button>
-            <button class="calcKey" data-k=")" type="button">)</button>
-            <button class="calcKey" data-k="⌫" type="button">⌫</button>
-
-            <button class="calcKey" data-k="7" type="button">7</button>
-            <button class="calcKey" data-k="8" type="button">8</button>
-            <button class="calcKey" data-k="9" type="button">9</button>
-            <button class="calcKey" data-k="/" type="button">÷</button>
-
-            <button class="calcKey" data-k="4" type="button">4</button>
-            <button class="calcKey" data-k="5" type="button">5</button>
-            <button class="calcKey" data-k="6" type="button">6</button>
-            <button class="calcKey" data-k="*" type="button">×</button>
-
-            <button class="calcKey" data-k="1" type="button">1</button>
-            <button class="calcKey" data-k="2" type="button">2</button>
-            <button class="calcKey" data-k="3" type="button">3</button>
-            <button class="calcKey" data-k="-" type="button">−</button>
-
-            <button class="calcKey wide" data-k="0" type="button">0</button>
-            <button class="calcKey" data-k="." type="button">.</button>
-            <button class="calcKey" data-k="+" type="button">+</button>
-
-            <button class="calcKey ok wide" data-k="=" type="button">=</button>
-          </div>
-
-          <div class="statusBar" id="calcStatus" role="status" aria-live="polite"></div>
-        </div>
-        <div class="dlgActions">
-          <button class="btn" id="calcClose" type="button">Close</button>
-        </div>
-      </dialog>
-    </main>
-
-    <script>
+<main class="wrap">
+<header class="header">
+<div class="topRow"><h1 style="margin:0">Combat Tracker</h1><a class="btn" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">Back</a></div>
+<p class="sub">Spellcasting: ./data/spellcasting.json, Spells: ./data/spells.json</p>
+</header>
+<section aria-label="Core" class="card" data-ui="UI101" id="coreCard">
+<div class="row">
+<label class="label" for="levelInput">Character Level (1 to 20)</label>
+<input data-ui="UI101-1" id="levelInput" max="20" min="1" step="1" type="number"/>
+</div>
+<div class="row" style="margin-top: 10px;">
+<label class="label" for="multiclassToggle">Multiclass</label>
+<div class="controls" style="margin-top:0; justify-content:flex-end;">
+<label class="pill"><input data-ui="UI101-2" id="multiclassToggle" type="checkbox"/> Enable (2 classes max, pooled slots)</label>
+</div>
+</div>
+<div aria-label="Class selection" class="classBlockWrap">
+<div class="classBlockTitle">Class Spellcasting</div>
+<div data-ui="UI101-3" id="classBlocks"></div>
+<div class="sub" id="classWarning"></div>
+</div>
+<div class="divider"></div>
+<div class="row">
+<label class="label" for="buildManifestUrl">Build Manifest URL (optional)</label>
+<input id="buildManifestUrl" placeholder="./data/builds/paladin_base.json (example)" type="url"/>
+</div>
+<div class="controls" style="margin-top: 10px;">
+<button class="btn" id="loadManifest" type="button">Load Manifest</button>
+<button class="btn" id="addPackage" type="button">Add Package URL</button>
+<button class="btn" id="clearPackages" type="button">Clear Packages</button>
+<div class="sub" id="packageSummary" style="margin-left:auto;"></div>
+</div>
+<div class="topStats">
+<div class="statBox">
+<div class="statLabel" id="statALabel">Resource A</div>
+<div class="statValue" id="statAText">0</div>
+</div>
+<div class="statBox">
+<div class="statLabel" id="statBLabel">Resource B</div>
+<div class="statValue" id="statBText">-</div>
+</div>
+<div class="statBox">
+<div class="statLabel" id="statCLabel">Resource C</div>
+<div class="statValue" id="statCText">-</div>
+</div>
+</div>
+<div class="controls">
+<button class="btn" data-ui="UI101-4" id="shortRest" type="button">Short Rest</button>
+<button class="btn" data-ui="UI101-5" id="longRest" type="button">Long Rest</button>
+<button class="btn" data-ui="UI101-6" id="nextTurn" type="button">Next Turn</button>
+<button class="btn" data-ui="UI101-7" id="openCalcTop" type="button">Open Calculator</button>
+<button class="btn" data-ui="UI101-8" id="openSpellbookTop" type="button">Open Spellbook</button>
+</div>
+<div class="card" data-ui="UI102" style="margin-top: 12px;">
+<div class="sectionTitle">
+<h2>Spell Slots</h2>
+<div class="sub" id="spellMetaText"></div>
+</div>
+<div data-ui="UI102" id="spellSlotsWrap"></div>
+<div class="controls" style="margin-top: 12px;">
+<button class="btn" data-ui="UI102-1" id="spellsResetSlots" type="button">Reset Slots</button>
+<button class="btn" data-ui="UI102-2" id="openSpellbookSlots" type="button">Open Spellbook</button>
+</div>
+<div aria-live="polite" class="statusBar" id="spellStatus" role="status"></div>
+</div>
+<div aria-label="Action economy" class="economyWrap">
+<div class="econRow">
+<div class="econLeft">
+<div class="econIcon"><img alt="Action" id="iconAction"/></div>
+<div>Action</div>
+</div>
+<div class="econBtns">
+<button class="btn" id="basicAttack" type="button">Basic Attack <span id="weaponDiceBadge" style="opacity:.75;font-weight:800"></span></button>
+<button class="btn" id="actionOptions" type="button">Additional Options</button>
+</div>
+</div>
+<div class="econRow">
+<div class="econLeft">
+<div class="econIcon"><img alt="Bonus action" id="iconBonus"/></div>
+<div>Bonus Action</div>
+</div>
+<div class="econBtns">
+<button class="btn" id="offhandAttack" type="button">Offhand Attack</button>
+<button class="btn" id="bonusOptions" type="button">Additional Options</button>
+</div>
+</div>
+<div class="econRow">
+<div class="econLeft">
+<div class="econIcon"><img alt="Reaction" id="iconReaction"/></div>
+<div>Reaction</div>
+</div>
+<div class="econBtns">
+<button class="btn" id="oppAttack" type="button">Attack of Opportunity</button>
+<button class="btn" id="readiedAttack" type="button">Readied Attack</button>
+<button aria-label="Readied action details" class="qBtn" id="readiedInfo" type="button">?</button>
+<button class="btn" id="reactionOptions" type="button">Additional Options</button>
+</div>
+</div>
+</div>
+<div aria-live="polite" class="statusBar" id="statusBar" role="status"></div>
+</section>
+<section aria-label="Health and AC" class="card" data-ui="UI103" id="combatCard">
+<div class="sectionTitle">
+<h2>Health and AC</h2>
+<div class="sub"></div>
+</div>
+<div class="hpGrid">
+<div class="statBox">
+<div class="statLabel">Current HP</div>
+<div class="statValue" data-ui="UI103-1" id="hpNowText">0</div>
+</div>
+<div class="statBox">
+<div class="statLabel">Max HP</div>
+<div class="statValue" data-ui="UI103-2" id="hpMaxText">0</div>
+</div>
+<div class="statBox">
+<div class="statLabel">Temp HP</div>
+<div class="statValue" data-ui="UI103-3" id="hpTempText">0</div>
+</div>
+<div class="statBox">
+<div class="statLabel">AC</div>
+<div class="statValue" data-ui="UI103-4" id="acText">10</div>
+</div>
+</div>
+<div class="hpControls">
+<div>
+<label class="label" for="hpMaxInput">Set Max HP</label>
+<input data-ui="UI103-5" id="hpMaxInput" min="0" step="1" type="number"/>
+</div>
+<div>
+<label class="label" for="hpTempInput">Set Temp HP</label>
+<input data-ui="UI103-6" id="hpTempInput" min="0" step="1" type="number"/>
+</div>
+<div>
+<label class="label" for="acInput">Set AC</label>
+<input data-ui="UI103-7" id="acInput" min="0" step="1" type="number"/>
+</div>
+<div class="controls" style="margin-top:0">
+<button class="btn" data-ui="UI103-8" id="hpFull" type="button">Full Heal</button>
+<button class="btn" data-ui="UI103-9" id="hpZeroTemp" type="button">Clear Temp</button>
+<button class="btn" data-ui="UI103-10" id="openCalc" type="button">Open Calculator</button>
+</div>
+</div>
+</section>
+<section aria-label="Spells" class="card" data-ui="UI104" id="spellsCard">
+<div class="sectionTitle">
+<h2 id="spellsSectionTitle">Spells</h2>
+<div class="sub" id="spellsSectionSub">Prepared casters: manage prepared spells. Known casters: manage known spells.</div>
+</div>
+<div class="controls" style="margin-top: 12px;">
+<button class="btn" id="spellsManageBtn" type="button">Manage Spells</button>
+<div class="sub" id="spellsLimitText" style="margin-left:auto;"></div>
+</div>
+<div class="spellGrid" id="spellsGrid"></div>
+<div aria-live="polite" class="statusBar" id="spellsStatus" role="status"></div>
+</section>
+<section aria-label="Abilities" class="card" data-ui="UI105" id="abilitiesCard">
+<div class="sectionTitle">
+<h2>Abilities</h2>
+<div class="sub">Loaded from packages, spend action economy when used.</div>
+</div>
+<div class="abilityGrid" id="abilitiesGrid"></div>
+</section>
+<section aria-label="Passive Abilities" class="card" data-ui="UI106" id="passivesCard">
+<div class="sectionTitle">
+<h2>Passive Abilities</h2>
+<div class="sub">Loaded from packages, reference only.</div>
+</div>
+<div class="abilityGrid" id="passivesGrid"></div>
+</section>
+<footer class="footer">Saved in your browser (localStorage).</footer>
+<dialog aria-label="Info dialog" id="infoDialog">
+<div class="dlgHead">
+<h3 class="dlgTitle" id="dlgTitle">Info</h3>
+<button aria-label="Close dialog" class="qBtn" id="dlgX" type="button">×</button>
+</div>
+<div class="dlgBody">
+<p id="dlgDesc"></p>
+<div class="dlgMeta" id="dlgMeta"></div>
+</div>
+<div class="dlgActions">
+<button class="btn" id="dlgClose" type="button">Close</button>
+</div>
+</dialog>
+<dialog aria-label="Spellbook dialog" id="spellbookDialog">
+<div class="dlgHead">
+<h3 class="dlgTitle" id="spellbookTitle">Spellbook</h3>
+<button aria-label="Close dialog" class="qBtn" id="spellbookX" type="button">×</button>
+</div>
+<div class="dlgBody">
+<div class="controls" style="margin-top: 0;">
+<input id="spellSearch" placeholder="Search spells..." type="text"/>
+<select id="spellLevelFilter">
+<option value="all">All levels</option>
+<option value="0">Cantrips</option>
+<option value="1">Level 1</option>
+<option value="2">Level 2</option>
+<option value="3">Level 3</option>
+<option value="4">Level 4</option>
+<option value="5">Level 5</option>
+<option value="6">Level 6</option>
+<option value="7">Level 7</option>
+<option value="8">Level 8</option>
+<option value="9">Level 9</option>
+</select>
+</div>
+<div class="popupGrid" style="margin-top: 12px;">
+<div class="popupSection">
+<div class="popupSectionTitle" id="spellbookMainTitle">Class Spells</div>
+<div class="popupBtns" id="spellbookList"></div>
+</div>
+<div class="popupSection">
+<div class="popupSectionTitle" id="spellbookRightTitle">Package (Subclass) Spells</div>
+<div class="popupBtns" id="spellbookRightList"></div>
+</div>
+</div>
+<div aria-live="polite" class="statusBar" id="spellbookStatus" role="status"></div>
+</div>
+<div class="dlgActions">
+<button class="btn" id="spellbookClose" type="button">Close</button>
+</div>
+</dialog>
+<dialog aria-label="Cast spell dialog" id="castDialog">
+<div class="dlgHead">
+<h3 class="dlgTitle" id="castTitle">Cast Spell</h3>
+<button aria-label="Close dialog" class="qBtn" id="castX" type="button">×</button>
+</div>
+<div class="dlgBody">
+<div class="row" style="grid-template-columns: 1fr 280px;">
+<label class="label" for="castSlotLevel">Spell Slot Level</label>
+<select id="castSlotLevel"></select>
+</div>
+<div class="row" style="margin-top: 10px; grid-template-columns: 1fr 280px;">
+<label class="label" for="castEconomy">Consumes</label>
+<select id="castEconomy"></select>
+</div>
+<div class="statBox" style="margin-top: 12px;">
+<div class="statLabel">Spell Details</div>
+<div class="statValue" id="castDetailsText" style="font-size: 13px; font-weight: 500; margin-top: 8px; white-space: pre-wrap;"></div>
+</div>
+<div class="statBox" style="margin-top: 10px;">
+<div class="statLabel">Rules Text</div>
+<div class="statValue" id="castRulesText" style="font-size: 13px; font-weight: 500; margin-top: 8px; white-space: pre-wrap;"></div>
+</div>
+<div class="statBox" style="margin-top: 10px;">
+<div class="statLabel">At Higher Levels</div>
+<div class="statValue" id="castHigherText" style="font-size: 13px; font-weight: 500; margin-top: 8px; white-space: pre-wrap;"></div>
+</div>
+<div aria-live="polite" class="statusBar" id="castStatus" role="status"></div>
+</div>
+<div class="dlgActions">
+<button class="btn" id="castConfirm" type="button">Cast</button>
+<button class="btn" id="castClose" type="button">Close</button>
+</div>
+</dialog>
+<dialog aria-label="Calculator dialog" id="calcDialog">
+<div class="dlgHead">
+<h3 class="dlgTitle">Calculator</h3>
+<button aria-label="Close dialog" class="qBtn" id="calcX" type="button">×</button>
+</div>
+<div class="dlgBody">
+<div class="calcDisplayBox">
+<div class="calcExpr" id="calcExpr"></div>
+<div class="calcResult" id="calcResult">0</div>
+</div>
+<div class="controls" style="margin-top: 12px">
+<button class="btn" id="applyAsDamage" type="button">Apply Result as Damage</button>
+<button class="btn" id="applyAsHeal" type="button">Apply Result as Healing</button>
+<button class="btn" id="calcCopy" type="button">Copy Result</button>
+</div>
+<div class="calcGrid" id="calcGrid">
+<button class="calcKey danger" data-k="C" type="button">C</button>
+<button class="calcKey" data-k="(" type="button">(</button>
+<button class="calcKey" data-k=")" type="button">)</button>
+<button class="calcKey" data-k="⌫" type="button">⌫</button>
+<button class="calcKey" data-k="7" type="button">7</button>
+<button class="calcKey" data-k="8" type="button">8</button>
+<button class="calcKey" data-k="9" type="button">9</button>
+<button class="calcKey" data-k="/" type="button">÷</button>
+<button class="calcKey" data-k="4" type="button">4</button>
+<button class="calcKey" data-k="5" type="button">5</button>
+<button class="calcKey" data-k="6" type="button">6</button>
+<button class="calcKey" data-k="*" type="button">×</button>
+<button class="calcKey" data-k="1" type="button">1</button>
+<button class="calcKey" data-k="2" type="button">2</button>
+<button class="calcKey" data-k="3" type="button">3</button>
+<button class="calcKey" data-k="-" type="button">−</button>
+<button class="calcKey wide" data-k="0" type="button">0</button>
+<button class="calcKey" data-k="." type="button">.</button>
+<button class="calcKey" data-k="+" type="button">+</button>
+<button class="calcKey ok wide" data-k="=" type="button">=</button>
+</div>
+<div aria-live="polite" class="statusBar" id="calcStatus" role="status"></div>
+</div>
+<div class="dlgActions">
+<button class="btn" id="calcClose" type="button">Close</button>
+</div>
+</dialog>
+</main>
+<script>
       "use strict";
 
       const SPELLCASTING_URL = "./data/spellcasting.json";
@@ -3216,5 +3198,5 @@ const DEFAULT_ICONS_BASE = "./Icons/";
 
       document.addEventListener("DOMContentLoaded", init);
     </script>
-  </body>
+</body>
 </html>

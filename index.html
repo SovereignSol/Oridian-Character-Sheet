@@ -1,10 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>D&D Mobile Tracker</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>D&amp;D Mobile Tracker</title>
+<style>
     :root{--bg:#0b0f14;--panel:rgba(18,26,35,.92);--border:#223041;--text:#e9eef5;--muted:#97a6b8;}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
@@ -22,26 +23,31 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>D&D Mobile Tracker</h1>
-    <div class="sub">Choose Combat Tracker or Character Sheet.</div>
-  </header>
+&lt;!--
+UI LABEL MAP
+UI201 Link card: Combat Tracker
+UI202 Link card: Character Sheet
+--&gt;
 
-  <div class="wrap">
-    <div class="panel">
-      <div class="panelBody">
-        <div class="menuGrid">
-          <a class="menuCard" href="./combat.html">
-            <div class="menuTitle">Combat Tracker</div>
-            <div class="menuHint">Run turns, track HP, manage spell slots.</div>
-          </a>
-          <a class="menuCard" href="./sheet.html">
-            <div class="menuTitle">Character Sheet</div>
-            <div class="menuHint">Abilities, saves, skills, class levels, feats and ASI, cloud.</div>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+<header>
+<h1>D&amp;D Mobile Tracker</h1>
+<div class="sub">Choose Combat Tracker or Character Sheet.</div>
+</header>
+<div class="wrap">
+<div class="panel">
+<div class="panelBody">
+<div class="menuGrid">
+<a class="menuCard" data-ui="UI201" href="./combat.html">
+<div class="menuTitle">Combat Tracker</div>
+<div class="menuHint">Run turns, track HP, manage spell slots.</div>
+</a>
+<a class="menuCard" data-ui="UI202" href="./sheet.html">
+<div class="menuTitle">Character Sheet</div>
+<div class="menuHint">Abilities, saves, skills, class levels, feats and ASI, cloud.</div>
+</a>
+</div>
+</div>
+</div>
+</div>
 </body>
 </html>

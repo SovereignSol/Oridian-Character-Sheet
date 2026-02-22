@@ -42,6 +42,33 @@ textarea{min-height:140px;resize:vertical}
 </style>
 </head>
 <body>
+
+<!--
+UI LABEL MAP (for editing and support)
+UI1  Identity box
+  UI1-1 Name input
+  UI1-2 Race input
+  UI1-3 Alignment input
+  UI1-4 Background select
+UI2  Class box
+  UI2-1 Multiclass toggle
+  UI2-2 Primary class block
+    UI2-2-1 Class select
+    UI2-2-2 Class level input
+    UI2-2-3 Subclass select
+  UI2-3 Secondary class block (shown when multiclass enabled)
+UI3  Abilities box
+  UI3-1 STR, UI3-2 DEX, UI3-3 CON, UI3-4 INT, UI3-5 WIS, UI3-6 CHA
+UI4  Combat box
+  UI4-1 HP Max, UI4-2 HP Now, UI4-3 Temp HP, UI4-4 AC Base, UI4-5 Speed, UI4-6 Apply Suggested HP
+UI5  Skills box (each skill card uses UI5-<skillId>)
+UI6  Details box
+  UI6-1 Appearance, UI6-2 Backstory, UI6-3 Allies, UI6-4 Treasure
+UI7  Spells summary box
+UI8  Always Prepared box
+UI9  Spell level boxes (UI9-L0..UI9-L9), rows use UI9-L<level>-<spellId> and controls suffix -K (Known), -P (Prepared), -V (View)
+UI10 Spell Notes box
+-->
 <header><h1>Character Sheet</h1></header>
 <div class="wrap">
   <div class="panel">
@@ -139,11 +166,11 @@ textarea{min-height:140px;resize:vertical}
     }
     return n;
   }
-  function field(label, control){
-    return el("label",{class:"field"},[el("div",{class:"lbl"},[label]), control]);
+  function field(label, control, ui){
+    return el("label", Object.assign({class:"field"}, ui?{"data-ui":ui}:{}),[el("div",{class:"lbl"},[label]), control]);
   }
-  function box(title, bodyKids){
-    return el("section",{class:"box"},[
+  function box(title, bodyKids, ui){
+    return el("section", Object.assign({class:"box"}, ui?{"data-ui":ui}:{}),[
       el("div",{class:"boxHead"},[el("div",{class:"boxTitle"},[title])]),
       el("div",{class:"boxBody"}, bodyKids || [])
     ]);
@@ -350,19 +377,19 @@ textarea{min-height:140px;resize:vertical}
 	    const left = el("div", { class: "row", style: "gap:12px; align-items:flex-start" }, [
 	      el("div", { style: "flex:1; min-width:260px" }, [
 	        box("Identity", [
-	          field("Name", el("input", { value: st.name || "", oninput: (e)=>{ st.name = e.target.value; saveState(st); } })),
-	          field("Race", el("input", { value: st.race || "", oninput: (e)=>{ st.race = e.target.value; saveState(st); } })),
-	          field("Alignment", el("input", { value: st.alignment || "", oninput: (e)=>{ st.alignment = e.target.value; saveState(st); } })),
-	          field("Background", backgroundSelect(st)),
-	        ]),
+	          field("Name", el("input", { "data-ui":"UI1-1", value: st.name || "", oninput: (e)=>{ st.name = e.target.value; saveState(st); } }), "UI1-1"),
+	          field("Race", el("input", { "data-ui":"UI1-2", value: st.race || "", oninput: (e)=>{ st.race = e.target.value; saveState(st); } }), "UI1-2"),
+	          field("Alignment", el("input", { "data-ui":"UI1-3", value: st.alignment || "", oninput: (e)=>{ st.alignment = e.target.value; saveState(st); } }), "UI1-3"),
+	          field("Background", backgroundSelect(st,"UI1-4"), "UI1-4"),
+	        ], "UI1"),
 	        box("Class", [
-	          classBlockEditor(st, "primary", "Primary"),
-	          field("Multiclass", el("select", { onchange: (e)=>{ st.multiclass = e.target.value === "yes"; saveState(st); render(); } }, [
+	          classBlockEditor(st, "primary", "Primary", "UI2-2"),
+	          field("Multiclass", el("select", { "data-ui":"UI2-1", onchange: (e)=>{ st.multiclass = e.target.value === "yes"; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-1"}:{}), [
 	            el("option", { value: "no", selected: !st.multiclass }, ["No"]),
 	            el("option", { value: "yes", selected: !!st.multiclass }, ["Yes"]),
 	          ])),
-	          st.multiclass ? classBlockEditor(st, "secondary", "Secondary") : el("div", { class: "note" }, ["Enable multiclass to add a secondary class."])
-	        ]),
+	          st.multiclass ? classBlockEditor(st, "secondary", "Secondary", "UI2-3") : el("div", { class: "note" }, ["Enable multiclass to add a secondary class."])
+	        ], "UI2"),
 	      ]),
 	      el("div", { style: "flex:1; min-width:260px" }, [
 	        box("Abilities", abilityList.map(a => {
@@ -373,20 +400,20 @@ textarea{min-height:140px;resize:vertical}
 	            render();
 	          } });
 	          const mod = abilityMod(st.abilities?.[a] ?? 10);
-	          return el("div", { class: "smallCard" }, [
+	          return el("div", { class: "smallCard", "data-ui": "UI3-" + a }, [
 	            el("div", { style: "display:flex; justify-content:space-between; align-items:center" }, [
 	              el("div", { style: "font-weight:900" }, [a]),
 	              el("div", { style: "color:var(--muted); font-size:12px" }, [`mod ${formatSigned(mod)}`])
 	            ]),
 	            inp,
 	          ]);
-	        })),
+	        })), "UI3"),
 	        box("Combat", [
-	          field("HP Max", el("input", { type:"number", min:"0", max:"9999", value: String(st.combat?.hpMax ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpMax=Number(e.target.value||0); if(st.combat.hpNow>st.combat.hpMax) st.combat.hpNow=st.combat.hpMax; saveState(st); } })),
-	          field("HP Now", el("input", { type:"number", min:"0", max:String(st.combat?.hpMax ?? 9999), value: String(st.combat?.hpNow ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpNow=Number(e.target.value||0); saveState(st); } })),
-	          field("Temp HP", el("input", { type:"number", min:"0", max:"9999", value: String(st.combat?.hpTemp ?? 0), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpTemp=Number(e.target.value||0); saveState(st); } })),
-	          field("AC Base", el("input", { type:"number", min:"0", max:"99", value: String(st.combat?.acBase ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.acBase=Number(e.target.value||0); saveState(st); } })),
-	          field("Speed", el("input", { type:"number", min:"0", max:"999", value: String(st.combat?.speed ?? 30), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.speed=Number(e.target.value||0); saveState(st); } })),
+	          field("HP Max", el("input", { "data-ui":"UI4-1", type:"number", min:"0", max:"9999", value: String(st.combat?.hpMax ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpMax=Number(e.target.value||0); if(st.combat.hpNow>st.combat.hpMax) st.combat.hpNow=st.combat.hpMax; saveState(st); } }), "UI4-1"),
+	          field("HP Now", el("input", { "data-ui":"UI4-2", type:"number", min:"0", max:String(st.combat?.hpMax ?? 9999), value: String(st.combat?.hpNow ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpNow=Number(e.target.value||0); saveState(st); } }), "UI4-2"),
+	          field("Temp HP", el("input", { "data-ui":"UI4-3", type:"number", min:"0", max:"9999", value: String(st.combat?.hpTemp ?? 0), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.hpTemp=Number(e.target.value||0); saveState(st); } }), "UI4-3"),
+	          field("AC Base", el("input", { "data-ui":"UI4-4", type:"number", min:"0", max:"99", value: String(st.combat?.acBase ?? 10), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.acBase=Number(e.target.value||0); saveState(st); } }), "UI4-4"),
+	          field("Speed", el("input", { "data-ui":"UI4-5", type:"number", min:"0", max:"999", value: String(st.combat?.speed ?? 30), oninput:(e)=>{ st.combat=st.combat||{}; st.combat.speed=Number(e.target.value||0); saveState(st); } }), "UI4-5"),
 	          (() => {
               const totalLv = totalCharacterLevel(st);
               const pb = proficiencyBonusByTotalLevel(totalLv);
@@ -406,7 +433,7 @@ textarea{min-height:140px;resize:vertical}
               }
               parts.push(`Suggested HP Max (avg): ${recHp}`);
               const body = el("div",{class:"note"},[parts.join(" | ")]);
-              const btn = el("button",{class:"btn",type:"button",style:"margin-top:8px",onclick:()=>{
+              const btn = el("button",{class:"btn","data-ui":"UI4-6",type:"button",style:"margin-top:8px",onclick:()=>{
                 st.combat=st.combat||{};
                 st.combat.hpMax = recHp;
                 if((st.combat.hpNow||0) > recHp) st.combat.hpNow = recHp;
@@ -415,7 +442,7 @@ textarea{min-height:140px;resize:vertical}
               }},["Apply Suggested HP Max"]);
               return el("div",{},[body, btn]);
             })()
-	        ]),
+	        ], "UI4"),
 	      ])
 	    ]);
 	
@@ -429,59 +456,59 @@ textarea{min-height:140px;resize:vertical}
 	      const pb = proficiencyBonus(st.level);
 	      const add = cur===1 ? pb : (cur===2 ? pb*2 : 0);
 	      const total = mod + add;
-	      return el("div", { class:"smallCard" }, [
+	      return el("div", Object.assign({ class:"smallCard" }, uiBase?{"data-ui":uiBase}:{}), [
 	        el("div", { style: "display:flex; justify-content:space-between; gap:10px; align-items:center" }, [
 	          el("div", {}, [`${sm.label} `, el("span", { style:"color:var(--muted); font-size:12px" }, [`(${sm.ability})`])]),
 	          el("div", { style:"color:var(--muted); font-size:12px" }, [`bonus ${formatSigned(total)}`]),
 	        ]),
 	        dd,
 	      ]);
-	    }));
+	    })), "UI5");
 	
 	    return el("div", {}, [left, el("div", { style:"margin-top:12px" }, [skillsBox])]);
 	  }
 
-	  function backgroundSelect(st){
+	  function backgroundSelect(st, ui){
 	    const bgs = Array.isArray(data.backgrounds?.backgrounds) ? data.backgrounds.backgrounds : [];
-	    const sel = el("select", { onchange:(e)=>{ st.backgroundId = e.target.value; const bg = bgs.find(x=>x.id===st.backgroundId); st.backgroundName = bg?.name || ""; saveState(st);} }, [
+	    const sel = el("select", Object.assign({ onchange:(e)=>{ st.backgroundId = e.target.value; const bg = bgs.find(x=>x.id===st.backgroundId); st.backgroundName = bg?.name || ""; saveState(st);} }, ui?{"data-ui":ui}:{}), [
 	      el("option", { value:"", selected: !st.backgroundId }, ["(none)"]),
 	      ...bgs.map(bg => el("option", { value:bg.id, selected: st.backgroundId===bg.id }, [bg.name]))
 	    ]);
 	    return sel;
 	  }
 
-	  function classBlockEditor(st, key, label){
+	  function classBlockEditor(st, key, label, uiBase){
 	    const blk = st[key] || {};
 	    const classNames = classesForDropdown();
-	    const classSel = el("select", { onchange:(e)=>{ blk.className = e.target.value; blk.subclass = ""; st[key]=blk; saveState(st); render(); } }, [
+	    const classSel = el("select", Object.assign({ onchange:(e)=>{ blk.className = e.target.value; blk.subclass = ""; st[key]=blk; saveState(st); render(); } }, [
 	      el("option", { value:"", selected: !blk.className }, ["(choose)"]),
 	      ...classNames.map(n => el("option", { value:n, selected: blk.className===n }, [n]))
 	    ]);
 	
-	    const lvlInp = el("input", { type:"number", min:"0", max:"20", value: String(blk.classLevel ?? (key==="primary"?1:0)), oninput:(e)=>{ blk.classLevel = Number(e.target.value||0); st[key]=blk; saveState(st); render(); } });
+	    const lvlInp = el("input", Object.assign({ type:"number", min:"0", max:"20", value: String(blk.classLevel ?? (key==="primary"?1:0)), oninput:(e)=>{ blk.classLevel = Number(e.target.value||0); st[key]=blk; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-2"}:{}));
 	
 	    const subs = blk.className ? subclassesForClass(blk.className) : [];
-	    const subSel = el("select", { onchange:(e)=>{ blk.subclass = e.target.value; const chosen = subs.find(x=>x.name===blk.subclass); blk.subclassPackageUrl = chosen?.packageUrl || ""; st[key]=blk; saveState(st); render(); } }, [
+	    const subSel = el("select", Object.assign({ onchange:(e)=>{ blk.subclass = e.target.value; const chosen = subs.find(x=>x.name===blk.subclass); blk.subclassPackageUrl = chosen?.packageUrl || ""; st[key]=blk; saveState(st); render(); } }, uiBase?{"data-ui":uiBase+"-3"}:{}), [
 	      el("option", { value:"", selected: !blk.subclass }, ["(none)"]),
 	      ...subs.map(su => el("option", { value:su.name, selected: blk.subclass===su.name }, [su.name]))
 	    ]);
 	
 	    return el("div", { class:"smallCard" }, [
 	      el("div", { style:"font-weight:900; margin-bottom:6px" }, [label]),
-	      field("Class", classSel),
-	      field("Class Level", lvlInp),
-	      field("Subclass", subSel),
-	    ]);
+	      field("Class", classSel, uiBase?uiBase+"-1":""),
+	      field("Class Level", lvlInp, uiBase?uiBase+"-2":""),
+	      field("Subclass", subSel, uiBase?uiBase+"-3":""),
+	    ], "UI6");
 	  }
 
 	  function renderDetails(st){
 	    st.details = st.details || {};
-	    const mkTa = (key) => el("textarea", { oninput:(e)=>{ st.details[key]=e.target.value; saveState(st); } }, [String(st.details[key]||"")]);
+	    const mkTa = (key, ui) => el("textarea", Object.assign({ oninput:(e)=>{ st.details[key]=e.target.value; saveState(st); } }, ui?{"data-ui":ui}:{}), [String(st.details[key]||"")]);
 	    return box("Details", [
-	      field("Appearance", mkTa("appearance")),
-	      field("Backstory", mkTa("backstory")),
-	      field("Allies", mkTa("allies")),
-	      field("Treasure", mkTa("treasure")),
+	      field("Appearance", mkTa("appearance","UI6-1"), "UI6-1"),
+	      field("Backstory", mkTa("backstory","UI6-2"), "UI6-2"),
+	      field("Allies", mkTa("allies","UI6-3"), "UI6-3"),
+	      field("Treasure", mkTa("treasure","UI6-4"), "UI6-4"),
 	    ]);
 	  }
 
@@ -645,7 +672,7 @@ function renderSpells(st){
 	      ? box("Always Prepared", [
 	          el("div", { class:"note" }, ["Granted by subclass rules. They do not count against prepared limits."]),
 	          el("ul", {}, always.map(id => el("li", {}, [spellNameById(id)])))
-	        ])
+	        ], "UI8")
 	      : null;
 
 	    const list = levels.length ? levels.map(lv => {
@@ -663,7 +690,7 @@ function renderSpells(st){
 	        const knownDisabled = known ? false : !canToggleKnown(id, source);
 	        const prepDisabled = always.includes(id) ? true : (prepared ? false : !canTogglePrepared(id, source));
 
-	        const knownCb = el("input", { type:"checkbox", checked: known, disabled: knownDisabled, onchange:(e)=>{
+	        const knownCb = el("input", { "data-ui":"UI9-L"+lv+"-"+id+"-K", type:"checkbox", checked: known, disabled: knownDisabled, onchange:(e)=>{
 	          if (e.target.checked) {
 	            if (!st.spells.known.find(x=>x.id===id)) st.spells.known.push({ id, source });
 	          } else {
@@ -674,7 +701,7 @@ function renderSpells(st){
 	          render();
 	        }});
 
-	        const prepCb = el("input", { type:"checkbox", checked: prepared, disabled: prepDisabled, onchange:(e)=>{
+	        const prepCb = el("input", { "data-ui":"UI9-L"+lv+"-"+id+"-P", type:"checkbox", checked: prepared, disabled: prepDisabled, onchange:(e)=>{
 	          if (e.target.checked) {
 	            if (!st.spells.prepared.find(x=>x.id===id)) st.spells.prepared.push({ id, source });
 	          } else {
@@ -684,7 +711,7 @@ function renderSpells(st){
 	          render();
 	        }});
 
-	        const infoBtn = el("button", { class:"btn", type:"button", onclick:()=>{
+	        const infoBtn = el("button", { class:"btn", "data-ui":"UI9-L"+lv+"-"+id+"-V", type:"button", onclick:()=>{
 	          const body = el("div", {}, [
 	            el("div", { class:"note" }, [`${sp.school || ""} | cast ${sp.castingTime || ""} | range ${sp.range || ""} | duration ${sp.duration || ""}`]),
 	            el("pre", { style:"white-space:pre-wrap; margin:0; font-family:inherit" }, [String(sp.description || sp.descrip || "")]),
@@ -692,7 +719,7 @@ function renderSpells(st){
 	          showModal(sp.name, body);
 	        }}, ["View"]);
 
-	        return el("div", { class:"smallCard" }, [
+	        return el("div", { class:"smallCard", "data-ui": "UI9-L"+lv+"-"+id }, [
 	          el("div", { style:"display:flex; justify-content:space-between; align-items:center; gap:10px" }, [
 	            el("div", {}, [
 	              el("div", { style:"font-weight:900" }, [sp.name]),
@@ -706,16 +733,16 @@ function renderSpells(st){
 	          ]),
 	        ]);
 	      });
-	      return box(title, rows.length ? rows : [el("div",{class:"note"},["No spells at this level."])]);
+	      return box(title, rows.length ? rows : [el("div",{class:"note"},["No spells at this level."])], "UI9-L"+lv);
 	    }) : [el("div",{class:"note"},["Pick a class and levels on the Core tab to populate spell options."])];
 
-	    const notesTa = el("textarea",{oninput:(e)=>{ st.spells.notes = e.target.value; saveState(st);} }, [st.spells.notes||""]);
+	    const notesTa = el("textarea",{"data-ui":"UI10-1", oninput:(e)=>{ st.spells.notes = e.target.value; saveState(st);} }, [st.spells.notes||""]);
 
 	    return el("div", {}, [
-	      box("Spells", [top]),
+	      box("Spells", [top], "UI7"),
 	      alwaysBox,
 	      ...list,
-	      box("Spell Notes", [ field("Notes", notesTa) ])
+	      box("Spell Notes", [ field("Notes", notesTa, "UI10-1") ], "UI10")
 	    ].filter(Boolean));
 	  }
 
