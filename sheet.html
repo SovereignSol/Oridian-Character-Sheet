@@ -279,18 +279,19 @@ UI10 Spell Notes box
 	    const st = loadState();
 	    root.innerHTML = "";
 
-	    if (page==="core"){
-	      root.appendChild(renderCore(st));
-	      return;
-	    }
-	    if (page==="details"){
-	      root.appendChild(renderDetails(st));
-	      return;
-	    }
-	    if (page==="spells"){
-	      root.appendChild(renderSpells(st));
-	      return;
-	    }
+	    try {
+	      if (page==="core"){
+	        root.appendChild(renderCore(st));
+	        return;
+	      }
+	      if (page==="details"){
+	        root.appendChild(renderDetails(st));
+	        return;
+	      }
+	      if (page==="spells"){
+	        root.appendChild(renderSpells(st));
+	        return;
+	      }
     if (page==="notes"){
       const ta = el("textarea",{oninput:(e)=>{ st.notes=e.target.value; saveState(st);} }, [st.notes||""]);
       root.appendChild(box("Notes", [ field("Notes", ta) ]));
@@ -371,6 +372,18 @@ UI10 Spell Notes box
     root.appendChild(box("Core", [
       el("div",{class:"note"},["Core section placeholder (kept stable while we iterate). Use the tabs to confirm navigation stays working."])
     ]));
+	    } catch (err) {
+	      console.error("Render failed", err);
+	      const errMsg = String(err?.message || err || "Unknown error");
+	      root.innerHTML = "";
+	      root.appendChild(el("section", { class: "box" }, [
+	        el("div", { class: "boxHead" }, [el("div", { class: "boxTitle" }, ["Render failed"]) ]),
+	        el("div", { class: "boxBody" }, [
+	          el("div", { class: "note" }, ["Something went wrong while rendering this page. Please reload and try again."]),
+	          el("div", { class: "note", style: "margin-top:8px;font-size:11px;" }, ["Error: " + errMsg]),
+	        ]),
+	      ]));
+	    }
 	  }
 
 	  function renderCore(st){
